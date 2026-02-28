@@ -1,6 +1,6 @@
-# CLAUDE.md — Forge Platform
+# CLAUDE.md — Mockline Platform
 
-> Agent context file. Read this before touching any code. This document is the source of truth for architecture decisions, conventions, and constraints for the Forge project.
+> Agent context file. Read this before touching any code. This document is the source of truth for architecture decisions, conventions, and constraints for the Mockline project.
 
 ---
 
@@ -26,35 +26,35 @@
 
 ## 1. Project Overview
 
-**Forge** is a B2B web platform where engineering teams upload OpenAPI specs and instantly receive a live, isolated mock API server — powered by [`@trillionclues/contour`](https://www.npmjs.com/package/@trillionclues/contour) running inside a Docker container.
+**mockline** is a B2B web platform where engineering teams upload OpenAPI specs and instantly receive a live, isolated mock API server — powered by [`@trillionclues/contour`](https://www.npmjs.com/package/@trillionclues/contour) running inside a Docker container.
 
 ### Core User Flow
 
 ```
 User uploads OpenAPI spec (.yaml / .json)
-  → Forge validates + parses the spec
-  → Forge builds a Docker image (Node + Contour + spec baked in)
+  → Mockline validates + parses the spec
+  → Mockline builds a Docker image (Node + Contour + spec baked in)
   → Container starts, Contour runs `contour start spec.yaml`
-  → Forge exposes a unique mock URL: mock-{id}.forge.dev
+  → Mockline exposes a unique mock URL: mock-{id}.mockline.dev
   → User shares URL with frontend devs, testers, CI pipelines
 ```
 
-### What Forge Is NOT
+### What Mockline Is NOT
 - Not a spec editor (Monaco is read-only preview; edits happen externally)
 - Not a bookmaker, payment processor, or user data broker
-- Not a replacement for Contour CLI — Forge is the platform layer on top
+- Not a replacement for Contour CLI — Mockline is the platform layer on top
 - Not a general-purpose container hosting service
 
 ### Relationship with Contour CLI
 
-| | Contour | Forge |
+| | Contour | Mockline |
 |---|---------|-------|
-| Repo | `trillionclues/contour` | `trillionclues/forge-platform` |
+| Repo | `trillionclues/contour` | `trillionclues/mockline-platform` |
 | Published | `npm i @trillionclues/contour` | Web app (not on npm) |
 | Role | Mock engine + CLI | Web UI + orchestration platform |
 | Usage | Standalone CLI tool | Installed inside each Docker container as a dep |
 
-> **Rule:** Never modify Contour source from within this repo. If a Contour bug is found, open a separate PR in the Contour repo. Forge pins a specific Contour version and updates deliberately.
+> **Rule:** Never modify Contour source from within this repo. If a Contour bug is found, open a separate PR in the Contour repo. Mockline pins a specific Contour version and updates deliberately.
 
 ---
 
@@ -64,7 +64,7 @@ User uploads OpenAPI spec (.yaml / .json)
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                        Forge Platform                            │
+│                        Mockline Platform                            │
 │                                                                  │
 │  ┌──────────────┐    ┌──────────────────┐    ┌───────────────┐  │
 │  │  Next.js 16  │───▶│   Hono API       │───▶│  Dockerode    │  │
@@ -79,7 +79,7 @@ User uploads OpenAPI spec (.yaml / .json)
 │                    ┌──────────▼──────────┐           │           │
 │                    │   Redis (Upstash)   │  ┌────────▼────────┐  │
 │                    │   Sessions + Cache  │  │  Traefik Proxy  │  │
-│                    └─────────────────────┘  │  mock-{id}.forge│  │
+│                    └─────────────────────┘  │  mock-{id}.mockline│  │
 │                                             └─────────────────┘  │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -143,7 +143,7 @@ User uploads OpenAPI spec (.yaml / .json)
 ### Monorepo Layout
 
 ```
-forge-platform/
+mockline-platform/
 ├── apps/
 │   ├── web/                  # Next.js 16 (App Router)
 │   └── api/                  # Hono API server
@@ -240,8 +240,8 @@ apps/api/
 
 ```bash
 # Clone
-git clone https://github.com/trillionclues/forge-platform
-cd forge-platform
+git clone https://github.com/trillionclues/mockline-platform
+cd mockline-platform
 
 # Install all deps (all workspaces)
 pnpm install
@@ -311,7 +311,7 @@ PORT=4000
 NODE_ENV=development
 
 # Database
-DATABASE_URL="postgresql://forge:forge@localhost:5432/forge_dev"
+DATABASE_URL="postgresql://mockline:mockline@localhost:5432/mockline_dev"
 
 # Redis
 REDIS_URL="redis://localhost:6379"
@@ -327,7 +327,7 @@ GITHUB_CLIENT_SECRET=""
 # Docker
 DOCKER_HOST="unix:///var/run/docker.sock"   # local
 # DOCKER_HOST="tcp://hetzner-vps-ip:2375"   # prod (use TLS)
-MOCK_BASE_DOMAIN="localhost"                 # prod: forge.dev
+MOCK_BASE_DOMAIN="localhost"                 # prod: mockline.dev
 
 # Contour version to bake into containers
 CONTOUR_VERSION="latest"                     # pin to e.g. "0.4.2" in prod
@@ -340,7 +340,7 @@ INTERNAL_API_SECRET="generate-random-secret" # used by web→api server calls
 
 ```env
 NEXT_PUBLIC_API_URL="http://localhost:4000"
-NEXT_PUBLIC_MOCK_BASE_URL="http://localhost"  # prod: https://mock-{id}.forge.dev
+NEXT_PUBLIC_MOCK_BASE_URL="http://localhost"  # prod: https://mock-{id}.mockline.dev
 
 # BetterAuth (client)
 NEXT_PUBLIC_AUTH_URL="http://localhost:4000"
@@ -424,12 +424,12 @@ throw new ApiError(429, 'Container limit reached', 'CONTAINER_LIMIT_EXCEEDED')
 ### Imports
 
 - Use absolute imports via TypeScript path aliases. No `../../../` chains.
-- Monorepo packages imported as `@forge/db`, `@forge/types`, `@forge/docker-manager`.
+- Monorepo packages imported as `@mockline/db`, `@mockline/types`, `@mockline/docker-manager`.
 
 ```json
 // tsconfig paths
 {
-  "@forge/*": ["packages/*/src"]
+  "@mockline/*": ["packages/*/src"]
 }
 ```
 
@@ -525,7 +525,7 @@ All other API logic lives in `apps/api` (Hono). Do not build a parallel API insi
 ```typescript
 // app/layout.tsx
 export const metadata: Metadata = {
-  title: { template: '%s | Forge', default: 'Forge — API Mocking Platform' },
+  title: { template: '%s | Mockline', default: 'Mockline — API Mocking Platform' },
   description: 'Instant mock API servers from your OpenAPI specs',
 }
 ```
@@ -584,7 +584,7 @@ CMD ["contour", "start", "spec.yaml", "--port", "3001"]
 export async function buildMockImage(params: {
   specContent: string
   specFormat: 'yaml' | 'json'
-  imageTag: string                 // e.g. "forge-mock-{specId}-{versionHash}"
+  imageTag: string                 // e.g. "mockline-mock-{specId}-{versionHash}"
   contourVersion: string
 }): Promise<{ imageId: string }>
 
@@ -619,21 +619,21 @@ const DEFAULT_RESOURCE_LIMITS = {
 ### Container Naming Convention
 
 ```
-forge-mock-{mockServerId}
+mockline-mock-{mockServerId}
 ```
 
-e.g. `forge-mock-cm8xyz123abc`
+e.g. `mockline-mock-cm8xyz123abc`
 
 This makes it easy to find the DB record from Docker logs and vice versa.
 
 ### Traefik Labels
 
-Traefik dynamically routes `mock-{id}.forge.dev` → container. Labels are set at container start:
+Traefik dynamically routes `mock-{id}.mockline.dev` → container. Labels are set at container start:
 
 ```typescript
 Labels: {
   'traefik.enable': 'true',
-  [`traefik.http.routers.${containerId}.rule`]: `Host(\`mock-${mockId}.forge.dev\`)`,
+  [`traefik.http.routers.${containerId}.rule`]: `Host(\`mock-${mockId}.mockline.dev\`)`,
   [`traefik.http.services.${containerId}.loadbalancer.server.port`]: '3001',
   'traefik.http.routers.${containerId}.entrypoints': 'websecure',
   'traefik.http.routers.${containerId}.tls.certresolver': 'letsencrypt',
@@ -710,7 +710,7 @@ model MockServer {
   dockerImageId   String?
   dockerContainerId String?
   status          MockServerStatus  @default(BUILDING)  // BUILDING|RUNNING|STOPPED|FAILED
-  publicUrl       String?           // mock-{id}.forge.dev
+  publicUrl       String?           // mock-{id}.mockline.dev
   tier            Tier
   lastAccessedAt  DateTime          @default(now())
   createdAt       DateTime          @default(now())
@@ -851,8 +851,8 @@ describe('validateSpec', () => {
 ```typescript
 // Test the full spec upload + provisioning flow
 // with real DB, mocked Docker
-import { mockDockerManager } from '@forge/docker-manager/mocks'
-vi.mock('@forge/docker-manager', () => mockDockerManager)
+import { mockDockerManager } from '@mockline/docker-manager/mocks'
+vi.mock('@mockline/docker-manager', () => mockDockerManager)
 ```
 
 ### E2E Tests (Playwright)
@@ -986,7 +986,7 @@ pnpm audit --audit-level=high
 # Automated via GitHub Actions weekly
 ```
 
-### What Forge Does NOT Need (Scope Guard)
+### What Mockline Does NOT Need (Scope Guard)
 
 - No payment processing in this repo (future: Stripe in separate service)
 - No user-uploaded code execution beyond Contour's scope
@@ -1047,6 +1047,6 @@ pnpm audit --audit-level=high
 | **PostgreSQL over MongoDB** | Relational data (users → specs → versions → mock servers) benefits from foreign keys and joins. JSON columns handle the unstructured spec content. |
 | **Upstash Redis over self-hosted** | Free tier is sufficient for dev; no ops overhead for cache/rate-limit. Easy to swap for self-hosted if needed. |
 | **No Pages Router** | App Router is the direction for Next.js. New patterns (Server Components, Server Actions) are only available in App Router. |
-| **pnpm workspaces + Turborepo** | Monorepo with shared packages (`@forge/db`, `@forge/types`) needs a build graph. Turbo handles caching and parallelism. |
+| **pnpm workspaces + Turborepo** | Monorepo with shared packages (`@mockline/db`, `@mockline/types`) needs a build graph. Turbo handles caching and parallelism. |
 | **Soft deletes on Spec + MockServer** | Users may need to recover accidentally deleted specs. Hard deletes are irreversible. Docker images are cleaned up asynchronously. |
-| **`cuid2` for all IDs** | Globally unique, URL-safe, unguessable, time-sortable. Better than UUIDs for public-facing URLs (`mock-cm8xyz123.forge.dev`). |
+| **`cuid2` for all IDs** | Globally unique, URL-safe, unguessable, time-sortable. Better than UUIDs for public-facing URLs (`mock-cm8xyz123.mockline.dev`). |
