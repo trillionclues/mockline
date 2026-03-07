@@ -49,7 +49,7 @@ User uploads OpenAPI spec (.yaml / .json)
 
 | | Contour | Mockline |
 |---|---------|-------|
-| Repo | `trillionclues/contour` | `trillionclues/mockline-platform` |
+| Repo | `trillionclues/contour` | `trillionclues/mockline` |
 | Published | `npm i @trillionclues/contour` | Web app (not on npm) |
 | Role | Mock engine + CLI | Web UI + orchestration platform |
 | Usage | Standalone CLI tool | Installed inside each Docker container as a dep |
@@ -91,12 +91,14 @@ User uploads OpenAPI spec (.yaml / .json)
 - Server Components for data fetching where possible (spec lists, dashboards)
 - Client Components only for interactive elements (Monaco editor, request builder, live status)
 - Communicates with `apps/api` via internal fetch (server-to-server) or TanStack Query (client)
+- Also consult the [UI Design Standard](UNCODIXIFY-UI-STANDARD.md)
 
 #### `apps/api` — Hono Backend
 - REST API consumed by the frontend and externally (CI integrations)
 - Owns all Docker orchestration via `dockerode`
 - Owns all database writes via Prisma
 - Stateless — no session logic here; sessions live in Redis via BetterAuth
+- Also consult the [Workflow Orchestration](WORKFLOW-ORCHESTRATION.md)
 
 #### `packages/docker-manager` — Docker Orchestration Layer
 - Wraps `dockerode` with typed, high-level functions: `buildMockImage`, `startMockContainer`, `stopContainer`, `removeContainer`
@@ -143,7 +145,7 @@ User uploads OpenAPI spec (.yaml / .json)
 ### Monorepo Layout
 
 ```
-mockline-platform/
+mockline/
 ├── apps/
 │   ├── web/                  # Next.js 16 (App Router)
 │   └── api/                  # Hono API server
@@ -240,8 +242,8 @@ apps/api/
 
 ```bash
 # Clone
-git clone https://github.com/trillionclues/mockline-platform
-cd mockline-platform
+git clone https://github.com/trillionclues/mockline
+cd mockline
 
 # Install all deps (all workspaces)
 pnpm install
