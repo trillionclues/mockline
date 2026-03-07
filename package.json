@@ -1,0 +1,29 @@
+{
+    "name": "mockline",
+    "private": true,
+    "scripts": {
+        "dev": "turbo dev",
+        "build": "turbo build",
+        "lint": "turbo lint",
+        "typecheck": "turbo typecheck",
+        "test": "turbo test",
+        "test:e2e": "turbo test:e2e",
+        "format": "prettier --write \"**/*.{ts,tsx,json,md,css}\"",
+        "format:check": "prettier --check \"**/*.{ts,tsx,json,md,css}\"",
+        "db:migrate": "pnpm --filter @mockline/db db:migrate",
+        "db:push": "pnpm --filter @mockline/db db:push",
+        "db:studio": "pnpm --filter @mockline/db db:studio",
+        "db:seed": "pnpm --filter @mockline/db db:seed",
+        "mock:build": "docker build -t mockline-mock-server ./docker/mock-server",
+        "mock:test": "docker run --rm -p 3001:3001 mockline-mock-server"
+    },
+    "devDependencies": {
+        "turbo": "^2.4.0",
+        "prettier": "^3.4.0",
+        "typescript": "^5.7.0"
+    },
+    "packageManager": "pnpm@9.15.0",
+    "engines": {
+        "node": ">=22.0.0"
+    }
+}
