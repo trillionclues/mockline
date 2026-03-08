@@ -14,8 +14,6 @@
   <a href="doc/PROJECT.md">Full Project Doc</a>
 </p>
 
----
-
 ## What is Mockline?
 
 Mockline is an automated PaaS for engineering teams to deploy and manage isolated, Docker-powered mock API servers from OpenAPI specs.
@@ -37,7 +35,31 @@ Each mock server runs [`@trillionclues/contour`](https://www.npmjs.com/package/@
 
 Mockline does not fork or modify Contour. It installs Contour as a dependency inside Docker images and starts it with the user's spec.
 
----
+## Commands
+
+```bash
+# Development
+pnpm dev                        # Start web + api
+pnpm dev --filter=web           # Next.js only
+pnpm dev --filter=api           # Hono API only
+
+# Database
+pnpm db:migrate                 # Run Prisma migrations
+pnpm db:studio                  # Open Prisma Studio GUI
+
+# Build
+pnpm build                      # Build all apps + packages
+pnpm typecheck                  # tsc --noEmit across all packages
+
+# Test
+pnpm test                       # Run Vitest
+pnpm lint                       # ESLint
+
+# Docker
+docker compose up -d db cache   # Start Postgres + Redis
+docker compose down             # Stop all
+docker compose logs -f api      # Tail API logs
+```
 
 ## Features
 
@@ -48,8 +70,6 @@ Mockline does not fork or modify Contour. It installs Contour as a dependency in
 - **API Explorer** — Send requests to mock servers, inspect responses *(coming soon)*
 - **Stateful mode** — Persist POST/PUT/DELETE data across container restarts via Docker volumes *(coming soon)*
 - **Auto-stop** — Idle containers stopped automatically to save resources
-
----
 
 ## Quick Start
 
@@ -117,19 +137,17 @@ Open [http://localhost:3000](http://localhost:3000).
 3. Set **Authorization callback URL** to `http://localhost:4000/api/auth/callback/github`
 4. Copy the Client ID and Client Secret into `apps/api/.env`
 
----
-
 ## Architecture
 
 ```
 ┌───────────────────────────────────────────────┐
-│                 Mockline Platform              │
+│                 Mockline Platform             │
 │                                               │
 │  Next.js ──► Hono API ──► Docker Engine       │
 │  (port 3000)  (port 4000)   (containers)      │
 │                   │                           │
-│              PostgreSQL    Redis               │
-│              (Prisma ORM)  (sessions, cache)   │
+│              PostgreSQL    Redis              │
+│              (Prisma ORM)  (sessions, cache)  │
 │                                               │
 │  Each mock container:                         │
 │  ┌──────────────────────────┐                 │
@@ -175,36 +193,6 @@ mockline/
 | Mock Engine | @trillionclues/contour |
 | Monorepo | pnpm workspaces + Turborepo |
 
----
-
-## Commands
-
-```bash
-# Development
-pnpm dev                        # Start web + api
-pnpm dev --filter=web           # Next.js only
-pnpm dev --filter=api           # Hono API only
-
-# Database
-pnpm db:migrate                 # Run Prisma migrations
-pnpm db:studio                  # Open Prisma Studio GUI
-
-# Build
-pnpm build                      # Build all apps + packages
-pnpm typecheck                  # tsc --noEmit across all packages
-
-# Test
-pnpm test                       # Run Vitest
-pnpm lint                       # ESLint
-
-# Docker
-docker compose up -d db cache   # Start Postgres + Redis
-docker compose down             # Stop all
-docker compose logs -f api      # Tail API logs
-```
-
----
-
 ## API Reference
 
 All endpoints require authentication (BetterAuth session) except `GET /health`.
@@ -242,8 +230,6 @@ Responses follow the envelope format: `{ data, error }`.
 | `GET` | `/contracts/:id` | Test run results |
 | `GET` | `/contracts?specId=...` | List runs for a spec |
 
----
-
 ## Database Schema (Key Models)
 
 ```
@@ -255,8 +241,6 @@ User  →  Spec  →  SpecVersion
 ```
 
 8 tables total. See `packages/db/prisma/schema.prisma` for the full schema.
-
----
 
 ## Docker Container Lifecycle
 
@@ -282,17 +266,13 @@ Spec uploaded
 | Capabilities | ALL dropped |
 | Privileges | `no-new-privileges` |
 
----
-
-#### multiple specs per user?
-NB: To allow multiple specs per user, we'll need to update the Traefik labels to route based on the spec ID, not just the user ID.
-
-#### add new dependency to the web app
-NB: To add a new dependency to the web app, run `pnpm add --filter @mockline/web <dependency-name>`.
-
 ## Contour CLI Options *(Upcoming: Phase 4)*
 
-When provisioning a mock server, users will be able to configure Contour's runtime options:
+When provisioning a mock server, users will be able to configure Contour's runtime options. These options are stored as JSON in the `MockServer.config` field and passed to the container as environment variables.
+
+NB:
+- To allow multiple specs per user, we'll need to update the Traefik labels to route based on the spec ID, not just the user ID.
+- To add a new dependency to the web app, run `pnpm add --filter @mockline/web <dependency-name>`.
 
 | Option | Description | Example |
 |--------|-------------|---------|
@@ -302,25 +282,10 @@ When provisioning a mock server, users will be able to configure Contour's runti
 | `--require-auth` | Require Bearer token | Rejects requests without `Authorization` header |
 | `--deterministic` | Reproducible fake data | Same request → same response (for E2E tests) |
 
-These options are stored as JSON in the `MockServer.config` field and passed to the container as environment variables.
-
----
-
-## Project Documentation
-
-| Document | Path | Purpose |
-|----------|------|---------|
-| Full architecture doc | `doc/PROJECT.md` | Comprehensive agent context: coding standards, API design, Docker patterns, security, feature phases |
-| UI design system | `doc/mockline-frontend/SKILL.md` | Dashboard design rules, color palette, typography, component patterns |
-
----
-
 ## License
 
-MIT
-
----
+[MIT](./LICENSE) © [trillionclues](https://github.com/trillionclues)
 
 <p align="center">
-  Built on <a href="https://www.npmjs.com/package/@trillionclues/contour">@trillionclues/contour</a>
+  Built on <a href="https://github.com/trillionclues/contour-cli">@trillionclues/contour</a>
 </p>
