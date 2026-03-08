@@ -1,0 +1,21 @@
+# Traefik Static Configuration
+api:
+  dashboard: true
+  insecure: true  # Dashboard on :8080 (dev only)
+
+entryPoints:
+  web:
+    address: ":80"
+  websecure:
+    address: ":443"
+
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    # ignore db and cache services unless label explicitly added
+    # only route containers with traefik.enable=true label
+    exposedByDefault: false
+    network: mockline-network
+
+log:
+  level: INFO
