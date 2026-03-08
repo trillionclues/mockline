@@ -7,6 +7,7 @@ import { requireAuth } from './middleware/auth'
 import { specsRouter } from './routes/specs'
 import { mocksRouter } from './routes/mocks'
 import { contractsRouter } from './routes/contracts'
+import { startAutoStopScheduler } from './services/auto-stop'
 
 const app = new Hono()
 
@@ -41,6 +42,7 @@ console.log(`Mockline API starting on port ${port}`)
 
 serve({ fetch: app.fetch, port }, (info) => {
     console.log(`Mockline API running at http://localhost:${info.port}`)
+    startAutoStopScheduler()
 })
 
 export default app
