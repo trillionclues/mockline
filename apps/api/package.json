@@ -1,0 +1,30 @@
+{
+    "name": "@mockline/api",
+    "version": "0.0.0",
+    "private": true,
+    "scripts": {
+        "dev": "tsx watch src/index.ts",
+        "build": "tsc",
+        "start": "node dist/index.js",
+        "typecheck": "tsc --noEmit",
+        "test": "vitest run",
+        "lint": "eslint ."
+    },
+    "dependencies": {
+        "hono": "^4.6.0",
+        "@hono/node-server": "^1.13.0",
+        "zod": "^3.23.0",
+        "ioredis": "^5.4.0",
+        "better-auth": "^1.2.0",
+        "@mockline/db": "workspace:*",
+        "@mockline/types": "workspace:*",
+        "@mockline/spec-parser": "workspace:*",
+        "@mockline/docker-manager": "workspace:*"
+    },
+    "devDependencies": {
+        "tsx": "^4.19.0",
+        "typescript": "^5.7.0",
+        "vitest": "^2.1.0",
+        "@types/node": "^22.0.0"
+    }
+}
