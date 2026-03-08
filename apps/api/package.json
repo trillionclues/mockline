@@ -11,20 +11,21 @@
         "lint": "eslint ."
     },
     "dependencies": {
-        "hono": "^4.6.0",
         "@hono/node-server": "^1.13.0",
-        "zod": "^3.23.0",
-        "ioredis": "^5.4.0",
-        "better-auth": "^1.2.0",
         "@mockline/db": "workspace:*",
-        "@mockline/types": "workspace:*",
+        "@mockline/docker-manager": "workspace:*",
         "@mockline/spec-parser": "workspace:*",
-        "@mockline/docker-manager": "workspace:*"
+        "@mockline/types": "workspace:*",
+        "better-auth": "^1.2.0",
+        "hono": "^4.6.0",
+        "ioredis": "^5.4.0",
+        "yaml": "^2.6.0",
+        "zod": "^3.23.0"
     },
     "devDependencies": {
+        "@types/node": "^22.19.13",
         "tsx": "^4.19.0",
         "typescript": "^5.7.0",
-        "vitest": "^2.1.0",
-        "@types/node": "^22.0.0"
+        "vitest": "^2.1.0"
     }
 }
