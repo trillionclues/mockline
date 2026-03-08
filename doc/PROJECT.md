@@ -654,6 +654,73 @@ await db.mockServer.update({
 })
 ```
 
+### Volume Persistence for Stateful Mock Servers *(Upcoming)*
+
+Mock servers are **stateless by default**. When a user opts into stateful mode (`--stateful`), user-generated data (POST/PUT/DELETE operations) persists across container restarts via Docker named volumes.
+
+#### Strategy: Backup volumes, not containers
+
+| | Container | Volume |
+|---|---|---|
+| Contains | OS, Node, Contour binary, spec | User state — POST/PUT data, request logs, config |
+| Rebuilt from | Docker image (deterministic) | Nothing — user-generated data |
+| Typical size | 200–400MB | < 10MB |
+| On restart | New container from same image | Same volume re-mounted |
+
+#### Volume data layout
+
+```
+/mockline-data/
+├── state.json          # POST/PUT/DELETE persisted records (--stateful only)
+├── config.json         # Runtime options (delay, error-rate, auth, headers)
+└── requests.log        # Request history for session explorer
+```
+
+#### Volume lifecycle
+
+```
+User provisions mock (stateful: true)
+  → Container starts, named volume created: mockline-data-{mockId}
+  → Volume mounted at /mockline-data inside container
+
+User POSTs data → Written to volume state.json
+Auto-stop fires → Container stopped, volume preserved ✓
+User returns   → New container, same volume mounted, state restored ✓
+User deletes   → Container + volume both removed
+```
+
+#### Contour CLI options passed as container env vars
+
+The `config` JSON field on `MockServer` stores runtime options. These are passed through to the container as environment variables:
+
+```typescript
+// docker-manager/startMockContainer
+const envVars = [
+  `CONTOUR_PORT=3001`,
+  config.stateful    ? `CONTOUR_STATEFUL=true` : '',
+  config.delay       ? `CONTOUR_DELAY=${config.delay}` : '',
+  config.errorRate   ? `CONTOUR_ERROR_RATE=${config.errorRate}` : '',
+  config.requireAuth ? `CONTOUR_REQUIRE_AUTH=true` : '',
+  config.deterministic ? `CONTOUR_DETERMINISTIC=true` : '',
+].filter(Boolean)
+
+// Volume mount (only for stateful mode)
+const binds = config.stateful
+  ? [`mockline-data-${mockId}:/mockline-data`]
+  : []
+```
+
+#### Dockerfile update for volume support
+
+```dockerfile
+# Added to docker/mock-server/Dockerfile
+VOLUME /mockline-data
+ENV CONTOUR_DATA_DIR=/mockline-data
+
+# CMD now reads env vars to build the CLI args
+CMD ["sh", "-c", "contour start spec.yaml --port ${CONTOUR_PORT:-3001} ${CONTOUR_STATEFUL:+--stateful} ${CONTOUR_DELAY:+--delay $CONTOUR_DELAY} ${CONTOUR_ERROR_RATE:+--error-rate $CONTOUR_ERROR_RATE} ${CONTOUR_REQUIRE_AUTH:+--require-auth} ${CONTOUR_DETERMINISTIC:+--deterministic}"]
+```
+
 ---
 
 ## 9. Database & Prisma Conventions
@@ -713,7 +780,11 @@ model MockServer {
   dockerContainerId String?
   status          MockServerStatus  @default(BUILDING)  // BUILDING|RUNNING|STOPPED|FAILED
   publicUrl       String?           // mock-{id}.mockline.dev
+  port            Int?              // exposed host port
   tier            Tier
+  stateful        Boolean           @default(false)     // persist POST/PUT/DELETE data
+  volumeName      String?           // Docker named volume (only when stateful)
+  config          Json?             // runtime options: { delay, errorRate, requireAuth, deterministic }
   lastAccessedAt  DateTime          @default(now())
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
@@ -1037,6 +1108,19 @@ pnpm audit --audit-level=high
 - Webhook alerts (ship if time allows)
 - Billing/payment (post-launch)
 
+### Phase 4 — Stateful Mocks & Configure Panel *(Upcoming)*
+**In scope:**
+- Volume persistence: named Docker volumes for stateful mock servers
+- `stateful`, `config`, `volumeName` fields on MockServer model
+- Contour CLI options passed as container env vars (delay, error-rate, auth, deterministic)
+- Dashboard UI: "Configure" panel when provisioning a mock server — toggles for stateful mode, delay range, error rate, require auth
+- Request history explorer: view logged requests from the volume
+- Volume cleanup on mock server deletion
+
+**Out of scope:**
+- Custom response overrides (per-endpoint response editing)
+- Volume backup to external storage (S3/R2)
+
 ---
 
 ## 15. Known Decisions & Why
@@ -1052,3 +1136,5 @@ pnpm audit --audit-level=high
 | **pnpm workspaces + Turborepo** | Monorepo with shared packages (`@mockline/db`, `@mockline/types`) needs a build graph. Turbo handles caching and parallelism. |
 | **Soft deletes on Spec + MockServer** | Users may need to recover accidentally deleted specs. Hard deletes are irreversible. Docker images are cleaned up asynchronously. |
 | **`cuid2` for all IDs** | Globally unique, URL-safe, unguessable, time-sortable. Better than UUIDs for public-facing URLs (`mock-cm8xyz123.mockline.dev`). |
+| **Volume-only backup, not container backup** | Containers are reproducible from the Docker image (which is built from the spec). Volumes hold the only irreproducible data (user POST/PUT state, request logs). Backing up a 400MB container when 99% is deterministic is wasteful vs. backing up a <10MB volume. |
+| **Stateful mode is opt-in** | Most mock use cases (frontend dev, CI/CD, demos) are ephemeral. Stateful mode adds volume management overhead. Users who need it opt in explicitly. |
