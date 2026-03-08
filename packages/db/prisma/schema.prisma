@@ -1,0 +1,184 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// Enums
+// ============================================
+
+enum Tier {
+  FREE
+  PRO
+  TEAM
+}
+
+enum MockServerStatus {
+  BUILDING
+  RUNNING
+  STOPPED
+  FAILED
+  REMOVED
+}
+
+enum SpecFormat {
+  YAML
+  JSON
+}
+
+// ============================================
+// Models
+// ============================================
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  githubId  String?  @unique
+  avatarUrl String?
+  tier      Tier     @default(FREE)
+
+  specs       Spec[]
+  mockServers MockServer[]
+  sessions    Session[]
+  accounts    Account[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Spec {
+  id     String  @id @default(cuid())
+  userId String
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name   String
+
+  versions    SpecVersion[]
+  mockServers MockServer[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([userId])
+  @@map("specs")
+}
+
+model SpecVersion {
+  id      String     @id @default(cuid())
+  specId  String
+  spec    Spec       @relation(fields: [specId], references: [id], onDelete: Cascade)
+  version Int
+  content String     // Raw YAML/JSON text
+  format  SpecFormat
+  hash    String     // SHA256 of content for dedup
+
+  mockServers MockServer[]
+
+  createdAt DateTime @default(now())
+
+  @@unique([specId, version])
+  @@index([specId])
+  @@map("spec_versions")
+}
+
+model MockServer {
+  id                String           @id @default(cuid())
+  specId            String
+  spec              Spec             @relation(fields: [specId], references: [id], onDelete: Cascade)
+  specVersionId     String
+  specVersion       SpecVersion      @relation(fields: [specVersionId], references: [id])
+  userId            String
+  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dockerImageId     String?
+  dockerContainerId String?
+  status            MockServerStatus @default(BUILDING)
+  publicUrl         String?
+  port              Int?
+  tier              Tier
+
+  lastAccessedAt DateTime @default(now())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  deletedAt      DateTime?
+
+  @@index([userId])
+  @@index([specId])
+  @@index([status])
+  @@map("mock_servers")
+}
+
+model ContractTestRun {
+  id        String @id @default(cuid())
+  specId    String
+  userId    String
+  baseUrl   String
+  results   Json   // Array of endpoint pass/fail results
+  summary   Json   // { total, passed, failed }
+  status    String @default("running") // running | completed | failed
+
+  createdAt DateTime @default(now())
+
+  @@index([specId])
+  @@index([userId])
+  @@map("contract_test_runs")
+}
+
+// ============================================
+// BetterAuth Models
+// ============================================
+
+model Session {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token        String   @unique
+  expiresAt    DateTime
+  ipAddress    String?
+  userAgent    String?
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accountId         String
+  providerId        String
+  accessToken       String?
+  refreshToken      String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope             String?
+  idToken           String?
+  password          String?
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("verifications")
+}
