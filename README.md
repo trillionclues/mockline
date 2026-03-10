@@ -141,7 +141,7 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ```
 ┌───────────────────────────────────────────────┐
-│                 Mockline Platform             │
+│                 Mockline PaaS                 │
 │                                               │
 │  Next.js ──► Hono API ──► Docker Engine       │
 │  (port 3000)  (port 4000)   (containers)      │

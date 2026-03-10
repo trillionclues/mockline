@@ -68,51 +68,61 @@ Build in this exact sequence. Each phase unlocks the next.
 
 ```
 Phase 0 — Foundation (no visible UI)
+  → globals.css tokens + font loading in root layout
   → api-client.ts
-  → query-client setup
-  → auth provider
-  → layout tokens in globals.css
+  → query-client.ts + query-keys.ts
+  → auth.ts (server) + auth-client.ts (client)
+  → API route handler: app/api/auth/[...all]/route.ts
+  → middleware.ts (route protection)
 
-Phase 1 — Landing Page
-  → Full static landing page
-  → No auth, no data
-  → Vercel deploy after this phase
+Phase 1 — Marketing Layout + Landing Page
+  → app/(marketing)/layout.tsx
+  → components/marketing/Nav.tsx
+  → components/marketing/Footer.tsx
+  → app/(marketing)/page.tsx (landing — hero first, then sections)
+  → Dashboard screenshot placeholder in hero
+  → Deploy and verify on Vercel before Phase 2
 
-Phase 2 — Dashboard Shell
-  → Sidebar + topbar layout
-  → Route structure
-  → Auth guard
-  → Empty states for every page
+Phase 2 — Auth Pages
+  → app/(auth)/layout.tsx (centered card shell)
+  → app/(auth)/login/page.tsx (Google OAuth button)
+  → Wire BetterAuth signIn.social()
+  → Test full sign-in → redirect to /overview flow
+  → Test middleware blocks /overview when unauthenticated
+  → Do not proceed until sign-in works end-to-end
 
-Phase 3 — Specs Feature
-  → Spec list page (table)
-  → Spec upload (modal + dropzone)
-  → Spec detail page (endpoints tree)
-  → Version history tab
+Phase 3 — Dashboard Shell
+  → app/(dashboard)/layout.tsx
+  → components/shell/Sidebar.tsx
+  → components/shell/Topbar.tsx
+  → Verify: sidebar visible, topbar correct height, 
+    content area properly offset, active nav cream border
+
+Phase 4 — Specs Feature (end-to-end)
+  → /specs list page + upload modal
+  → /specs/[id] detail + endpoint tree
+  → /specs/[id] versions tab
   → Wire to real API
 
-Phase 4 — Mock Servers Feature
-  → Mock server list
-  → Provision modal
-  → Mock server detail (status + URL)
-  → Live API explorer
-  → Wire to real API + polling
-
-Phase 5 — Contract Tests Feature
-  → Run contract test (form)
-  → Test results page
+Phase 5 — Mock Servers Feature (end-to-end)
+  → /mocks list + provision modal
+  → /mocks/[id] detail + status polling
+  → /explorer API explorer
   → Wire to real API
 
-Phase 6 — Schema Diff (Phase 3 of product)
-  → Diff viewer component
-  → Version selector
-  → Breaking change indicators
+Phase 6 — Contract Tests (end-to-end)
+  → /contracts list + run modal
+  → /contracts/[id] results
+  → Wire to real API
 
-Phase 7 — Polish + Responsive
-  → Responsive audit (all pages)
-  → Loading states
-  → Error boundaries
-  → Empty states check
+Phase 7 — Schema Diff
+  → /diff viewer
+  → Version selector + breaking change indicators
+
+Phase 8 — Polish + Responsive Audit
+  → Every page at 375px / 768px / 1280px
+  → Replace dashboard screenshot placeholder with real screenshot
+  → Loading states, error boundaries, empty states audit
 ```
 
 **Do not start Phase 3 until Phase 2 is deployed and working. Do not start Phase 4 until the spec upload flow works end-to-end.**
@@ -128,46 +138,60 @@ Phase 7 — Polish + Responsive
 @import "tailwindcss";
 
 @theme {
-  /* Core backgrounds — inherited from Contour CLI */
-  --color-bg:            #0a0a0b;
-  --color-bg-card:       #111114;
-  --color-bg-terminal:   #0d0d10;
-
-  /* Surfaces */
-  --color-surface:       #111114;
-  --color-surface-2:     #16161a;
+  /* Backgrounds */
+  --color-bg:              #0a0a0b;
+  --color-surface:         #111114;
+  --color-surface-2:       #16161a;
 
   /* Borders */
-  --color-border:        #1a1a2e;
+  --color-border:          #1a1a2e;
   --color-border-highlight: rgba(242, 227, 187, 0.2);
 
-  /* Primary accent — Contour's cream/gold */
-  --color-primary:       #F2E3BB;
-  --color-primary-muted: rgba(242, 227, 187, 0.08);
-  --color-primary-glow:  rgba(242, 227, 187, 0.13);
+  /* Primary — Contour/Mockline cream */
+  --color-primary:         #F2E3BB;
+  --color-primary-muted:   rgba(242, 227, 187, 0.08);
 
   /* Text */
-  --color-text:          #e4e4e7;
-  --color-text-muted:    #71717a;
-  --color-text-subtle:   #52525b;
-  --color-text-strong:   #f4f4f5;
+  --color-text:            #e4e4e7;
+  --color-text-muted:      #71717a;
+  --color-text-subtle:     #52525b;
+  --color-text-strong:     #f4f4f5;
 
-  /* Status — these stay, they're functional not brand */
+  /* Status */
   --color-status-running:  #22c55e;
   --color-status-building: #C0B87A;
   --color-status-stopped:  #71717a;
   --color-status-failed:   #ef4444;
 
   /* Semantic */
-  --color-destructive:   #ef4444;
-  --color-warning:       #C0B87A;
-  --color-success:       #22c55e;
+  --color-destructive:     #ef4444;
+  --color-warning:         #C0B87A;
+  --color-success:         #22c55e;
 
-  /* Typography — inherited from Contour CLI */
-  --font-family-heading: 'Outfit', sans-serif;
-  --font-family-sans:    'Inter', -apple-system, sans-serif;
-  --font-family-mono:    'JetBrains Mono', 'Fira Code', monospace;
+  /* Typography — three fonts, three roles, no overlap */
+  --font-family-heading:   'Outfit', sans-serif;
+  --font-family-sans:      'Inter', -apple-system, sans-serif;
+  --font-family-mono:      'JetBrains Mono', 'Fira Code', monospace;
 }
+
+* { box-sizing: border-box; margin: 0; }
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-family-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-family-heading);
+}
+
+::-webkit-scrollbar       { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 4px; }
 
 * { box-sizing: border-box; margin: 0; }
 
@@ -297,6 +321,70 @@ export const queryKeys = {
 }
 ```
 
+### 3.5 Auth Foundation
+```
+## 3.5 Auth Foundation
+
+Set up before any page that requires authentication.
+All four files below must exist and work before Phase 2 begins.
+
+### Route Groups
+
+  (marketing)/   → public, no auth check, uses Nav + Footer
+  (auth)/        → public, no dashboard shell, centered card layout
+  (dashboard)/   → protected, redirects to /login if no session
+
+These three groups must never share a layout. 
+Each has its own layout.tsx. None nests inside another.
+
+### middleware.ts
+
+Placed at the project root (same level as app/).
+Runs on every request except static assets.
+
+Protected paths: anything not starting with:
+  / (exact), /pricing, /login, /api/auth
+
+Logic:
+  - No session cookie + protected path → redirect /login
+  - Has session cookie + /login → redirect /overview
+  - Otherwise → next()
+
+Cookie name: "better-auth.session_token"
+Check with: request.cookies.get("better-auth.session_token")
+
+### Server session helper
+
+getSession() in lib/auth.ts
+Called at the top of every dashboard Server Component 
+that needs user identity (for scoping DB queries).
+
+Pattern in every dashboard page:
+  const session = await getSession()
+  if (!session) redirect('/login')   // belt-and-suspenders after middleware
+
+### Auth client
+
+authClient in lib/auth-client.ts
+Used in Client Components only for:
+  - authClient.signIn.social({ provider: 'google', callbackURL: '/overview' })
+  - authClient.signOut() (settings page)
+
+Never call the auth client in Server Components.
+Never call getSession() in Client Components.
+The split is absolute.
+
+### Google OAuth setup checklist
+
+Before testing sign-in:
+  □ GOOGLE_CLIENT_ID in .env.local
+  □ GOOGLE_CLIENT_SECRET in .env.local  
+  □ BETTER_AUTH_SECRET in .env.local (openssl rand -hex 32)
+  □ BETTER_AUTH_URL="http://localhost:3000"
+  □ Authorized redirect URI in Google Cloud Console:
+    http://localhost:3000/api/auth/callback/google
+  □ API route handler exists at app/api/auth/[...all]/route.ts
+
 ---
 
 ## 4. Landing Page — Full Build Spec
@@ -331,6 +419,44 @@ Section padding-y:  80px desktop / 56px tablet / 40px mobile
 Section padding-x:  24px (applied at container level, never per-element)
 Content max-width:  680px for text-heavy sections (hero copy, how-it-works)
 Grid max-width:     full container width for feature grids
+```
+
+Replace the terminal component paragraph with:
+```
+HERO VISUAL — Dashboard screenshot block
+  Not a terminal. The hero visual shows the Mockline dashboard UI.
+  
+  Container: position relative, max-width 1000px, margin 56px auto 0
+  
+  Frame:
+    background: #111114
+    border: 1px solid #1a1a2e
+    border-radius: 8px 8px 0 0
+    overflow: hidden
+  
+  Browser chrome bar (inside frame, top):
+    height: 28px, background: #16161a
+    border-bottom: 1px solid #1a1a2e
+    Three dots: red #ef4444, yellow #C0B87A, green #22c55e
+    8px diameter, gap 5px, left-padded 14px
+  
+  Image:
+    <Image src="/images/dashboard-preview.png" />
+    Placeholder until screenshot is taken: 
+    div height 520px, background #16161a,
+    centered text "Dashboard preview" JetBrains Mono 13px #52525b
+  
+  Bottom fade overlay:
+    height: 120px
+    background: linear-gradient(to bottom, transparent, #0a0a0b)
+    position: relative, margin-top: -120px, z-index: 1
+    pointer-events: none
+
+  WHEN TO REPLACE THE PLACEHOLDER:
+    After Phase 3 (dashboard shell) is complete and verified,
+    take a screenshot of the Overview page at 1280px width
+    and replace /public/images/dashboard-preview.png.
+    The landing page hero updates automatically.
 ```
 
 ### 4.1 Nav
