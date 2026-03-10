@@ -28,7 +28,7 @@ export default function AuthLayout({
 
             <div style={{
                 width: '100%',
-                maxWidth: '500px',
+                maxWidth: '450px',
                 background: '#111114',
                 border: '1px solid #2e2e49ff',
                 borderRadius: '12px',
