@@ -37,13 +37,14 @@ export default async function middleware(request: NextRequest) {
 
     const sessionCookie = request.cookies.get('better-auth.session_token')
     if (!sessionCookie) {
-        // No session cookie, redirect to login
+        // No session, redirect to login
         const url = new URL('/login', request.url)
+        url.searchParams.set('redirect_to', pathname + request.nextUrl.search)
         return NextResponse.redirect(url)
     }
 
-    // a session, let them through.
-    // Dashboard layout `await auth()` handles checking if cookie is truly valid.
+    // dashboard layout `await auth()`
+    // handles checking if cookie is truly valid.
     return NextResponse.next()
 }
 
