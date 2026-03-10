@@ -35,7 +35,7 @@ User uploads OpenAPI spec (.yaml / .json)
   → Mockline validates + parses the spec
   → Mockline builds a Docker image (Node + Contour + spec baked in)
   → Container starts, Contour runs `contour start spec.yaml`
-  → Mockline exposes a unique mock URL: mock-{id}.mockline.dev
+  → Mockline exposes a unique mock URL: mock-{id}.mockline.xyz
   → User shares URL with frontend devs, testers, CI pipelines
 ```
 
@@ -329,7 +329,7 @@ GITHUB_CLIENT_SECRET=""
 # Docker
 DOCKER_HOST="unix:///var/run/docker.sock"   # local
 # DOCKER_HOST="tcp://hetzner-vps-ip:2375"   # prod (use TLS)
-MOCK_BASE_DOMAIN="localhost"                 # prod: mockline.dev
+MOCK_BASE_DOMAIN="localhost"                 # prod: mockline.xyz
 
 # Contour version to bake into containers
 CONTOUR_VERSION="latest"                     # pin to e.g. "0.4.2" in prod
@@ -342,7 +342,7 @@ INTERNAL_API_SECRET="generate-random-secret" # used by web→api server calls
 
 ```env
 NEXT_PUBLIC_API_URL="http://localhost:4000"
-NEXT_PUBLIC_MOCK_BASE_URL="http://localhost"  # prod: https://mock-{id}.mockline.dev
+NEXT_PUBLIC_MOCK_BASE_URL="http://localhost"  # prod: https://mock-{id}.mockline.xyz
 
 # BetterAuth (client)
 NEXT_PUBLIC_AUTH_URL="http://localhost:4000"
@@ -611,10 +611,10 @@ Every container MUST have limits set. Without these, a single user can exhaust t
 
 ```typescript
 const DEFAULT_RESOURCE_LIMITS = {
-  Memory: 128 * 1024 * 1024,     // 128MB hard limit
-  MemorySwap: 256 * 1024 * 1024, // 256MB swap limit
+  Memory: 64,     // 128MB hard limit
+  MemorySwap: 64 * 1024 * 1024, // 256MB swap limit
   NanoCpus: 0.1 * 1e9,           // 10% of one CPU core
-  PidsLimit: 50,                  // max 50 processes
+  PidsLimit: 50,   
 }
 ```
 
@@ -630,12 +630,12 @@ This makes it easy to find the DB record from Docker logs and vice versa.
 
 ### Traefik Labels
 
-Traefik dynamically routes `mock-{id}.mockline.dev` → container. Labels are set at container start:
+Traefik dynamically routes `mock-{id}.mockline.xyz` → container. Labels are set at container start:
 
 ```typescript
 Labels: {
   'traefik.enable': 'true',
-  [`traefik.http.routers.${containerId}.rule`]: `Host(\`mock-${mockId}.mockline.dev\`)`,
+  [`traefik.http.routers.${containerId}.rule`]: `Host(\`mock-${mockId}.mockline.xyz\`)`,
   [`traefik.http.services.${containerId}.loadbalancer.server.port`]: '3001',
   'traefik.http.routers.${containerId}.entrypoints': 'websecure',
   'traefik.http.routers.${containerId}.tls.certresolver': 'letsencrypt',
@@ -779,7 +779,7 @@ model MockServer {
   dockerImageId   String?
   dockerContainerId String?
   status          MockServerStatus  @default(BUILDING)  // BUILDING|RUNNING|STOPPED|FAILED
-  publicUrl       String?           // mock-{id}.mockline.dev
+  publicUrl       String?           // mock-{id}.mockline.xyz
   port            Int?              // exposed host port
   tier            Tier
   stateful        Boolean           @default(false)     // persist POST/PUT/DELETE data
@@ -1135,6 +1135,6 @@ pnpm audit --audit-level=high
 | **No Pages Router** | App Router is the direction for Next.js. New patterns (Server Components, Server Actions) are only available in App Router. |
 | **pnpm workspaces + Turborepo** | Monorepo with shared packages (`@mockline/db`, `@mockline/types`) needs a build graph. Turbo handles caching and parallelism. |
 | **Soft deletes on Spec + MockServer** | Users may need to recover accidentally deleted specs. Hard deletes are irreversible. Docker images are cleaned up asynchronously. |
-| **`cuid2` for all IDs** | Globally unique, URL-safe, unguessable, time-sortable. Better than UUIDs for public-facing URLs (`mock-cm8xyz123.mockline.dev`). |
+| **`cuid2` for all IDs** | Globally unique, URL-safe, unguessable, time-sortable. Better than UUIDs for public-facing URLs (`mock-cm8xyz123.mockline.xyz`). |
 | **Volume-only backup, not container backup** | Containers are reproducible from the Docker image (which is built from the spec). Volumes hold the only irreproducible data (user POST/PUT state, request logs). Backing up a 400MB container when 99% is deterministic is wasteful vs. backing up a <10MB volume. |
 | **Stateful mode is opt-in** | Most mock use cases (frontend dev, CI/CD, demos) are ephemeral. Stateful mode adds volume management overhead. Users who need it opt in explicitly. |

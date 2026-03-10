@@ -561,7 +561,7 @@ function HeroTerminal() {
           <span className="t-text"> Mock server running at</span>
         </div>
         <div className="terminal-url">
-          mock-a3f9c2.mockline.dev
+          mock-a3f9c2.mockline.xyz
         </div>
       </div>
     </div>

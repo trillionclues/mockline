@@ -136,7 +136,7 @@ export type SpecValidationError = {
 export const MAX_SPEC_FILE_SIZE = 1024 * 1024 // 1MB
 
 export const DEFAULT_RESOURCE_LIMITS: Required<ResourceLimits> = {
-    memoryMb: 128,
+    memoryMb: 64, // 64MB hard limit per container
     cpuPercent: 10,
 }
 
@@ -146,7 +146,11 @@ export const CONTAINER_LIMITS = {
     TEAM: 20,
 } as const satisfies Record<Tier, number>
 
-export const AUTO_STOP_MINUTES = 60
+export const AUTO_STOP_MINUTES = {
+    FREE: 60, // 1 hour
+    PRO: 24 * 60, // 24 hours
+    TEAM: 7 * 24 * 60, // 1 week
+} as const satisfies Record<Tier, number>
 
 export const RATE_LIMITS = {
     PROVISION: { window: 3600, max: 10 },

@@ -24,6 +24,7 @@ export async function startMockContainer(
                 '3001/tcp': [{ HostPort: String(port) }],
             },
             Memory: memoryBytes,
+            MemorySwap: memoryBytes, // Same as memory = disable swap for this container
             NanoCpus: cpuQuota * 1_000_000,
             RestartPolicy: { Name: 'unless-stopped' },
             SecurityOpt: ['no-new-privileges'],
@@ -94,6 +95,7 @@ export async function startMockContainerWithOptions(
                 '3001/tcp': [{ HostPort: String(port) }],
             },
             Memory: memoryBytes,
+            MemorySwap: memoryBytes, // Same as memory = disable swap for this container
             NanoCpus: cpuQuota * 1_000_000,
             RestartPolicy: { Name: 'unless-stopped' },
             SecurityOpt: ['no-new-privileges'],
