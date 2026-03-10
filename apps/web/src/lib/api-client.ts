@@ -34,31 +34,31 @@ export type {
     MockServer, ProvisionMockInput, ContractTestRun, RunContractInput
 }
 
-// ── Specs ───────────
+// ── Specs ──
 export const specsApi = {
-    list: () => request<Spec[]>('/specs'),
-    get: (id: string) => request<SpecDetail>(`/specs/${id}`),
-    create: (body: CreateSpecInput) => request<Spec>('/specs', { method: 'POST', body: JSON.stringify(body) }),
-    delete: (id: string) => request<void>(`/specs/${id}`, { method: 'DELETE' }),
-    getVersions: (id: string) => request<SpecVersion[]>(`/specs/${id}/versions`),
-    uploadVersion: (id: string, body: UploadVersionInput) => request<SpecVersion>(`/specs/${id}/versions`, { method: 'POST', body: JSON.stringify(body) }),
-    diff: (id: string, v1: number, v2: number) => request<SchemaDiff>(`/specs/${id}/versions/${v1}/diff/${v2}`),
+    list: (opts?: RequestInit) => request<Spec[]>('/specs', opts),
+    get: (id: string, opts?: RequestInit) => request<SpecDetail>(`/specs/${id}`, opts),
+    create: (body: CreateSpecInput, opts?: RequestInit) => request<Spec>('/specs', { ...opts, method: 'POST', body: JSON.stringify(body) }),
+    delete: (id: string, opts?: RequestInit) => request<void>(`/specs/${id}`, { ...opts, method: 'DELETE' }),
+    getVersions: (id: string, opts?: RequestInit) => request<SpecVersion[]>(`/specs/${id}/versions`, opts),
+    uploadVersion: (id: string, body: UploadVersionInput, opts?: RequestInit) => request<SpecVersion>(`/specs/${id}/versions`, { ...opts, method: 'POST', body: JSON.stringify(body) }),
+    diff: (id: string, v1: number, v2: number, opts?: RequestInit) => request<SchemaDiff>(`/specs/${id}/versions/${v1}/diff/${v2}`, opts),
 }
 
-// ── Mocks ───────────
+// ── Mocks ──
 export const mocksApi = {
-    list: () => request<MockServer[]>('/mocks'),
-    get: (id: string) => request<MockServer>(`/mocks/${id}`),
-    provision: (body: ProvisionMockInput) => request<MockServer>('/mocks', { method: 'POST', body: JSON.stringify(body) }),
-    start: (id: string) => request<MockServer>(`/mocks/${id}/start`, { method: 'POST' }),
-    stop: (id: string) => request<void>(`/mocks/${id}/stop`, { method: 'POST' }),
-    delete: (id: string) => request<void>(`/mocks/${id}`, { method: 'DELETE' }),
+    list: (opts?: RequestInit) => request<MockServer[]>('/mocks', opts),
+    get: (id: string, opts?: RequestInit) => request<MockServer>(`/mocks/${id}`, opts),
+    provision: (body: ProvisionMockInput, opts?: RequestInit) => request<MockServer>('/mocks', { ...opts, method: 'POST', body: JSON.stringify(body) }),
+    start: (id: string, opts?: RequestInit) => request<MockServer>(`/mocks/${id}/start`, { ...opts, method: 'POST' }),
+    stop: (id: string, opts?: RequestInit) => request<void>(`/mocks/${id}/stop`, { ...opts, method: 'POST' }),
+    delete: (id: string, opts?: RequestInit) => request<void>(`/mocks/${id}`, { ...opts, method: 'DELETE' }),
 }
 
-// ── Contracts ───────────
+// ── Contracts ──
 export const contractsApi = {
-    run: (body: RunContractInput) => request<ContractTestRun>('/contracts', { method: 'POST', body: JSON.stringify(body) }),
-    get: (id: string) => request<ContractTestRun>(`/contracts/${id}`),
-    list: (specId?: string) => request<ContractTestRun[]>(`/contracts${specId ? `?specId=${specId}` : ''}`),
+    run: (body: RunContractInput, opts?: RequestInit) => request<ContractTestRun>('/contracts', { ...opts, method: 'POST', body: JSON.stringify(body) }),
+    get: (id: string, opts?: RequestInit) => request<ContractTestRun>(`/contracts/${id}`, opts),
+    list: (specId?: string, opts?: RequestInit) => request<ContractTestRun[]>(`/contracts${specId ? `?specId=${specId}` : ''}`, opts),
 }
 
