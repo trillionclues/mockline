@@ -97,7 +97,7 @@ export const PLANS = [
             { text: 'Audit logs', included: true },
         ],
         cta: 'Contact us',
-        ctaHref: 'mailto:team@mockline.dev',
+        ctaHref: 'mailto:team@mockline.xyz',
     },
 ]
 
@@ -129,7 +129,7 @@ export const STEPS = [
             { text: '⠸ Baking spec into image...', color: '#C0B87A' },
             { text: '', color: '#71717a' },
             { text: '✓ Container running', color: '#22c55e' },
-            { text: '→ mock-kx92a.mockline.dev', color: '#F2E3BB' },
+            { text: '→ mock-kx92a.mockline.xyz', color: '#F2E3BB' },
         ],
     },
     {
@@ -138,7 +138,7 @@ export const STEPS = [
         body: 'Send the remote URL to your team. Point your CI pipeline at it. Run contract tests whenever your real API is ready.',
         reversed: false,
         lines: [
-            { text: '$ curl mock-kx92a.mockline.dev/payments', color: '#71717a' },
+            { text: '$ curl mock-kx92a.mockline.xyz/payments', color: '#71717a' },
             { text: '', color: '#71717a' },
             { text: '{', color: '#e4e4e7' },
             { text: '"id": "pay_kx92a4f1b",', color: '#e4e4e7', indent: true },

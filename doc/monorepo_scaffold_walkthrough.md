@@ -81,7 +81,7 @@ PostgreSQL (:5432) + Redis (:6379)
      ↓ dockerode
 Docker Engine → mock containers (Contour :3001)
      ↓ Traefik
-mock-{id}.mockline.dev → Container
+mock-{id}.mockline.xyz → Container
 ```
 
 **Key architecture decisions:**
