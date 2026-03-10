@@ -4,6 +4,8 @@ import { prismaAdapter } from 'better-auth/adapters/prisma'
 import { db } from '@mockline/db'
 
 export const auth = betterAuth({
+    baseURL: process.env.NEXT_PUBLIC_AUTH_URL ?? 'http://localhost:4000',
+    secret: process.env.BETTER_AUTH_SECRET ?? 'dev',
     database: prismaAdapter(db, {
         provider: 'postgresql',
     }),
