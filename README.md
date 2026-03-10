@@ -1,40 +1,38 @@
 
 <p align="center">
-  <img src="mockline.svg" alt="mockline" height="28" />
+  <img src="mockline.svg" alt="mockline" height="48" />
 </p>
 
 <p align="center">
-  API mocking platform powered by OpenAPI specs.<br />
-  Upload a spec. Get a live mock server. Share the URL.
+Mockline — Automated Mock API PaaS
 </p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/@trillionclues/contour">Built on Contour</a> ·
   <a href="#quick-start">Quick Start</a> ·
   <a href="#architecture">Architecture</a> ·
-  <a href="doc/PROJECT.md">Full Project Doc</a>
+  <a href="doc/PROJECT.md">Project Doc</a>
 </p>
-
-## What is Mockline?
 
 Mockline is an automated PaaS for engineering teams to deploy and manage isolated, Docker-powered mock API servers from OpenAPI specs.
 
 ```
-Upload spec.yaml  →  Validate + parse  →  Build Docker image  →  Start container  →  mock-abc123.mockline.dev
+Upload spec.yaml  →  Validate + parse  →  Build Docker image  →  Start container  →  mock-abc123.mockline.xyz
 ```
 
 Each mock server runs [`@trillionclues/contour`](https://www.npmjs.com/package/@trillionclues/contour) inside an isolated Docker container with resource limits, automatic health checks, and auto-stop after idle timeout.
 
-### How it relates to Contour CLI
-
-| | Contour | Mockline |
-|---|---------|----------|
-| What | CLI tool — `contour start spec.yaml` | Web platform + API |
-| Published | `npm i @trillionclues/contour` | Self-hosted web app |
-| Role | Mock engine (generates responses from specs) | Orchestration layer (Docker, auth, dashboards) |
-| Usage | Developers run locally | Contour runs *inside* each Docker container |
-
 Mockline does not fork or modify Contour. It installs Contour as a dependency inside Docker images and starts it with the user's spec.
+
+## Features
+
+- **Spec management** — Upload OpenAPI 3.x YAML/JSON specs, version history, validation
+- **Mock servers** — One-click provisioning, live status, shareable URLs
+- **Contract testing** — Test real APIs against their OpenAPI contracts, pass/fail per endpoint
+- **Schema diffing** — Compare spec versions, detect breaking changes
+- **API Explorer** — Send requests to mock servers, inspect responses *(coming soon)*
+- **Stateful mode** — Persist POST/PUT/DELETE data across container restarts via Docker volumes *(coming soon)*
+- **Auto-stop** — Idle containers stopped automatically to save resources
+
 
 ## Commands
 
@@ -61,16 +59,6 @@ docker compose up -d db cache   # Start Postgres + Redis
 docker compose down             # Stop all
 docker compose logs -f api      # Tail API logs
 ```
-
-## Features
-
-- **Spec management** — Upload OpenAPI 3.x YAML/JSON specs, version history, validation
-- **Mock servers** — One-click provisioning, live status, shareable URLs
-- **Contract testing** — Test real APIs against their OpenAPI contracts, pass/fail per endpoint
-- **Schema diffing** — Compare spec versions, detect breaking changes
-- **API Explorer** — Send requests to mock servers, inspect responses *(coming soon)*
-- **Stateful mode** — Persist POST/PUT/DELETE data across container restarts via Docker volumes *(coming soon)*
-- **Auto-stop** — Idle containers stopped automatically to save resources
 
 ## Quick Start
 
@@ -138,26 +126,15 @@ Open [http://localhost:3000](http://localhost:3000).
 3. Set **Authorization callback URL** to `http://localhost:4000/api/auth/callback/github`
 4. Copy the Client ID and Client Secret into `apps/api/.env`
 
-## Architecture
 
-```
-┌───────────────────────────────────────────────┐
-│                 Mockline PaaS                 │
-│                                               │
-│  Next.js ──► Hono API ──► Docker Engine       │
-│  (port 3000)  (port 4000)   (containers)      │
-│                   │                           │
-│              PostgreSQL    Redis              │
-│              (Prisma ORM)  (sessions, cache)  │
-│                                               │
-│  Each mock container:                         │
-│  ┌──────────────────────────┐                 │
-│  │ Node + Contour CLI       │                 │
-│  │ contour start spec.yaml  │                 │
-│  │ Port 3001 (internal)     │                 │
-│  └──────────────────────────┘                 │
-└───────────────────────────────────────────────┘
-```
+### How it relates to Contour CLI
+
+| | Contour | Mockline |
+|---|---------|----------|
+| What | CLI tool — `contour start spec.yaml` | Web platform + API |
+| Published | `npm i @trillionclues/contour` | Self-hosted web app |
+| Role | Mock engine (generates responses from specs) | Orchestration layer (Docker, auth, dashboards) |
+| Usage | Developers run locally | Contour runs *inside* each Docker container |
 
 ### Monorepo Structure
 
