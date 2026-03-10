@@ -1,6 +1,6 @@
 
 <p align="center">
-  <img src="./public/images/mockline-wordmark.svg" alt="mockline" height="28" />
+  <img src="mockline.svg" alt="mockline" height="28" />
 </p>
 
 <p align="center">
