@@ -1,0 +1,151 @@
+export const LOGOS = [
+    'Stripe',
+    'Vercel',
+    'Railway',
+    'Supabase',
+    'PlanetScale',
+    'Render',
+    'Fly.io',
+    'Neon',
+    'Upstash',
+    'Turso',
+]
+
+export const COLUMNS = [
+    {
+        label: 'Product',
+        links: [
+            { label: 'Docs', href: '/docs' },
+            { label: 'Pricing', href: '/pricing' },
+            { label: 'Changelog', href: '/changelog' },
+            { label: 'Roadmap', href: '/roadmap' },
+        ],
+    },
+    {
+        label: 'Developers',
+        links: [
+            { label: 'API Reference', href: '/docs/api' },
+            { label: 'CLI Docs', href: 'https://www.npmjs.com/package/@trillionclues/contour' },
+            { label: 'GitHub', href: 'https://github.com/trillionclues/mockline' },
+            { label: 'npm', href: 'https://www.npmjs.com/package/@trillionclues/contour' },
+        ],
+    },
+    {
+        label: 'Company',
+        links: [
+            { label: 'About', href: '/about' },
+            { label: 'Blog', href: '/blog' },
+            { label: 'Terms', href: '/terms' },
+            { label: 'Privacy', href: '/privacy' },
+        ],
+    },
+]
+
+export const PLANS = [
+    {
+        name: 'Free',
+        monthlyPrice: 0,
+        yearlyPrice: 0,
+        period: 'forever',
+        description: 'For solo devs and exploration.',
+        highlighted: false,
+        features: [
+            { text: '1 mock server', included: true },
+            { text: '1 spec', included: true },
+            { text: 'Auto-stops after 1hr', included: true },
+            { text: 'Shareable URL', included: true },
+            { text: 'Community support', included: true },
+            { text: 'Contract testing', included: false },
+            { text: 'Schema diffing', included: false },
+        ],
+        cta: 'Get started free',
+        ctaHref: '/login?intent=register',
+    },
+    {
+        name: 'Pro',
+        monthlyPrice: 9,
+        yearlyPrice: 7,
+        period: '/ month',
+        description: 'For developers who ship daily.',
+        highlighted: true,
+        features: [
+            { text: '5 mock servers', included: true },
+            { text: 'Unlimited specs', included: true },
+            { text: 'Always-on servers', included: true },
+            { text: 'Shareable URLs', included: true },
+            { text: 'Email support', included: true },
+            { text: 'Contract testing', included: true },
+            { text: 'Schema diffing + history', included: true },
+        ],
+        cta: 'Start Pro trial',
+        ctaHref: '/login?intent=register&plan=pro',
+    },
+    {
+        name: 'Team',
+        monthlyPrice: 29,
+        yearlyPrice: 23,
+        period: '/ month',
+        description: 'For teams that move together.',
+        highlighted: false,
+        features: [
+            { text: 'Everything in Pro', included: true },
+            { text: '20 mock servers', included: true },
+            { text: 'Team workspaces', included: true },
+            { text: 'Webhook alerts', included: true },
+            { text: 'Priority support', included: true },
+            { text: 'SSO (coming soon)', included: true },
+            { text: 'Audit logs', included: true },
+        ],
+        cta: 'Contact us',
+        ctaHref: 'mailto:team@mockline.dev',
+    },
+]
+
+export const STEPS = [
+    {
+        number: '01',
+        title: 'Upload your spec',
+        body: 'Drag in any OpenAPI 3.x file. Mockline validates it instantly and parses every endpoint, schema, and response type.',
+        reversed: false,
+        lines: [
+            { text: '$ mockline upload payments-api.yaml', color: '#71717a' },
+            { text: '→ Parsing spec...', color: '#71717a' },
+            { text: '✓ Valid — 24 endpoints parsed', color: '#22c55e' },
+            { text: '', color: '#71717a' },
+            { text: 'Schemas:    18', color: '#52525b' },
+            { text: 'Responses:  42', color: '#52525b' },
+            { text: 'Auth:       Bearer token', color: '#52525b' },
+        ],
+    },
+    {
+        number: '02',
+        title: 'Container spins up',
+        body: 'A Docker container with your spec baked in starts in under 60 seconds. Isolated. Reproducible. No shared state.',
+        reversed: true,
+        lines: [
+            { text: '$ mockline provision payments-api', color: '#71717a' },
+            { text: '⠋ Building container...', color: '#C0B87A' },
+            { text: '⠙ Installing @trillionclues/contour...', color: '#C0B87A' },
+            { text: '⠸ Baking spec into image...', color: '#C0B87A' },
+            { text: '', color: '#71717a' },
+            { text: '✓ Container running', color: '#22c55e' },
+            { text: '→ mock-kx92a.mockline.dev', color: '#F2E3BB' },
+        ],
+    },
+    {
+        number: '03',
+        title: 'Share and test',
+        body: 'Send the remote URL to your team. Point your CI pipeline at it. Run contract tests whenever your real API is ready.',
+        reversed: false,
+        lines: [
+            { text: '$ curl mock-kx92a.mockline.dev/payments', color: '#71717a' },
+            { text: '', color: '#71717a' },
+            { text: '{', color: '#e4e4e7' },
+            { text: '"id": "pay_kx92a4f1b",', color: '#e4e4e7', indent: true },
+            { text: '"amount": 4999,', color: '#e4e4e7', indent: true },
+            { text: '"currency": "usd",', color: '#e4e4e7', indent: true },
+            { text: '"status": "succeeded"', color: '#e4e4e7', indent: true },
+            { text: '}', color: '#e4e4e7' },
+        ],
+    },
+]

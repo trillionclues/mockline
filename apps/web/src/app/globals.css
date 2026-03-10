@@ -1,1 +1,159 @@
 @import "tailwindcss";
+
+@theme {
+    /* Backgrounds */
+    --color-bg: #0a0a0b;
+    --color-surface: #111114;
+    --color-surface-2: #16161a;
+
+    /* Borders */
+    --color-border: #1a1a2e;
+    --color-border-highlight: rgba(242, 227, 187, 0.2);
+
+    /* Primary — Contour/Mockline cream */
+    --color-primary: #F2E3BB;
+    --color-primary-muted: rgba(242, 227, 187, 0.08);
+
+    /* Text */
+    --color-text: #e4e4e7;
+    --color-text-muted: #71717a;
+    --color-text-subtle: #52525b;
+    --color-text-strong: #f4f4f5;
+
+    /* Status */
+    --color-status-running: #22c55e;
+    --color-status-building: #C0B87A;
+    --color-status-stopped: #71717a;
+    --color-status-failed: #ef4444;
+
+    /* Semantic */
+    --color-destructive: #ef4444;
+    --color-warning: #C0B87A;
+    --color-success: #22c55e;
+
+    /* Typography — three fonts, three roles, no overlap */
+    --font-family-heading: 'Outfit', sans-serif;
+    --font-family-sans: 'Inter', -apple-system, sans-serif;
+    --font-family-mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+}
+
+
+body {
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-family-sans);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+h1,
+h2,
+h3,
+h4 {
+    font-family: var(--font-family-heading);
+}
+
+/* Scrollbar — matches GitHub style */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 4px;
+}
+
+/* Mono utility — used across the app */
+.mono {
+    font-family: var(--font-family-mono);
+}
+
+
+.footer-github-link:hover {
+    color: #e4e4e7 !important;
+}
+
+.footer-built-link:hover {
+    color: #71717a !important;
+}
+
+.footer-link:hover {
+    color: #e4e4e7 !important;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.3;
+    }
+}
+
+@media (max-width: 768px) {
+    .nav-center-links {
+        display: none !important;
+    }
+
+    .nav-signin-link {
+        display: none !important;
+    }
+}
+
+@media (max-width: 768px) {
+    nav>div {
+        padding: 0 20px !important;
+    }
+}
+
+.nav-link:hover {
+    color: #e4e4e7 !important;
+}
+
+.nav-signin:hover {
+    color: #e4e4e7 !important;
+}
+
+.nav-cta:hover {
+    opacity: 0.85 !important;
+}
+
+
+@media (max-width: 768px) {
+    .footer-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 32px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .footer-grid {
+        grid-template-columns: 1fr !important;
+    }
+}

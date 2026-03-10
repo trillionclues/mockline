@@ -1,4 +1,4 @@
-# CLAUDE.md — Mockline Platform
+# CLAUDE.md — Mockline PaaS
 
 > Agent context file. Read this before touching any code. This document is the source of truth for architecture decisions, conventions, and constraints for the Mockline project.
 
@@ -64,8 +64,8 @@ User uploads OpenAPI spec (.yaml / .json)
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                        Mockline Platform                            │
-│                                                                  │
+│                Mockline — Automated Mock API PaaS               │
+│                                                                 │
 │  ┌──────────────┐    ┌──────────────────┐    ┌───────────────┐  │
 │  │  Next.js 16  │───▶│   Hono API       │───▶│  Dockerode    │  │
 │  │  (App Router)│    │  (Express-style) │    │  (Docker SDK) │  │
@@ -527,7 +527,7 @@ All other API logic lives in `apps/api` (Hono). Do not build a parallel API insi
 ```typescript
 // app/layout.tsx
 export const metadata: Metadata = {
-  title: { template: '%s | Mockline', default: 'Mockline — API Mocking Platform' },
+  title: { template: '%s | Mockline', default: 'Mockline — Automated Mock API PaaS' },
   description: 'Instant mock API servers from your OpenAPI specs',
 }
 ```

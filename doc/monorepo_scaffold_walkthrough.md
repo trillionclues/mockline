@@ -170,6 +170,17 @@ pnpm dev              # Start web + api concurrently via turbo
 > [!NOTE]
 > Minor peer dependency warning: `better-call@1.1.8` wants `zod@^4.0.0` but we have `3.25.x`. This is a transitive dep from `better-auth` and doesn't affect functionality.
 
+[!TIP]
+Run these anytime you update the schema.prisma file:
+# Update your database schema
+pnpm --filter @mockline/db exec prisma db push
+
+# Regenerate the Prisma Client types
+pnpm --filter @mockline/db exec prisma generate
+
+OR
+pnpm --filter @mockline/db db:sync
+
 ## What's Next
 
 1. **Copy env files** — `cp apps/api/.env.example apps/api/.env` (and web)
