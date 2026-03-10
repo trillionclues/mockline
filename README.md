@@ -1,5 +1,6 @@
+
 <p align="center">
-  <strong>mockline</strong>
+  <img src="./public/images/mockline-wordmark.svg" alt="mockline" height="28" />
 </p>
 
 <p align="center">

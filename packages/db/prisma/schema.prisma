@@ -38,6 +38,10 @@ model User {
   id        String   @id @default(cuid())
   email     String   @unique
   name      String?
+  
+  emailVerified Boolean   @default(false)
+  image         String?
+  
   githubId  String?  @unique
   avatarUrl String?
   tier      Tier     @default(FREE)

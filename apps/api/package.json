@@ -3,7 +3,8 @@
     "version": "0.0.0",
     "private": true,
     "scripts": {
-        "dev": "tsx watch src/index.ts",
+        "dev": "tsx watch --env-file=.env src/index.ts",
+        "db:sync": "prisma db push && prisma generate",
         "build": "tsc",
         "start": "node dist/index.js",
         "typecheck": "tsc --noEmit",
