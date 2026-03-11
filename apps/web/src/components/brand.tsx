@@ -1,7 +1,6 @@
 export const MocklineWordmark = ({ size = 15 }: { size?: number }) => {
     return (
         <span style={{
-            fontFamily: 'Outfit, sans-serif',
             fontWeight: 600,
             fontSize: `${size}px`,
             color: '#f4f4f5',

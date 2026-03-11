@@ -37,7 +37,6 @@ export function SpecsTable({ specs }: { specs: Spec[] }) {
                         >
                             <td style={tdStyle}>
                                 <div style={{
-                                    fontFamily: 'var(--font-family-heading)',
                                     fontWeight: 500,
                                     color: 'var(--color-text-strong)',
                                     marginBottom: '2px',
@@ -45,7 +44,6 @@ export function SpecsTable({ specs }: { specs: Spec[] }) {
                                     {spec.name}
                                 </div>
                                 <div style={{
-                                    fontFamily: 'var(--font-family-mono)',
                                     fontSize: '11px',
                                     color: 'var(--color-text-muted)',
                                 }}>
@@ -101,7 +99,6 @@ export function SpecsTable({ specs }: { specs: Spec[] }) {
 }
 
 const thStyle: React.CSSProperties = {
-    fontFamily: 'var(--font-family-sans)',
     fontSize: '12px',
     fontWeight: 500,
     color: 'var(--color-text-subtle)',
@@ -109,7 +106,6 @@ const thStyle: React.CSSProperties = {
 }
 
 const tdStyle: React.CSSProperties = {
-    fontFamily: 'var(--font-family-sans)',
     fontSize: '14px',
     color: 'var(--color-text)',
     padding: '16px 24px',

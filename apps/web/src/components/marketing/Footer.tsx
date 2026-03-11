@@ -43,7 +43,6 @@ export const Footer = () => {
                             <MocklineWordmark size={20} />
                         </div>
                         <p style={{
-                            fontFamily: 'Inter, -apple-system, sans-serif',
                             fontSize: '13px',
                             color: '#959598ff',
                             maxWidth: '200px',
@@ -97,7 +96,6 @@ export const Footer = () => {
                             transition={{ duration: 0.5, delay: (i + 1) * 0.07, ease }}
                         >
                             <div style={{
-                                fontFamily: 'Inter, -apple-system, sans-serif',
                                 fontSize: '12px',
                                 color: '#71717a',
                                 marginBottom: '14px',
@@ -126,7 +124,7 @@ export const Footer = () => {
                         alignItems: 'center',
                     }}
                 >
-                    <span style={{ fontFamily: 'Inter, -apple-system, sans-serif', fontSize: '12px', color: '#959598ff', }}>
+                    <span style={{ fontSize: '12px', color: '#959598ff', }}>
                         © {new Date().getFullYear()} Mockline
                     </span>
 
@@ -136,7 +134,6 @@ export const Footer = () => {
                         rel="noopener noreferrer"
                         className="footer-built-link"
                         style={{
-                            fontFamily: 'Inter, -apple-system, sans-serif',
                             fontSize: '12px',
                             color: '#959598ff',
                             textDecoration: 'none',
@@ -168,7 +165,6 @@ export const Footer = () => {
 function FooterLink({ href, children }: { href: string; children: React.ReactNode }) {
     const isExternal = href.startsWith('http')
     const style: React.CSSProperties = {
-        fontFamily: 'Inter, -apple-system, sans-serif',
         fontSize: '13px',
         color: '#959598ff',
         textDecoration: 'none',

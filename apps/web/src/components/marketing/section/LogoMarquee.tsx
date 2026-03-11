@@ -15,7 +15,6 @@ export const LogoMarquee = () => {
             overflow: 'hidden',
         }}>
             <p style={{
-                fontFamily: 'Inter, -apple-system, sans-serif',
                 fontSize: '11px',
                 color: '#959598ff',
                 textAlign: 'center',
@@ -70,7 +69,6 @@ export const LogoMarquee = () => {
                             }}
                         >
                             <span style={{
-                                fontFamily: 'Outfit, sans-serif',
                                 fontWeight: 600,
                                 fontSize: '18px',
                                 color: '#3a3a4a',

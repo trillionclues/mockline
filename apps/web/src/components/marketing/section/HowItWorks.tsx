@@ -31,7 +31,6 @@ function CodeBlock({ lines }: {
             </div>
             <div style={{
                 padding: '20px 24px',
-                fontFamily: 'JetBrains Mono, Fira Code, monospace',
                 fontSize: '13px',
                 lineHeight: 1.9,
             }}>
@@ -83,10 +82,9 @@ function Step({ step, index }: { step: typeof STEPS[0]; index: number }) {
                     animate={inView ? 'visible' : 'hidden'}
                     custom={0}
                     style={{
-                        fontFamily: 'Outfit, sans-serif',
                         fontWeight: 800,
                         fontSize: '72px',
-                        color: '#1a1a2e',
+                        color: '#2e2e51ff',
                         lineHeight: 1,
                         display: 'block',
                         letterSpacing: '-0.03em',
@@ -101,7 +99,6 @@ function Step({ step, index }: { step: typeof STEPS[0]; index: number }) {
                     animate={inView ? 'visible' : 'hidden'}
                     custom={0.08}
                     style={{
-                        fontFamily: 'Outfit, sans-serif',
                         fontWeight: 700,
                         fontSize: '22px',
                         color: '#e4e4e7',
@@ -118,7 +115,6 @@ function Step({ step, index }: { step: typeof STEPS[0]; index: number }) {
                     animate={inView ? 'visible' : 'hidden'}
                     custom={0.16}
                     style={{
-                        fontFamily: 'Inter, -apple-system, sans-serif',
                         fontSize: '15px',
                         color: '#71717a',
                         lineHeight: 1.7,
@@ -164,7 +160,6 @@ export function HowItWorks() {
                     }}
                 >
                     <h2 style={{
-                        fontFamily: 'Outfit, sans-serif',
                         fontWeight: 700,
                         fontSize: 'clamp(24px, 3vw, 36px)',
                         color: '#e4e4e7',
@@ -174,7 +169,6 @@ export function HowItWorks() {
                         From spec to live mock in three steps
                     </h2>
                     <p style={{
-                        fontFamily: 'Inter, -apple-system, sans-serif',
                         fontSize: '16px',
                         color: '#71717a',
                         maxWidth: '440px',

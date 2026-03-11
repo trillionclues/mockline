@@ -37,7 +37,6 @@ export const LoginContent = () => {
     return (
         <>
             <h1 style={{
-                fontFamily: 'Outfit, sans-serif',
                 fontWeight: 700,
                 fontSize: '22px',
                 color: '#e4e4e7',
@@ -47,7 +46,6 @@ export const LoginContent = () => {
                 {isRegister ? 'Create your account' : 'Welcome back'}
             </h1>
             <p style={{
-                fontFamily: 'Inter, -apple-system, sans-serif',
                 fontSize: '14px',
                 color: '#959598ff',
                 textAlign: 'center',
@@ -55,7 +53,7 @@ export const LoginContent = () => {
             }}>
                 {isRegister
                     ? 'Sign up to start mocking APIs in seconds.'
-                    : 'Sign in to your Mockline dashboard.'}
+                    : 'Sign in to our Mockline dashboard.'}
             </p>
 
             <button
@@ -73,7 +71,6 @@ export const LoginContent = () => {
                     color: '#0a0a0b',
                     border: 'none',
                     borderRadius: '6px',
-                    fontFamily: 'Inter, -apple-system, sans-serif',
                     fontWeight: 500,
                     fontSize: '14px',
                     cursor: loadingProvider !== null ? 'not-allowed' : 'pointer',
@@ -104,7 +101,6 @@ export const LoginContent = () => {
             }}>
                 <div style={{ flex: 1, height: '1px', background: '#2e2e49ff' }} />
                 <span style={{
-                    fontFamily: 'Inter, -apple-system, sans-serif',
                     fontSize: '11px',
                     color: '#959598ff',
                 }}>or</span>
@@ -126,7 +122,6 @@ export const LoginContent = () => {
                     color: '#e4e4e7',
                     border: '1px solid #1a1a2e',
                     borderRadius: '6px',
-                    fontFamily: 'Inter, -apple-system, sans-serif',
                     fontWeight: 500,
                     fontSize: '14px',
                     cursor: loadingProvider !== null ? 'not-allowed' : 'pointer',
@@ -147,7 +142,6 @@ export const LoginContent = () => {
             </button>
 
             <p style={{
-                fontFamily: 'Inter, -apple-system, sans-serif',
                 fontSize: '13px',
                 color: '#959598ff',
                 textAlign: 'center',
@@ -173,7 +167,6 @@ export const LoginContent = () => {
             </p>
 
             <p style={{
-                fontFamily: 'Inter, -apple-system, sans-serif',
                 fontSize: '11px',
                 color: '#52525b',
                 textAlign: 'center',

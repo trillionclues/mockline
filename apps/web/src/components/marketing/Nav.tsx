@@ -66,7 +66,6 @@ export const Nav = () => {
                         href="/login"
                         className="nav-signin-link nav-signin"
                         style={{
-                            fontFamily: 'Inter, -apple-system, sans-serif',
                             fontSize: '14px',
                             color: '#959598ff',
                             textDecoration: 'none',
@@ -87,7 +86,6 @@ export const Nav = () => {
                             background: '#F2E3BB',
                             color: '#0a0a0b',
                             borderRadius: '6px',
-                            fontFamily: 'Inter, -apple-system, sans-serif',
                             fontWeight: 600,
                             fontSize: '13px',
                             textDecoration: 'none',
@@ -108,7 +106,6 @@ function NavLink({ href, children }: { href: string; children: React.ReactNode }
             href={href}
             className="nav-link"
             style={{
-                fontFamily: 'Inter, -apple-system, sans-serif',
                 fontSize: '14px',
                 color: '#959598ff',
                 textDecoration: 'none',

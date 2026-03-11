@@ -27,7 +27,6 @@ export function Pricing() {
                 >
 
                     <p style={{
-                        fontFamily: 'Inter, sans-serif',
                         fontSize: '16px',
                         color: '#71717a',
                         marginBottom: '28px',
@@ -50,7 +49,6 @@ export function Pricing() {
                                 padding: '6px 16px',
                                 borderRadius: '6px',
                                 border: 'none',
-                                fontFamily: 'Inter, sans-serif',
                                 fontSize: '13px',
                                 fontWeight: 500,
                                 cursor: 'pointer',
@@ -67,7 +65,6 @@ export function Pricing() {
                                 padding: '6px 16px',
                                 borderRadius: '6px',
                                 border: 'none',
-                                fontFamily: 'Inter, sans-serif',
                                 fontSize: '13px',
                                 fontWeight: 500,
                                 cursor: 'pointer',
@@ -81,7 +78,6 @@ export function Pricing() {
                         >
                             Yearly
                             <span style={{
-                                fontFamily: 'Inter, sans-serif',
                                 fontSize: '10px',
                                 fontWeight: 600,
                                 color: '#22c55e',
@@ -122,7 +118,6 @@ export function Pricing() {
                     transition={{ delay: 0.6 }}
                     style={{
                         textAlign: 'center',
-                        fontFamily: 'Inter, sans-serif',
                         fontSize: '12px',
                         color: '#52525b',
                         marginTop: '32px',

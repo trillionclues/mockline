@@ -4,7 +4,6 @@ export default function OverviewPage() {
             <h2 style={{
                 fontSize: '18px',
                 fontWeight: 600,
-                fontFamily: 'Outfit, sans-serif',
                 color: '#f4f4f5',
                 marginBottom: '16px',
             }}>

@@ -38,7 +38,6 @@ export default function AuthLayout({
             </div>
 
             <p style={{
-                fontFamily: 'Inter, -apple-system, sans-serif',
                 fontSize: '12px',
                 color: '#959598ff',
                 marginTop: '24px',

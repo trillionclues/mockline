@@ -1,5 +1,19 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import { Bricolage_Grotesque, Inter } from 'next/font/google'
+
+const bricolage = Bricolage_Grotesque({
+    subsets: ['latin'],
+    weight: ['400', '500', '600', '700', '800'],
+    variable: '--font-bricolage',
+    display: 'swap',
+})
+
+const inter = Inter({
+    subsets: ['latin'],
+    variable: '--font-inter',
+    display: 'swap',
+})
 
 export const metadata: Metadata = {
     title: {
@@ -31,13 +45,16 @@ export const metadata: Metadata = {
         description: 'Automated Mock API infrastructure for modern engineering teams.',
     },
     metadataBase: new URL('https://mockline.xyz'),
+    icons: {
+        icon: '/favicon.svg',
+    },
 }
 
 import { Providers } from '@/components/providers'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
-        <html lang="en">
+        <html lang="en" className={`${bricolage.variable} ${inter.variable}`}>
             <body>
                 <Providers>
                     {children}

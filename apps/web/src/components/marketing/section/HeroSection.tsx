@@ -46,7 +46,6 @@ export const HeroSection = () => {
                             borderRadius: '999px',
                             fontSize: '12px',
                             fontWeight: 500,
-                            fontFamily: 'Inter, sans-serif',
                             color: '#71717a',
                             marginBottom: '32px',
                             background: 'rgba(255,255,255,0.02)',
@@ -64,7 +63,6 @@ export const HeroSection = () => {
                     </motion.div>
 
                     <h1 style={{
-                        fontFamily: 'Outfit, sans-serif',
                         fontWeight: 800,
                         fontSize: 'clamp(36px, 5vw, 64px)',
                         lineHeight: 1.15,
@@ -77,7 +75,7 @@ export const HeroSection = () => {
                             transition={{ duration: 0.5, delay: 0.1, ease }}
                             style={{ color: '#e4e4e7', display: 'block' }}
                         >
-                            Stop waiting for the <strong>Backend</strong>.
+                            Stop waiting for the backend.
                         </motion.span>
                         <motion.span
                             initial={{ opacity: 0, y: 24 }}
@@ -85,7 +83,7 @@ export const HeroSection = () => {
                             transition={{ duration: 0.5, delay: 0.2, ease }}
                             style={{ color: '#F2E3BB', display: 'block' }}
                         >
-                            <strong>Live mocks</strong> in seconds.
+                            Ship against live mocks.
                         </motion.span>
                     </h1>
 
@@ -94,7 +92,6 @@ export const HeroSection = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.3, ease }}
                         style={{
-                            fontFamily: 'Inter, sans-serif',
                             fontSize: '17px',
                             color: '#71717a',
                             maxWidth: '520px',
@@ -131,7 +128,6 @@ export const HeroSection = () => {
                                     background: '#F2E3BB',
                                     color: '#0a0a0b',
                                     borderRadius: '6px',
-                                    fontFamily: 'Inter, sans-serif',
                                     fontWeight: 600,
                                     fontSize: '14px',
                                     textDecoration: 'none',
@@ -154,7 +150,6 @@ export const HeroSection = () => {
                                     background: 'transparent',
                                     color: '#e4e4e7',
                                     borderRadius: '6px',
-                                    fontFamily: 'Inter, sans-serif',
                                     fontWeight: 600,
                                     fontSize: '14px',
                                     textDecoration: 'none',
@@ -170,7 +165,6 @@ export const HeroSection = () => {
                         </div>
 
                         <p style={{
-                            fontFamily: 'Inter, sans-serif',
                             fontSize: '12px',
                             color: '#52525b',
                         }}>
@@ -217,7 +211,6 @@ export const HeroSection = () => {
                                 justifyContent: 'center',
                             }}>
                                 <span style={{
-                                    fontFamily: 'JetBrains Mono, monospace',
                                     fontSize: '13px',
                                     color: '#52525b',
                                 }}>

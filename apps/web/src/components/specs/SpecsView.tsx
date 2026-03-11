@@ -32,7 +32,6 @@ export function SpecsView({ initialSpecs }: { initialSpecs: Spec[] }) {
                 marginBottom: '32px',
             }}>
                 <h1 style={{
-                    fontFamily: 'var(--font-family-heading)',
                     fontSize: '24px',
                     fontWeight: 600,
                     color: 'var(--color-text-strong)',
@@ -48,7 +47,6 @@ export function SpecsView({ initialSpecs }: { initialSpecs: Spec[] }) {
                         color: 'var(--color-bg)',
                         border: 'none',
                         borderRadius: '6px',
-                        fontFamily: 'var(--font-family-sans)',
                         fontWeight: 500,
                         fontSize: '13px',
                         cursor: 'pointer',

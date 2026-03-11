@@ -51,7 +51,6 @@ export const FeatureCard = ({ feature, index }: { feature: typeof FEATURES[0]; i
                     {feature.icon}
                 </div>
                 <span style={{
-                    fontFamily: 'JetBrains Mono, monospace',
                     fontSize: '11px',
                     color: '#959598ff',
                     letterSpacing: '0.05em',
@@ -61,7 +60,6 @@ export const FeatureCard = ({ feature, index }: { feature: typeof FEATURES[0]; i
             </div>
 
             <h3 style={{
-                fontFamily: 'Outfit, sans-serif',
                 fontWeight: 600,
                 fontSize: '15px',
                 color: '#e4e4e7',
@@ -71,7 +69,6 @@ export const FeatureCard = ({ feature, index }: { feature: typeof FEATURES[0]; i
                 {feature.title}
             </h3>
             <p style={{
-                fontFamily: 'Inter, -apple-system, sans-serif',
                 fontSize: '13px',
                 color: '#71717a',
                 lineHeight: 1.65,
