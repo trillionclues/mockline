@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 28" height="28">
+  <line x1="6" y1="22" x2="6" y2="12" stroke="#F2E3BB" stroke-width="1.7" stroke-linecap="round"/>
+  <polyline points="3,15 6,10 9,15" stroke="#F2E3BB" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <polyline points="6,22 12,17 18,22" stroke="#F2E3BB" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <line x1="18" y1="22" x2="18" y2="12" stroke="#F2E3BB" stroke-width="1.7" stroke-linecap="round"/>
+  <polyline points="15,15 18,10 21,15" stroke="#F2E3BB" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <text x="28" y="20" font-family="sans-serif" font-weight="600" font-size="16" fill="#f4f4f5" letter-spacing="-0.1">mock</text>
+  <rect x="80" y="4" width="1.5" height="22" rx="1" fill="#F2E3BB"/>
+  <text x="84" y="20" font-family="sans-serif" font-weight="600" font-size="16" fill="#f4f4f5" letter-spacing="-0.1">ine</text>
+</svg>

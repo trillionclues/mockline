@@ -57,7 +57,6 @@ export function UploadSpecModal({ open, onClose }: Props) {
                 boxShadow: '0 24px 48px rgba(0, 0, 0, 0.4)',
             }}>
                 <h2 style={{
-                    fontFamily: 'var(--font-family-heading)',
                     fontSize: '20px',
                     fontWeight: 600,
                     color: 'var(--color-text-strong)',
@@ -66,7 +65,6 @@ export function UploadSpecModal({ open, onClose }: Props) {
                     Upload Specification
                 </h2>
                 <p style={{
-                    fontFamily: 'var(--font-family-sans)',
                     fontSize: '14px',
                     color: 'var(--color-text-muted)',
                     marginBottom: '24px',
@@ -140,7 +138,6 @@ export function UploadSpecModal({ open, onClose }: Props) {
                             onChange={(e) => setContent(e.target.value)}
                             style={{
                                 ...inputStyle,
-                                fontFamily: 'var(--font-family-mono)',
                                 resize: 'vertical',
                                 minHeight: '120px',
                             }}
@@ -198,7 +195,6 @@ export function UploadSpecModal({ open, onClose }: Props) {
 
 const labelStyle: React.CSSProperties = {
     display: 'block',
-    fontFamily: 'var(--font-family-sans)',
     fontSize: '13px',
     fontWeight: 500,
     color: 'var(--color-text)',

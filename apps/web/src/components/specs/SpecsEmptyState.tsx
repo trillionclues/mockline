@@ -27,7 +27,6 @@ export function SpecsEmptyState({ onUpload }: { onUpload: () => void }) {
             </div>
 
             <h3 style={{
-                fontFamily: 'var(--font-family-heading)',
                 fontSize: '16px',
                 fontWeight: 600,
                 color: 'var(--color-text-strong)',
@@ -37,7 +36,6 @@ export function SpecsEmptyState({ onUpload }: { onUpload: () => void }) {
             </h3>
 
             <p style={{
-                fontFamily: 'var(--font-family-sans)',
                 fontSize: '14px',
                 color: 'var(--color-text-muted)',
                 marginBottom: '24px',
@@ -55,7 +53,6 @@ export function SpecsEmptyState({ onUpload }: { onUpload: () => void }) {
                     color: 'var(--color-text)',
                     border: '1px solid var(--color-border)',
                     borderRadius: '6px',
-                    fontFamily: 'var(--font-family-sans)',
                     fontWeight: 500,
                     fontSize: '13px',
                     cursor: 'pointer',

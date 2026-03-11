@@ -30,7 +30,6 @@ export function FeaturesGrid() {
                     }}
                 >
                     <h2 style={{
-                        fontFamily: 'Outfit, sans-serif',
                         fontWeight: 700,
                         fontSize: 'clamp(24px, 3vw, 36px)',
                         color: '#e4e4e7',
@@ -40,7 +39,6 @@ export function FeaturesGrid() {
                         Everything your team needs to move faster
                     </h2>
                     <p style={{
-                        fontFamily: 'Inter, -apple-system, sans-serif',
                         fontSize: '16px',
                         color: '#959598ff',
                         maxWidth: '420px',

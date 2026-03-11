@@ -62,7 +62,6 @@ export const PricingCard = ({
                     transform: 'translateX(-50%)',
                     background: '#F2E3BB',
                     color: '#0a0a0b',
-                    fontFamily: 'Inter, sans-serif',
                     fontWeight: 600,
                     fontSize: '10px',
                     letterSpacing: '0.06em',
@@ -76,7 +75,6 @@ export const PricingCard = ({
 
             <div style={{ marginBottom: '24px' }}>
                 <div style={{
-                    fontFamily: 'Inter, sans-serif',
                     fontWeight: 500,
                     fontSize: '13px',
                     color: plan.highlighted ? '#F2E3BB' : '#71717a',
@@ -85,7 +83,6 @@ export const PricingCard = ({
                     {plan.name}
                 </div>
                 <div style={{
-                    fontFamily: 'Inter, sans-serif',
                     fontSize: '12px',
                     color: '#52525b',
                     lineHeight: 1.5,
@@ -108,7 +105,6 @@ export const PricingCard = ({
                         exit={{ opacity: 0, y: 8 }}
                         transition={{ duration: 0.2 }}
                         style={{
-                            fontFamily: 'JetBrains Mono, monospace',
                             fontWeight: 700,
                             fontSize: '40px',
                             color: '#f4f4f5',
@@ -121,7 +117,6 @@ export const PricingCard = ({
                 </AnimatePresence>
             </div>
             <div style={{
-                fontFamily: 'Inter, sans-serif',
                 fontSize: '12px',
                 color: '#52525b',
                 marginBottom: '28px',
@@ -160,7 +155,6 @@ export const PricingCard = ({
                             display: 'flex',
                             alignItems: 'center',
                             gap: '10px',
-                            fontFamily: 'Inter, sans-serif',
                             fontSize: '13px',
                             color: feature.included ? '#c4c4cc' : '#3a3a4a',
                         }}
@@ -181,7 +175,6 @@ export const PricingCard = ({
                     justifyContent: 'center',
                     height: '40px',
                     borderRadius: '6px',
-                    fontFamily: 'Inter, sans-serif',
                     fontWeight: 600,
                     fontSize: '13px',
                     textDecoration: 'none',

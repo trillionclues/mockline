@@ -26,7 +26,6 @@ export function Sidebar() {
         padding: '0 12px',
         borderRadius: '6px',
         fontSize: '13px',
-        fontFamily: 'Inter, -apple-system, sans-serif',
         color: active ? '#f4f4f5' : '#71717a',
         background: active ? 'rgba(242, 227, 187, 0.08)' : 'transparent',
         borderLeft: active ? '2px solid #F2E3BB' : '2px solid transparent',
@@ -54,7 +53,6 @@ export function Sidebar() {
                 borderBottom: '1px solid #1a1a2e',
                 fontSize: '15px',
                 fontWeight: 600,
-                fontFamily: 'Outfit, sans-serif',
                 color: '#f4f4f5',
                 flexShrink: 0,
             }}>
@@ -79,7 +77,6 @@ export function Sidebar() {
                     fontSize: '11px',
                     color: '#52525b',
                     padding: '12px 12px 4px',
-                    fontFamily: 'Inter, sans-serif',
                     letterSpacing: 'normal',
                     textTransform: 'none',
                 }}>

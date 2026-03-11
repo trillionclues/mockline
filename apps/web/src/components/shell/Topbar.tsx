@@ -31,7 +31,6 @@ export function Topbar() {
             <span style={{
                 fontSize: '14px',
                 fontWeight: 500,
-                fontFamily: 'Inter, sans-serif',
                 color: '#f4f4f5',
             }}>
                 {title}

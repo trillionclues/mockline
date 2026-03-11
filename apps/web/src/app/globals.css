@@ -32,21 +32,21 @@
     --color-success: #22c55e;
 
     /* Typography — three fonts, three roles, no overlap */
-    --font-family-heading: 'Outfit', sans-serif;
-    --font-family-sans: 'Inter', -apple-system, sans-serif;
+    --font-family-heading: var(--font-bricolage), sans-serif;
+    --font-family-sans: var(--font-inter), sans-serif;
     --font-family-mono: 'JetBrains Mono', 'Fira Code', monospace;
 }
 
 * {
     box-sizing: border-box;
     margin: 0;
+    font-family: var(--font-family-heading);
 }
 
 
 body {
     background: var(--color-bg);
     color: var(--color-text);
-    font-family: var(--font-family-sans);
     font-size: 14px;
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
