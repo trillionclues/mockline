@@ -25,10 +25,9 @@
 16. [GitHub Actions CI/CD — Provider Agnostic](#16-github-actions-cicd--provider-agnostic)
 17. [Database Backups](#17-database-backups)
 18. [Monitoring + Uptime](#18-monitoring--uptime)
-19. [Network Cleanup](#19-network-cleanup)
-20. [Staging vs Production Checklist](#20-staging-vs-production-checklist)
-21. [Runbook — Common Operations](#21-runbook--common-operations)
-22. [Migrating Providers Later](#22-migrating-providers-later)
+19. [Staging vs Production Checklist](#20-staging-vs-production-checklist)
+20. [Runbook — Common Operations](#21-runbook--common-operations)
+21. [Migrating Providers Later](#22-migrating-providers-later)
 
 ---
 
@@ -177,57 +176,6 @@ Typical result: images go from 1.2GB → 200MB.
 `apps/web` is deployed via Vercel — no Dockerfile needed for it.
 Only `apps/api` and `docker/mock-server` need Docker images.
 
-<!-- ### `apps/web/Dockerfile`
-
-```dockerfile
-FROM node:22-alpine AS base
-RUN corepack enable && corepack prepare pnpm@latest --activate
-
-# ── deps ────────
-FROM base AS deps
-WORKDIR /app
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
-COPY apps/web/package.json ./apps/web/
-COPY packages/db/package.json ./packages/db/
-COPY packages/types/package.json ./packages/types/
-RUN pnpm install --frozen-lockfile
-
-# ── builder ──────
-FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/apps/web/node_modules ./apps/web/node_modules
-COPY . .
-ENV NEXT_TELEMETRY_DISABLED=1
-RUN pnpm --filter=web build
-
-# ── runner — smallest possible ──────
-FROM node:22-alpine AS runner
-WORKDIR /app
-ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED=1
-
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
-
-COPY --from=builder /app/apps/web/public ./public
-COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/static ./apps/web/.next/static
-
-USER nextjs
-EXPOSE 3000
-ENV PORT=3000
-ENV HOSTNAME="0.0.0.0"
-CMD ["node", "apps/web/server.js"]
-```
-
-**Required in `apps/web/next.config.ts`:**
-```typescript
-const nextConfig = {
-  output: 'standalone',  // enables the multi-stage runner above
-}
-``` -->
-
 ### `apps/api/Dockerfile`
 
 ```dockerfile
@@ -249,7 +197,7 @@ FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN pnpm --filter=api build
+RUN pnpm --filter=@mockline/api build
 RUN pnpm --filter=@mockline/db prisma generate
 
 # ── runner ───────────
@@ -389,7 +337,7 @@ This becomes `CF_DNS_API_TOKEN` in your `.env`.
    HTTP   TCP  80     Anywhere
    HTTPS  TCP  443    Anywhere
    ```
-   Do NOT open port 22, 5432 (Postgres), or 6379 (Redis).
+   Do NOT open ports 5432 (Postgres) or 6379 (Redis) — keep those internal to Docker.
 7. **Storage**: 30GB gp3
 8. Launch
 
@@ -439,24 +387,20 @@ sudo swapon /swapfile
 echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 free -h   # verify
 
-# SSH hardening
-# Change SSH port (makes automated scanners skip you)
-# Disable root login over SSH
-# Disable password auth (key only)
-sudo sed -i 's/#Port 22/Port 22/' /etc/ssh/sshd_config
-sudo sed -i 's/Port 22/Port 22/' /etc/ssh/sshd_config
+# SSH hardening — keep port 22 (EC2 Security Group restricts to your IP)
+# Disable root login and password auth (key only)
 sudo sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin no/' /etc/ssh/sshd_config
 sudo sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
 sudo sed -i 's/PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
 sudo systemctl restart sshd
 
 # Firewall
-sudo ufw allow 22/tcp # SSH (new port)
-sudo ufw allow 80/tcp # HTTP (Traefik → Let's Encrypt)
+sudo ufw allow 22/tcp  # SSH (Security Group already restricts to your IP)
+sudo ufw allow 80/tcp  # HTTP (Traefik → Let's Encrypt)
 sudo ufw allow 443/tcp # HTTPS
 sudo ufw --force enable
 
-# Fail2ban - blocks IPs after repeated failed SSH attempts
+# Fail2ban — blocks IPs after repeated failed SSH attempts
 sudo apt install fail2ban -y
 sudo systemctl enable fail2ban
 sudo systemctl start fail2ban
@@ -466,11 +410,9 @@ sudo apt install unattended-upgrades -y
 sudo dpkg-reconfigure --priority=low unattended-upgrades
 ```
 
-**Update AWS Security Group:** Change the SSH inbound rule from port 22 → 22.
-
 **From now on, SSH/connect as:**
 ```bash
-ssh -i ~/.ssh/mockline-staging.pem -p 22 deploy@
+ssh -i ~/.ssh/mockline-staging.pem deploy@<ELASTIC_IP>
 ```
 
 ---
@@ -484,7 +426,7 @@ sudo usermod -aG docker deploy
 
 # Log out and back in
 exit
-ssh -i ~/.ssh/mockline-staging.pem -p 22 deploy@
+ssh -i ~/.ssh/mockline-staging.pem deploy@<ELASTIC_IP>
 
 # Verify
 docker --version
@@ -929,15 +871,16 @@ Settings → Secrets and variables → Actions
 API_HOST             # Elastic IP (or Hetzner IP later)
 API_USER             # deploy
 API_SSH_KEY          # private key contents
-API_SSH_PORT         # 2222
-API_DATABASE_URL     # postgresql://mockline:<pw>@<ELASTIC_IP>:5432/mockline_prod
-                     # use IP not 'db' — CI runs outside Docker network
 
 # Vercel (web)
 VERCEL_TOKEN         # from vercel.com → Account Settings → Tokens
 VERCEL_ORG_ID        # from .vercel/project.json after first deploy
 VERCEL_PROJECT_ID    # from .vercel/project.json after first deploy
 ```
+
+> **Note:** No `API_DATABASE_URL` secret needed. Prisma migrations run inside
+> the Docker container at startup (the API Dockerfile CMD handles this).
+> The DB is only accessible within the Docker network — not from CI runners.
 
 ### `.github/workflows/deploy-web.yml`
 
@@ -1012,6 +955,10 @@ env:
   NODE_VERSION: '22'
   PNPM_VERSION: '9'
 
+concurrency:
+  group: deploy-api-staging
+  cancel-in-progress: true
+
 jobs:
   quality:
     name: Type Check + Lint
@@ -1026,26 +973,14 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm lint
 
-  migrate:
-    name: Run Migrations
-    runs-on: ubuntu-latest
-    needs: quality
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-        with: { version: '${{ env.PNPM_VERSION }}' }
-      - uses: actions/setup-node@v4
-        with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }
-      - run: pnpm install --frozen-lockfile
-      - name: Deploy migrations
-        env:
-          DATABASE_URL: ${{ secrets.API_DATABASE_URL }}
-        run: pnpm --filter=@mockline/db prisma migrate deploy
+  # No separate migrate job — the API Dockerfile CMD runs
+  # `prisma migrate deploy` on every container start.
+  # DB is only reachable inside the Docker network.
 
   deploy:
     name: Deploy to EC2
     runs-on: ubuntu-latest
-    needs: migrate
+    needs: quality
     environment: staging
     steps:
       - name: Deploy via SSH
@@ -1054,7 +989,6 @@ jobs:
           host: ${{ secrets.API_HOST }}
           username: ${{ secrets.API_USER }}
           key: ${{ secrets.API_SSH_KEY }}
-          port: ${{ secrets.API_SSH_PORT }}
           script: |
             set -e
             cd /opt/mockline
@@ -1088,6 +1022,10 @@ env:
   NODE_VERSION: '22'
   PNPM_VERSION: '9'
 
+concurrency:
+  group: deploy-api-production
+  cancel-in-progress: true
+
 jobs:
   quality:
     name: Type Check + Lint
@@ -1102,28 +1040,14 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm lint
 
-  migrate:
-    name: Run Migrations
-    runs-on: ubuntu-latest
-    needs: quality
-    environment: production   # ← manual approval gate
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-        with: { version: '${{ env.PNPM_VERSION }}' }
-      - uses: actions/setup-node@v4
-        with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }
-      - run: pnpm install --frozen-lockfile
-      - name: Deploy migrations
-        env:
-          DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }}
-        run: pnpm --filter=@mockline/db prisma migrate deploy
+  # No separate migrate job — same as staging.
+  # API Dockerfile CMD runs `prisma migrate deploy` on container start.
 
   deploy:
     name: Deploy to Production
     runs-on: ubuntu-latest
-    needs: migrate
-    environment: production
+    needs: quality
+    environment: production   # ← manual approval gate
     steps:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
@@ -1328,13 +1252,16 @@ git push origin v0.2.0
 
 ### SSH into server
 ```bash
-ssh -i ~/.ssh/mockline-staging.pem -p 22 deploy@
+# AWS (uses .pem key from EC2 setup)
+ssh -i ~/.ssh/mockline-staging.pem deploy@<ELASTIC_IP>
+
+# Hetzner / DigitalOcean (uses your default SSH key)
+ssh deploy@<VPS_IP>
 ```
 
 ### View logs
 ```bash
 docker compose logs -f api
-docker compose logs -f web
 docker compose logs -f traefik
 docker compose logs -f db
 ```

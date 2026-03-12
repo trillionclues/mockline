@@ -26,6 +26,7 @@ export async function startMockContainer(
             Memory: memoryBytes,
             MemorySwap: memoryBytes, // Same as memory = disable swap for this container
             NanoCpus: cpuQuota * 1_000_000,
+            PidsLimit: 50,
             RestartPolicy: { Name: 'unless-stopped' },
             SecurityOpt: ['no-new-privileges'],
             CapDrop: ['ALL'],
@@ -97,6 +98,7 @@ export async function startMockContainerWithOptions(
             Memory: memoryBytes,
             MemorySwap: memoryBytes, // Same as memory = disable swap for this container
             NanoCpus: cpuQuota * 1_000_000,
+            PidsLimit: 50,
             RestartPolicy: { Name: 'unless-stopped' },
             SecurityOpt: ['no-new-privileges'],
             CapDrop: ['ALL'],

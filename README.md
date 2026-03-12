@@ -4,7 +4,7 @@
 </p>
 
 <p align="center">
-Mockline — Automated Mock API PaaS
+Automated Mock API PaaS
 </p>
 
 <p align="center">
@@ -15,13 +15,11 @@ Mockline — Automated Mock API PaaS
 
 Mockline is an automated PaaS for engineering teams to deploy and manage isolated, Docker-powered mock API servers from OpenAPI specs.
 
+Each mock server runs [`@trillionclues/contour`](https://www.npmjs.com/package/@trillionclues/contour) inside an isolated Docker container with resource limits, automatic health checks, and auto-stop after idle timeout.
+
 ```
 Upload spec.yaml  →  Validate + parse  →  Build Docker image  →  Start container  →  mock-abc123.mockline.xyz
 ```
-
-Each mock server runs [`@trillionclues/contour`](https://www.npmjs.com/package/@trillionclues/contour) inside an isolated Docker container with resource limits, automatic health checks, and auto-stop after idle timeout.
-
-Mockline does not fork or modify Contour. It installs Contour as a dependency inside Docker images and starts it with the user's spec.
 
 ## Features
 
@@ -32,33 +30,6 @@ Mockline does not fork or modify Contour. It installs Contour as a dependency in
 - **API Explorer** — Send requests to mock servers, inspect responses *(coming soon)*
 - **Stateful mode** — Persist POST/PUT/DELETE data across container restarts via Docker volumes *(coming soon)*
 - **Auto-stop** — Idle containers stopped automatically to save resources
-
-
-## Commands
-
-```bash
-# Development
-pnpm dev                        # Start web + api
-pnpm dev --filter=web           # Next.js only
-pnpm dev --filter=api           # Hono API only
-
-# Database
-pnpm db:migrate                 # Run Prisma migrations
-pnpm db:studio                  # Open Prisma Studio GUI
-
-# Build
-pnpm build                      # Build all apps + packages
-pnpm typecheck                  # tsc --noEmit across all packages
-
-# Test
-pnpm test                       # Run Vitest
-pnpm lint                       # ESLint
-
-# Docker
-docker compose up -d db cache   # Start Postgres + Redis
-docker compose down             # Stop all
-docker compose logs -f api      # Tail API logs
-```
 
 ## Quick Start
 
@@ -118,6 +89,33 @@ pnpm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
+
+
+## Commands
+
+```bash
+# Development
+pnpm dev                        # Start web + api
+pnpm dev --filter=web           # Next.js only
+pnpm dev --filter=api           # Hono API only
+
+# Database
+pnpm db:migrate                 # Run Prisma migrations
+pnpm db:studio                  # Open Prisma Studio GUI
+
+# Build
+pnpm build                      # Build all apps + packages
+pnpm typecheck                  # tsc --noEmit across all packages
+
+# Test
+pnpm test                       # Run Vitest
+pnpm lint                       # ESLint
+
+# Docker
+docker compose up -d db cache   # Start Postgres + Redis
+docker compose down             # Stop all
+docker compose logs -f api      # Tail API logs
+```
 
 ### GitHub OAuth Setup
 
@@ -263,7 +261,3 @@ NB:
 ## License
 
 [MIT](./LICENSE) © [trillionclues](https://github.com/trillionclues)
-
-<p align="center">
-  Built on <a href="https://github.com/trillionclues/contour-cli">@trillionclues/contour</a>
-</p>
