@@ -34,22 +34,40 @@
 
 ## 1. Architecture Decision
 
-### Everything on one VPS. Self-hosted DB and Redis. No managed services.
+### Frontend on Vercel. API + DB + Redis + mock containers on VPS.
 
-The core reason: `apps/api` must spawn Docker containers to provision mock servers.
-This requires direct access to the Docker socket. Vercel, Railway, and Render are
+`apps/web` (Next.js) doesn't need the Docker socket — it just needs to exist
+somewhere and make requests to `api.mockline.xyz`. Vercel handles it for free,
+with global CDN, automatic deploys on push, and zero server management.
+
+`apps/api` (Hono) must spawn Docker containers for mock provisioning. That requires
+direct access to the Docker socket. It lives on EC2. Vercel, Railway, and Render are
 serverless or container platforms — they do not expose the Docker socket.
 A VPS is the only option where this works cleanly.
 
+This means `mockline.xyz` is always live even when EC2 is stopped.
+Anyone visiting the domain sees a real product. API calls will fail gracefully
+during development downtime — which is fine before real users exist.
+
 ```
+┌─────────────────────────────────────────────────-┐
+│                    Vercel (free)                 │
+│                                                  │
+│  ┌────────────────────────────────────────────┐  │
+│  │  apps/web — Next.js                        │  │
+│  │  mockline.xyz / www.mockline.xyz           │  │
+│  │  Always live. No server needed.            │  │
+│  └────────────────────────────────────────────┘  │
+└────────────────────────────────────────────────-─┘
+
 ┌─────────────────────────────────────────────────────────────┐
 │              VPS (AWS EC2 t2.micro → Hetzner CX23)          │
 │                                                             │
-│  ┌──────────┐  ┌──────────┐  ┌────────┐  ┌─────────────┐    │
-│  │ apps/web │  │ apps/api │  │   db   │  │    cache    │    │
-│  │ Next.js  │  │  Hono    │  │Postgres│  │    Redis    │    │
-│  │ :3000    │  │  :4000   │  │ :5432  │  │   :6379     │    │
-│  └──────────┘  └──────────┘  └────────┘  └─────────────┘    │
+│  ┌──────────┐  ┌────────┐  ┌─────────────┐                  │
+│  │ apps/api │  │   db   │  │    cache    │                  │
+│  │  Hono    │  │Postgres│  │    Redis    │                  │
+│  │ :4000    │  │ :5432  │  │   :6379     │                  │
+│  └──────────┘  └────────┘  └─────────────┘                  │
 │                                                             │
 │  ┌──────────────────────────────────────────────────────┐   │
 │  │  Traefik — reverse proxy + SSL + routing             │   │
@@ -66,8 +84,12 @@ A VPS is the only option where this works cleanly.
 ```
 
 **Traffic flow:**
-```
+
 User → Cloudflare DNS → VPS IP → Traefik → correct container
+```
+mockline.xyz        → Vercel CDN → Next.js app
+api.mockline.xyz    → Cloudflare DNS → EC2 → Traefik → Hono API
+*.mockline.xyz      → Cloudflare DNS → EC2 → Traefik → mock container
 ```
 
 **Why self-hosted DB and Redis instead of Neon/Upstash:**
@@ -86,7 +108,7 @@ Traefik's wildcard SSL certificate requires a DNS challenge.
 The DNS challenge requires an API token from your DNS provider.
 Cloudflare has a clean API that Traefik supports natively.
 You keep Namecheap as the registrar — you just point Namecheap's
-nameservers at Cloudflare.
+nameservers at Cloudflare. All DNS management happens in Cloudflare from then on.
 
 ---
 
@@ -95,6 +117,7 @@ nameservers at Cloudflare.
 ### AWS Free Tier (first 12 months)
 | Service | Spec | Cost |
 |---------|------|------|
+| **Vercel** | Frontend hosting | $0 (free tier, always) |
 | EC2 t2.micro | 1 vCPU, 1GB RAM | $0 (750 hrs/mo free) |
 | EBS Storage | 30GB SSD | $0 (30GB free) |
 | Data transfer | 15GB/mo out | $0 (15GB free) |
@@ -105,6 +128,7 @@ nameservers at Cloudflare.
 ### After Free Tier / Move to Hetzner
 | Service | Spec | Cost |
 |---------|------|------|
+| **Vercel** | Frontend hosting | $0 (free tier, always) |
 | Hetzner CX23 | 2 vCPU, 4GB RAM, 40GB SSD | €3.49/mo |
 | mockline.xyz renewal | Namecheap | ~$10–15/yr |
 | **Total** | | **~€3.49/mo** |
@@ -122,6 +146,7 @@ Fine for staging and early dev — not for production with real users.
 - Forces you to learn EC2, Security Groups, Elastic IPs, IAM — all industry standard
 - Stop the instance when not developing to preserve free hours
 - Spin it back up in 30 seconds when needed
+- Frontend stays live on Vercel regardless — domain never goes dark
 
 ### Why Hetzner later
 - CX23 (€3.49) gives 4GB RAM vs t2.micro's 1GB for less money after free tier
@@ -140,6 +165,7 @@ aws ec2 start-instances --instance-ids i-xxxxxxxxxxxx
 ```
 
 Use an **Elastic IP** (free while attached) so your IP doesn't change on restart.
+Without it you'll need to update DNS every time the instance starts.
 
 ---
 
@@ -148,7 +174,10 @@ Use an **Elastic IP** (free while attached) so your IP doesn't change on restart
 Multi-stage builds copy only what's needed to run, leaving build tools behind.
 Typical result: images go from 1.2GB → 200MB.
 
-### `apps/web/Dockerfile`
+`apps/web` is deployed via Vercel — no Dockerfile needed for it.
+Only `apps/api` and `docker/mock-server` need Docker images.
+
+<!-- ### `apps/web/Dockerfile`
 
 ```dockerfile
 FROM node:22-alpine AS base
@@ -197,7 +226,7 @@ CMD ["node", "apps/web/server.js"]
 const nextConfig = {
   output: 'standalone',  // enables the multi-stage runner above
 }
-```
+``` -->
 
 ### `apps/api/Dockerfile`
 
@@ -285,8 +314,7 @@ mockline/                           ← monorepo root
       traefik.dev.yml               ← dashboard on, insecure mode
       traefik.prod.yml              ← https, no dashboard, letsencrypt
   apps/
-    web/
-      Dockerfile                    ← create (multi-stage above)
+    web/                            ← deployed via Vercel, no Dockerfile needed
     api/
       Dockerfile                    ← create (multi-stage above)
   packages/
@@ -302,15 +330,10 @@ Your `docker-compose.yml` Dockerfile references need explicit paths:
 
 ```yaml
 services:
-  web:
-    build:
-      context: .                        # monorepo root as build context
-      dockerfile: apps/web/Dockerfile   # relative to context
-
   api:
     build:
-      context: .
-      dockerfile: apps/api/Dockerfile
+      context: .                        # monorepo root as build context
+      dockerfile: apps/api/Dockerfile   # relative to context
 
   proxy:
     volumes:
@@ -339,6 +362,7 @@ Namecheap → Domain List → Manage → mockline.xyz
 → Nameservers → Custom DNS → enter both Cloudflare nameservers → Save
 
 Propagation: 5–30 minutes. Cloudflare emails you when active.
+After this, all DNS changes happen in Cloudflare. Namecheap is irrelevant for DNS.
 
 ### Step 3 — Create Cloudflare API Token (for wildcard SSL)
 
@@ -361,7 +385,7 @@ This becomes `CF_DNS_API_TOKEN` in your `.env`.
 5. **Key pair**: Create new → ED25519 → download `.pem` → save to `~/.ssh/mockline-staging.pem`
 6. **Security group** — new group with rules:
    ```
-   SSH    TCP  2222   My IP only    ← custom port
+   SSH    TCP  22   My IP only    
    HTTP   TCP  80     Anywhere
    HTTPS  TCP  443    Anywhere
    ```
@@ -373,7 +397,8 @@ This becomes `CF_DNS_API_TOKEN` in your `.env`.
 
 EC2 → Elastic IPs → Allocate → Associate → select your instance
 
-This IP is permanent. Add it to all DNS records.
+This IP is permanent. Add it to `api`, `api.staging`, and `*` DNS records.
+`@` and `www` go to Vercel — not here.
 
 ### Step 3 — Connect
 
@@ -418,15 +443,15 @@ free -h   # verify
 # Change SSH port (makes automated scanners skip you)
 # Disable root login over SSH
 # Disable password auth (key only)
-sudo sed -i 's/#Port 22/Port 2222/' /etc/ssh/sshd_config
-sudo sed -i 's/Port 22/Port 2222/' /etc/ssh/sshd_config
+sudo sed -i 's/#Port 22/Port 22/' /etc/ssh/sshd_config
+sudo sed -i 's/Port 22/Port 22/' /etc/ssh/sshd_config
 sudo sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin no/' /etc/ssh/sshd_config
 sudo sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
 sudo sed -i 's/PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
 sudo systemctl restart sshd
 
 # Firewall
-sudo ufw allow 2222/tcp # SSH (new port)
+sudo ufw allow 22/tcp # SSH (new port)
 sudo ufw allow 80/tcp # HTTP (Traefik → Let's Encrypt)
 sudo ufw allow 443/tcp # HTTPS
 sudo ufw --force enable
@@ -441,11 +466,11 @@ sudo apt install unattended-upgrades -y
 sudo dpkg-reconfigure --priority=low unattended-upgrades
 ```
 
-**Update AWS Security Group:** Change the SSH inbound rule from port 22 → 2222.
+**Update AWS Security Group:** Change the SSH inbound rule from port 22 → 22.
 
 **From now on, SSH/connect as:**
 ```bash
-ssh -i ~/.ssh/mockline-staging.pem -p 2222 deploy@
+ssh -i ~/.ssh/mockline-staging.pem -p 22 deploy@
 ```
 
 ---
@@ -459,7 +484,7 @@ sudo usermod -aG docker deploy
 
 # Log out and back in
 exit
-ssh -i ~/.ssh/mockline-staging.pem -p 2222 deploy@
+ssh -i ~/.ssh/mockline-staging.pem -p 22 deploy@
 
 # Verify
 docker --version
@@ -568,9 +593,26 @@ The wildcard cert is issued once and reused for every `mock-*.mockline.xyz` subd
 - `apps/web/.env.local` — real values, gitignored ✓
 - `packages/.env` — Postgres credentials for local Docker ✓
 
+### apps/web on Vercel — environment variables set in Vercel dashboard
+
+`NEXT_PUBLIC_*` vars are set in the Vercel project dashboard, not in any `.env` file
+on the VPS. Vercel bakes them into the build at deploy time.
+
+Vercel Dashboard → your project → Settings → Environment Variables:
+
+```
+NEXT_PUBLIC_API_URL          https://api.mockline.xyz
+NEXT_PUBLIC_APP_URL          https://mockline.xyz
+NEXT_PUBLIC_MOCK_BASE_URL    https://mock.mockline.xyz
+NEXT_PUBLIC_AUTH_URL         https://api.mockline.xyz
+INTERNAL_API_SECRET          <must match API value>
+BETTER_AUTH_SECRET           <must match API value>
+```
+
 ### On VPS — `/opt/mockline/.env`
 
 Created manually on the server. Never committed to git.
+API-only. No `NEXT_PUBLIC_*` vars needed here — web is on Vercel.
 
 ```bash
 # ── App ────────────
@@ -628,6 +670,7 @@ In Docker Compose, services talk to each other by service name.
 ## 12. Database + Redis — Self-Hosted in Docker
 
 Updated `docker-compose.yml` for production:
+API, DB, Redis, Traefik only. No `web` service.
 
 ```yaml
 services:
@@ -680,25 +723,6 @@ services:
       - ./letsencrypt:/letsencrypt
     environment:
       - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
-    networks:
-      - mockline-network
-
-  web:
-    build:
-      context: .
-      dockerfile: apps/web/Dockerfile
-    container_name: mockline-web
-    restart: unless-stopped
-    env_file: .env
-    depends_on:
-      db:
-        condition: service_healthy
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.web.rule=Host(`mockline.xyz`) || Host(`www.mockline.xyz`)"
-      - "traefik.http.routers.web.entrypoints=websecure"
-      - "traefik.http.routers.web.tls.certresolver=letsencrypt"
-      - "traefik.http.services.web.loadbalancer.server.port=3000"
     networks:
       - mockline-network
 
@@ -803,10 +827,28 @@ This creates four tables:
 - `verification` — email verification tokens (unused if Google-only)
 
 These tables are separate from the app schema. Run this once per
-new database (staging and production separately).
+new database (staging and production separately).  Never again unless you wipe the database.
 ---
 
 ## 14. Application Deployment
+
+### Vercel — connect repo and configure
+
+1. vercel.com → New Project → Import from GitHub → select `mockline`
+2. **Root Directory**: `apps/web`
+3. **Framework**: Next.js (auto-detected)
+4. **Environment Variables**: add all `NEXT_PUBLIC_*` vars from Section 11
+5. Deploy
+
+Vercel auto-deploys on every push to `main`. Preview deploys on every PR.
+
+### Connect custom domain to Vercel
+
+Vercel → your project → Settings → Domains → Add:
+- `mockline.xyz`
+- `www.mockline.xyz`
+
+Vercel will show you the DNS values to add. Add them in Cloudflare (Section 15).
 
 ### First deploy — manual, run once
 
@@ -846,57 +888,125 @@ curl https://api.mockline.xyz/health
 
 ## 15. DNS Records
 
-Add in Cloudflare. **Proxy OFF (grey cloud / DNS only) for all records.**
-Traefik handles SSL — Cloudflare proxying SSL on top creates double-SSL cert errors.
+Add in Cloudflare DNS dashboard.
+
+**Vercel records** — use the values Vercel gives you when you add the domain.
+Keep proxy OFF (DNS only) — Vercel has its own CDN and SSL.
+
+**EC2 records** — proxy OFF (DNS only).
+Traefik handles SSL — Cloudflare proxying on top causes double-SSL cert errors.
 
 ```
-Type   Name          Content         TTL    Proxy
-──────────────────────────────────────────────────
-A      @             <ELASTIC_IP>    Auto   DNS only
-A      www           <ELASTIC_IP>    Auto   DNS only
-A      api           <ELASTIC_IP>    Auto   DNS only
-A      staging       <ELASTIC_IP>    Auto   DNS only
-A      api.staging   <ELASTIC_IP>    Auto   DNS only
-A      *             <ELASTIC_IP>    Auto   DNS only ← wildcard for mock containers
+Type    Name          Content                        TTL    Proxy
+──────────────────────────────────────────────────────────────────
+A       @             76.76.21.21 (Vercel)           Auto   DNS only
+CNAME   www           cname.vercel-dns.com           Auto   DNS only
+A       api           <ELASTIC_IP>                   Auto   DNS only
+A       api.staging   <ELASTIC_IP>                   Auto   DNS only
+A       *             <ELASTIC_IP>                   Auto   DNS only ← wildcard for mock containers
 ```
 
-The `*` wildcard catches `mock-abc123.mockline.xyz`. Traefik reads
-the Docker container labels and routes to the correct mock container.
+The exact Vercel IP and CNAME values are shown in your Vercel dashboard
+when you add the domain — use those, not the example values above.
+
+The `*` wildcard on EC2 catches `mock-abc123.mockline.xyz`. Traefik reads
+Docker container labels and routes to the correct mock container.
 
 ---
 
 ## 16. GitHub Actions CI/CD — Provider Agnostic
 
-The pipeline only needs: IP, SSH key, username.
-Changing providers = changing three secrets. Nothing else.
+Two separate workflows — one for Vercel (web), one for EC2 (API).
+The EC2 workflow only needs: IP, SSH key, username.
+Switching providers = changing three secrets. Nothing else
 
 ### Repository secrets
 
 Settings → Secrets and variables → Actions
 
 ```
-STAGING_HOST          # Elastic IP (or Hetzner IP later)
-STAGING_USER          # deploy
-STAGING_SSH_KEY       # private key contents (id_ed25519 or .pem content)
-STAGING_SSH_PORT      # 2222
-STAGING_DATABASE_URL  # postgresql://mockline:<pw>@<ELASTIC_IP>:5432/mockline_prod
-                      # use IP not 'db' — CI runs outside Docker network
+# API / EC2
+API_HOST             # Elastic IP (or Hetzner IP later)
+API_USER             # deploy
+API_SSH_KEY          # private key contents
+API_SSH_PORT         # 2222
+API_DATABASE_URL     # postgresql://mockline:<pw>@<ELASTIC_IP>:5432/mockline_prod
+                     # use IP not 'db' — CI runs outside Docker network
 
-PROD_HOST
-PROD_USER
-PROD_SSH_KEY
-PROD_SSH_PORT
-PROD_DATABASE_URL
+# Vercel (web)
+VERCEL_TOKEN         # from vercel.com → Account Settings → Tokens
+VERCEL_ORG_ID        # from .vercel/project.json after first deploy
+VERCEL_PROJECT_ID    # from .vercel/project.json after first deploy
 ```
 
-### `.github/workflows/staging.yml`
+### `.github/workflows/deploy-web.yml`
+
+Deploys `apps/web` to Vercel on every push to `main`.
 
 ```yaml
-name: Deploy — Staging
+name: Deploy — Web (Vercel)
 
 on:
   push:
     branches: [main]
+    paths:
+      - 'apps/web/**'
+      - 'packages/types/**'
+
+env:
+  NODE_VERSION: '22'
+  PNPM_VERSION: '9'
+
+jobs:
+  deploy:
+    name: Deploy to Vercel
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with: { version: '${{ env.PNPM_VERSION }}' }
+
+      - uses: actions/setup-node@v4
+        with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Deploy to Vercel
+        run: |
+          pnpm dlx vercel --token=${{ secrets.VERCEL_TOKEN }} \
+            --prod \
+            --yes
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+```
+
+Note: Vercel's GitHub integration auto-deploys on push without needing this workflow.
+This workflow gives you explicit control and lets you gate it behind quality checks.
+If you prefer the simpler Vercel Git integration, skip this workflow entirely and
+let Vercel handle web deploys automatically.
+
+
+
+### `.github/workflows/deploy-api.yml`
+
+Deploys `apps/api` to EC2 on every push to `main`.
+
+
+```yaml
+name: Deploy — API (EC2)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/api/**'
+      - 'packages/db/**'
+      - 'packages/types/**'
+      - 'packages/docker-manager/**'
+      - 'docker-compose.yml'
 
 env:
   NODE_VERSION: '22'
@@ -916,8 +1026,8 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm lint
 
-  build:
-    name: Build
+  migrate:
+    name: Run Migrations
     runs-on: ubuntu-latest
     needs: quality
     steps:
@@ -927,26 +1037,13 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }
       - run: pnpm install --frozen-lockfile
-      - run: pnpm build
-
-  migrate:
-    name: Run Migrations
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-        with: { version: '${{ env.PNPM_VERSION }}' }
-      - uses: actions/setup-node@v4
-        with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }
-      - run: pnpm install --frozen-lockfile
       - name: Deploy migrations
         env:
-          DATABASE_URL: ${{ secrets.STAGING_DATABASE_URL }}
+          DATABASE_URL: ${{ secrets.API_DATABASE_URL }}
         run: pnpm --filter=@mockline/db prisma migrate deploy
 
   deploy:
-    name: Deploy to Staging
+    name: Deploy to EC2
     runs-on: ubuntu-latest
     needs: migrate
     environment: staging
@@ -954,32 +1051,33 @@ jobs:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
         with:
-          host: ${{ secrets.STAGING_HOST }}
-          username: ${{ secrets.STAGING_USER }}
-          key: ${{ secrets.STAGING_SSH_KEY }}
-          port: ${{ secrets.STAGING_SSH_PORT }}
+          host: ${{ secrets.API_HOST }}
+          username: ${{ secrets.API_USER }}
+          key: ${{ secrets.API_SSH_KEY }}
+          port: ${{ secrets.API_SSH_PORT }}
           script: |
             set -e
             cd /opt/mockline
             git pull origin main
-            docker compose up -d --build web api
+            docker compose up -d --build api
             docker image prune -f
-            echo "✓ Staging deploy complete — $(git rev-parse --short HEAD)"
+            echo "✓ API deploy complete — $(git rev-parse --short HEAD)"
 
       - name: Health check
         run: |
           sleep 20
-          curl --fail --silent https://api.staging.mockline.xyz/health \
+          curl --fail --silent https://api.mockline.xyz/health \
             | grep -q '"status":"ok"' \
             || (echo "Health check failed" && exit 1)
           echo "✓ Health check passed"
 ```
 
-### `.github/workflows/production.yml`
-Triggers on git tag `v*`. Requires manual approval.
+### `.github/workflows/deploy-api-prod.yml`
+
+Production API deploy — triggered by git tag `v*`, requires manual approval.
 
 ```yaml
-name: Deploy — Production
+name: Deploy — API Production
 
 on:
   push:
@@ -1004,23 +1102,10 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm lint
 
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    needs: quality
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-        with: { version: '${{ env.PNPM_VERSION }}' }
-      - uses: actions/setup-node@v4
-        with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm build
-
   migrate:
     name: Run Migrations
     runs-on: ubuntu-latest
-    needs: build
+    needs: quality
     environment: production   # ← manual approval gate
     steps:
       - uses: actions/checkout@v4
@@ -1052,9 +1137,9 @@ jobs:
             cd /opt/mockline
             git fetch --tags
             git checkout ${{ github.ref_name }}
-            docker compose up -d --build web api
+            docker compose up -d --build api
             docker image prune -f
-            echo "✓ Production deploy complete — ${{ github.ref_name }}"
+            echo "✓ Production API deploy complete — ${{ github.ref_name }}"
 
       - name: Health check
         run: |
@@ -1124,13 +1209,12 @@ gunzip -c /opt/mockline/backups/mockline_TIMESTAMP.sql.gz \
 ## 18. Monitoring + Uptime
 
 ### UptimeRobot (free — 50 monitors, 5-min intervals)
-
 uptimerobot.com → Add monitors:
 - `https://mockline.xyz` — HTTP, 5 min
 - `https://api.mockline.xyz/health` — HTTP, 5 min
-- `https://staging.mockline.xyz` — HTTP, 5 min
 
-Alert contact: email + optional Discord webhook.
+Note: `mockline.xyz` stays up even when EC2 is stopped (Vercel).
+Only the API monitor will alert when EC2 is down.
 
 ### Health endpoint — already in `apps/api/src/index.ts` ✓
 
@@ -1151,7 +1235,6 @@ docker stats --no-stream
 
 # Logs for a specific service
 docker compose logs --tail=100 api
-docker compose logs --tail=100 web
 ```
 
 ---
@@ -1161,39 +1244,45 @@ docker compose logs --tail=100 web
 ### Staging (AWS EC2 free tier)
 
 ```
-[ ] mockline.xyz on Namecheap ✓ (done)
+[ ] mockline.xyz on Namecheap ✓
 [ ] Cloudflare account created, mockline.xyz added
 [ ] Namecheap nameservers → Cloudflare
-[ ] Cloudflare API token created
+[ ] Cloudflare API token created (Edit zone DNS scope)
+
+[ ] Vercel project created, repo connected
+[ ] apps/web root directory set in Vercel
+[ ] NEXT_PUBLIC_* env vars added in Vercel dashboard
+[ ] mockline.xyz and www added as Vercel domains
+[ ] Vercel DNS values added in Cloudflare (proxy OFF)
+[ ] https://mockline.xyz loads landing page
+
 [ ] EC2 t2.micro launched (Ubuntu 24.04, 30GB gp3)
 [ ] Elastic IP allocated and associated
 [ ] Security group: 2222, 80, 443 open
-[ ] SSH key permissions: chmod 400
+[ ] SSH key: chmod 400
 [ ] deploy user created, SSH key copied
 [ ] Server hardened (port 2222, UFW, Fail2ban)
 [ ] Swap enabled (2GB)
 [ ] Docker + Docker Compose installed
 [ ] deploy user in docker group
 [ ] /opt/mockline created, owned by deploy
-[ ] Repo cloned
-[ ] .env created with all values
+[ ] Repo cloned to /opt/mockline
+[ ] .env created (API vars only — no NEXT_PUBLIC_*)
 [ ] letsencrypt/ created, acme files chmod 600
-[ ] DNS A records added (including * wildcard), proxy OFF
+[ ] api and * DNS A records added in Cloudflare (proxy OFF)
 [ ] docker compose up -d --build
 [ ] docker compose ps — all services healthy
-[ ] Initial Prisma migration created locally (prisma migrate dev --name init)
-[ ] Migration file committed and pushed
-[ ] Prisma migrations deployed on server
+[ ] Initial Prisma migration created locally and committed
+[ ] Prisma migrations deployed
 [ ] BetterAuth tables migrated (once)
-[ ] curl https://api.staging.mockline.xyz/health returns 200
-[ ] Landing page loads at https://staging.mockline.xyz
+[ ] curl https://api.mockline.xyz/health returns 200
 [ ] GitHub OAuth app created for staging
-[ ] GitHub login works end to end
+[ ] Login flow works end to end
 [ ] Backup script + cron job active
 [ ] UptimeRobot monitors added
-[ ] GitHub Actions secrets added (STAGING_*)
+[ ] GitHub Actions secrets added (API_HOST, API_USER, API_SSH_KEY, VERCEL_*)
 [ ] staging environment created in GitHub
-[ ] First CI deploy triggered by push to main ✓
+[ ] First CI deploys triggered by push to main
 [ ] mockline_default network removed
 ```
 
@@ -1201,11 +1290,12 @@ docker compose logs --tail=100 web
 
 ```
 [ ] New server provisioned (separate from staging)
-[ ] All staging checklist items repeated
+[ ] All EC2 checklist items repeated for prod server
 [ ] New GitHub OAuth app for production (separate credentials)
+[ ] Vercel production env vars verified
 [ ] production environment in GitHub with required reviewer
 [ ] First release: git tag v0.1.0 && git push origin v0.1.0
-[ ] UptimeRobot monitors for production URLs
+[ ] UptimeRobot monitors for production
 [ ] Backup cron running
 ```
 
@@ -1213,12 +1303,20 @@ docker compose logs --tail=100 web
 
 ## 20. Runbook — Common Operations
 
-### Push a fix to staging
+### Push a frontend change
 ```bash
 git add .
-git commit -m "fix: description"
+git commit -m "feat: update landing page"
 git push origin main
-# CI updates staging in ~4 minutes
+# Vercel auto-deploys — live in ~1 minute
+```
+
+### Push an API change
+```bash
+git add .
+git commit -m "fix: api description"
+git push origin main
+# deploy-api.yml runs — EC2 updated in ~4 minutes
 ```
 
 ### Release to production
@@ -1230,7 +1328,7 @@ git push origin v0.2.0
 
 ### SSH into server
 ```bash
-ssh -i ~/.ssh/mockline-staging.pem -p 2222 deploy@
+ssh -i ~/.ssh/mockline-staging.pem -p 22 deploy@
 ```
 
 ### View logs
@@ -1244,7 +1342,6 @@ docker compose logs -f db
 ### Restart a service without rebuilding
 ```bash
 docker compose restart api
-docker compose restart web
 ```
 
 ### Force rebuild a service
@@ -1257,7 +1354,7 @@ docker compose up -d --build api --no-deps
 cd /opt/mockline
 git log --oneline --tags
 git checkout v0.1.0
-docker compose up -d --build web api
+docker compose up -d --build api
 ```
 
 ### Stop EC2 to preserve free tier hours
@@ -1268,8 +1365,9 @@ aws ec2 stop-instances --instance-ids i-xxxxxxxxxxxx
 ### Add a new environment variable
 ```bash
 nano /opt/mockline/.env
-docker compose up -d web api
+docker compose up -d api
 # Also add to GitHub Secrets for CI access
+# For web: add in Vercel dashboard → triggers a redeploy
 ```
 
 ### Reset a stuck mock container
@@ -1299,7 +1397,7 @@ docker compose exec db pg_dump -U mockline mockline_prod \
   | gzip > /tmp/migrate.sql.gz
 
 # Copy to new server
-scp -P 2222 /tmp/migrate.sql.gz deploy@:/tmp/
+scp -P 22 /tmp/migrate.sql.gz deploy@:/tmp/
 
 # New server — restore
 gunzip -c /tmp/migrate.sql.gz \
@@ -1308,13 +1406,14 @@ gunzip -c /tmp/migrate.sql.gz \
 
 ### Step 3 — Update three GitHub secrets
 ```
-STAGING_HOST    → new server IP
-STAGING_USER    → deploy (unchanged)
-STAGING_SSH_KEY → new server SSH key (or reuse same key)
+API_HOST    → new server IP
+API_USER    → deploy (unchanged)
+API_SSH_KEY → new server SSH key (or reuse same key)
 ```
 
 ### Step 4 — Update DNS
-Cloudflare → change all A records to new IP. Done in seconds.
+Cloudflare → change `api` and `*` A records to new IP.
+`@` and `www` (Vercel records) are unchanged.
 
 ### Step 5 — Verify and terminate old server
 ```bash
@@ -1327,4 +1426,4 @@ are completely unchanged. The migration is a data move + three secrets + DNS upd
 
 ---
 
-Last updated: March 2026 — AWS EC2 free tier staging, provider-agnostic CI/CD, self-hosted Postgres + Redis.*
+*Last updated: March 2026 — Vercel frontend + AWS EC2 API, provider-agnostic CI/CD, self-hosted Postgres + Redis.*
