@@ -39,6 +39,11 @@ export async function startMockContainer(
             'traefik.enable': 'true',
             [`traefik.http.routers.${containerId}.rule`]: `Host(\`${containerId}.${process.env.MOCK_BASE_DOMAIN ?? 'localhost'}\`)`,
             [`traefik.http.services.${containerId}.loadbalancer.server.port`]: '3001',
+            [`traefik.http.routers.${containerId}.entrypoints`]: 'websecure',
+            [`traefik.http.routers.${containerId}.tls.certresolver`]: 'letsencrypt-wildcard',
+            [`traefik.http.routers.${containerId}.tls.domains[0].main`]: 'mockline.xyz',
+            [`traefik.http.routers.${containerId}.tls.domains[0].sans`]: '*.mockline.xyz',
+
         },
     })
 
@@ -110,6 +115,11 @@ export async function startMockContainerWithOptions(
             'traefik.enable': 'true',
             [`traefik.http.routers.${containerId}.rule`]: `Host(\`${containerId}.${process.env.MOCK_BASE_DOMAIN ?? 'localhost'}\`)`,
             [`traefik.http.services.${containerId}.loadbalancer.server.port`]: '3001',
+            [`traefik.http.routers.${containerId}.entrypoints`]: 'websecure',
+            [`traefik.http.routers.${containerId}.tls.certresolver`]: 'letsencrypt-wildcard',
+            [`traefik.http.routers.${containerId}.tls.domains[0].main`]: 'mockline.xyz',
+            [`traefik.http.routers.${containerId}.tls.domains[0].sans`]: '*.mockline.xyz',
+
         },
     })
 

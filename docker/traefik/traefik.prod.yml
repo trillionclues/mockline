@@ -1,0 +1,50 @@
+global:
+  checkNewVersion: false
+  sendAnonymousUsage: false
+
+log:
+  level: INFO
+
+entryPoints:
+  web:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+          permanent: true
+  websecure:
+    address: ":443"
+
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    exposedByDefault: false
+    network: mockline-network
+  file:
+    directory: /etc/traefik/dynamic
+    watch: true
+
+certificatesResolvers:
+  # HTTP challenge — named subdomains
+  letsencrypt:
+    acme:
+      email: trillionclues@gmail.com
+      storage: /letsencrypt/acme.json
+      httpChallenge:
+        entryPoint: web
+
+  # DNS challenge via Cloudflare — required for *.mockline.xyz wildcard
+  letsencrypt-wildcard:
+    acme:
+      email: trillionclues@gmail.com
+      storage: /letsencrypt/acme-wildcard.json
+      dnsChallenge:
+        provider: cloudflare
+        resolvers:
+          - "1.1.1.1:53"
+          - "8.8.8.8:53"
+
+api:
+  dashboard: false

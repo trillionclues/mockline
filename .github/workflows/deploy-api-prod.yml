@@ -1,0 +1,78 @@
+name: Deploy — API Production
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+env:
+  NODE_VERSION: '22'
+  PNPM_VERSION: '9'
+
+concurrency:
+  group: deploy-api-production
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Type Check + Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: '${{ env.PNPM_VERSION }}' }
+      - uses: actions/setup-node@v4
+        with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm lint
+
+  # No separate migrate job — same as staging.
+  # API Dockerfile CMD runs `prisma migrate deploy` on container start.
+
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: quality
+    environment:
+      name: production
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.PROD_HOST }}
+          username: ${{ secrets.PROD_USER }}
+          key: ${{ secrets.PROD_SSH_KEY }}
+          port: ${{ secrets.PROD_SSH_PORT }}
+          script: |
+            set -e
+            cd /opt/mockline
+
+            # Save current image ID for rollback
+            PREV_IMAGE=$(docker inspect --format='{{.Image}}' mockline-api 2>/dev/null || echo "none")
+
+            git fetch --tags
+            git checkout ${{ github.ref_name }}
+            docker compose up -d --build api
+            docker image prune -f
+
+            # Internal health check with rollback
+            sleep 15
+            if ! curl --fail --silent http://localhost:4000/health | grep -q '"status":"ok"'; then
+                echo "⚠ Internal health check failed — rolling back"
+                if [ "$PREV_IMAGE" != "none" ]; then
+                    docker tag "$PREV_IMAGE" mockline-api:rollback
+                fi
+                docker compose down api
+                exit 1
+            fi
+
+            echo "✓ Production API deploy complete — ${{ github.ref_name }}"
+
+      - name: Health check
+        run: |
+          sleep 20
+          curl --fail --silent ${{ secrets.PROD_API_URL || 'https://api.mockline.xyz' }}/health \
+            | grep -q '"status":"ok"' \
+            || (echo "Production health check failed" && exit 1)
+          echo "✓ Production health check passed"

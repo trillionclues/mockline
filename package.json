@@ -15,7 +15,9 @@
         "db:studio": "pnpm --filter @mockline/db db:studio",
         "db:seed": "pnpm --filter @mockline/db db:seed",
         "mock:build": "docker build -t mockline-mock-server ./docker/mock-server",
-        "mock:test": "docker run --rm -p 3001:3001 mockline-mock-server"
+        "mock:test": "docker run --rm -p 3001:3001 mockline-mock-server",
+        "docker:dev": "docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d",
+        "docker:down": "docker compose down"
     },
     "devDependencies": {
         "turbo": "^2.4.0",

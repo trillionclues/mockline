@@ -41,3 +41,7 @@ test-results/
 *.log
 npm-debug.log*
 pnpm-debug.log*
+
+# Let's Encrypt
+letsencrypt/
+
