@@ -1,44 +1,77 @@
 services:
-  # --- Infra ---
-
   db:
     image: postgres:15-alpine
     container_name: mockline-db
+    restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
-    ports:
-      - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U mockline" ]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER}" ]
       interval: 5s
       timeout: 3s
       retries: 5
+    networks:
+      - mockline-network
 
   cache:
     image: redis:7-alpine
     container_name: mockline-cache
-    ports:
-      - "6379:6379"
+    restart: unless-stopped
+    volumes:
+      - redisdata:/data
+    command: redis-server --appendonly yes
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
       interval: 5s
       timeout: 3s
       retries: 5
+    networks:
+      - mockline-network
 
   proxy:
     image: traefik:v3.2
     container_name: mockline-proxy
+    restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
-      - "8080:8080" # Traefik dashboard for monitoring routes (dev only)
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./docker/traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./docker/traefik/traefik.prod.yml:/etc/traefik/traefik.yml:ro
+      - ./letsencrypt:/letsencrypt
+    environment:
+      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
+    networks:
+      - mockline-network
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: mockline-api
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    env_file: .env
+    # Explicit values override .env — uses Docker service names for container networking
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public
+      - REDIS_URL=redis://cache:6379
+    depends_on:
+      db:
+        condition: service_healthy
+      cache:
+        condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.rule=Host(`api.mockline.xyz`)"
+      - "traefik.http.routers.api.entrypoints=websecure"
+      - "traefik.http.routers.api.tls.certresolver=letsencrypt"
+      - "traefik.http.services.api.loadbalancer.server.port=4000"
     networks:
       - mockline-network
 
@@ -49,3 +82,4 @@ networks:
 
 volumes:
   pgdata:
+  redisdata:

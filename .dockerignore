@@ -1,8 +1,23 @@
 node_modules
+.git
+.github
+.turbo
+.next
+out
+dist
+coverage
+playwright-report
+test-results
+doc
+docker
+letsencrypt
+apps/web
+*.md
+!README.md
+.DS_Store
 
 .env
-.env.example
-.env.local
-.env.local.example
+.env.*
+!.env.example
 .dockerignore
 .gitignore

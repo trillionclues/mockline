@@ -19,11 +19,17 @@ export async function buildMockImage(params: BuildMockImageParams): Promise<{ im
 
         // Write Dockerfile inline (self-contained without external reference)
         const dockerfile = [
-            'FROM node:22-alpine',
+            'FROM node:22-alpine AS installer',
             'WORKDIR /app',
             `ARG CONTOUR_VERSION=${contourVersion}`,
-            `RUN corepack enable && corepack prepare pnpm@latest --activate`,
+            'RUN corepack enable && corepack prepare pnpm@9.15.0 --activate',
+
             `RUN pnpm add -g @trillionclues/contour@${contourVersion}`,
+            '# ── runner ────────────',
+            'FROM node:22-alpine AS runner',
+            'WORKDIR /app',
+            'COPY --from=installer /usr/local/bin/contour /usr/local/bin/contour',
+            'COPY --from=installer /usr/local/lib/node_modules /usr/local/lib/node_modules',
             'USER node',
             `COPY --chown=node:node ${specFilename} ./${specFilename}`,
             'EXPOSE 3001',
@@ -31,6 +37,7 @@ export async function buildMockImage(params: BuildMockImageParams): Promise<{ im
             '  CMD wget -qO- http://localhost:3001/health || exit 1',
             `CMD ["contour", "start", "${specFilename}", "--port", "3001"]`,
         ].join('\n')
+
 
         fs.writeFileSync(path.join(tmpDir, 'Dockerfile'), dockerfile, 'utf-8')
 
