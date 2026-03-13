@@ -9,6 +9,7 @@ on:
       - 'packages/types/**'
       - 'packages/docker-manager/**'
       - 'docker-compose.yml'
+  workflow_dispatch:
 
 env:
   NODE_VERSION: '22'

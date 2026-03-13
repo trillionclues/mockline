@@ -6,6 +6,7 @@ on:
     paths:
       - 'apps/web/**'
       - 'packages/types/**'
+  workflow_dispatch:
 
 env:
   NODE_VERSION: '22'
