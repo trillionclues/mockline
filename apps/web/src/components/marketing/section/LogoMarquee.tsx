@@ -9,14 +9,14 @@ export const LogoMarquee = () => {
             maxWidth: '1300px',
             margin: '0 auto',
             padding: '48px 0',
-            borderTop: '1px solid #1a1a2e',
-            borderBottom: '1px solid #1a1a2e',
+            borderTop: '1px solid var(--color-border)',
+            borderBottom: '1px solid var(--color-border)',
             position: 'relative',
             overflow: 'hidden',
         }}>
             <p style={{
                 fontSize: '11px',
-                color: '#959598ff',
+                color: 'var(--color-text-muted)',
                 textAlign: 'center',
                 letterSpacing: '0.08em',
                 textTransform: 'uppercase',
@@ -31,7 +31,7 @@ export const LogoMarquee = () => {
                     top: 0,
                     width: '120px',
                     height: '100%',
-                    background: 'linear-gradient(to right, #0a0a0b, transparent)',
+                    background: 'linear-gradient(to right, var(--color-bg), transparent)',
                     zIndex: 2,
                     pointerEvents: 'none',
                 }} />
@@ -42,7 +42,7 @@ export const LogoMarquee = () => {
                     top: 0,
                     width: '120px',
                     height: '100%',
-                    background: 'linear-gradient(to left, #0a0a0b, transparent)',
+                    background: 'linear-gradient(to left, var(--color-bg), transparent)',
                     zIndex: 2,
                     pointerEvents: 'none',
                 }} />
@@ -71,7 +71,7 @@ export const LogoMarquee = () => {
                             <span style={{
                                 fontWeight: 600,
                                 fontSize: '18px',
-                                color: '#3a3a4a',
+                                color: 'var(--color-text-subtle)',
                                 padding: '0 36px',
                                 transition: 'color 200ms ease',
                                 whiteSpace: 'nowrap',
@@ -86,7 +86,7 @@ export const LogoMarquee = () => {
                                 width: '3px',
                                 height: '3px',
                                 borderRadius: '50%',
-                                background: '#2a2a3a',
+                                background: 'var(--color-border)',
                                 flexShrink: 0,
                             }} />
                         </div>
@@ -104,7 +104,7 @@ export const LogoMarquee = () => {
         }
 
         .marquee-logo:hover {
-          color: #71717a !important;
+          color: var(--color-text-muted) !important;
         }
       `}</style>
         </section>

@@ -6,7 +6,7 @@ export default function LoginPage() {
         <Suspense fallback={
             <div style={{
                 fontSize: '14px',
-                color: '#959598ff',
+                color: 'var(--color-nav-text)',
                 textAlign: 'center',
                 padding: '40px',
             }}>

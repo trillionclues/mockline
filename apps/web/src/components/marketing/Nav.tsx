@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { MocklineWordmark } from '../brand'
+import { ThemeToggle } from '../theme-toggle'
 
 export const Nav = () => {
     const [scrolled, setScrolled] = useState(false)
@@ -20,12 +21,12 @@ export const Nav = () => {
             zIndex: 50,
             height: '70px',
             background: scrolled
-                ? 'rgba(10, 10, 11, 0.85)'
+                ? 'var(--color-nav-bg-scrolled)'
                 : 'transparent',
             backdropFilter: scrolled ? 'blur(12px)' : 'none',
             WebkitBackdropFilter: scrolled ? 'blur(12px)' : 'none',
             borderBottom: scrolled
-                ? '1px solid #1a1a2e'
+                ? '1px solid var(--color-border)'
                 : '1px solid transparent',
             transition: 'background 200ms ease, border-color 200ms ease, backdrop-filter 200ms ease',
         }}>
@@ -60,14 +61,15 @@ export const Nav = () => {
                 <div style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '20px',
+                    gap: '12px',
                 }}>
+                    <ThemeToggle />
                     <Link
                         href="/login"
                         className="nav-signin-link nav-signin"
                         style={{
                             fontSize: '14px',
-                            color: '#959598ff',
+                            color: 'var(--color-nav-text)',
                             textDecoration: 'none',
                             transition: 'color 120ms ease',
                         }}
@@ -83,8 +85,8 @@ export const Nav = () => {
                             justifyContent: 'center',
                             height: '38px',
                             padding: '0 18px',
-                            background: '#F2E3BB',
-                            color: '#0a0a0b',
+                            background: 'var(--color-primary)',
+                            color: 'var(--color-cta-text)',
                             borderRadius: '6px',
                             fontWeight: 600,
                             fontSize: '13px',
@@ -107,7 +109,7 @@ function NavLink({ href, children }: { href: string; children: React.ReactNode }
             className="nav-link"
             style={{
                 fontSize: '14px',
-                color: '#959598ff',
+                color: 'var(--color-nav-text)',
                 textDecoration: 'none',
                 transition: 'color 120ms ease',
                 fontWeight: 500,

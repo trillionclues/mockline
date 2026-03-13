@@ -54,7 +54,7 @@ import { Providers } from '@/components/providers'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
-        <html lang="en" className={`${bricolage.variable} ${inter.variable}`}>
+        <html lang="en" suppressHydrationWarning className={`${bricolage.variable} ${inter.variable}`}>
             <body>
                 <Providers>
                     {children}

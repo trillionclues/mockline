@@ -11,7 +11,7 @@ export default function DashboardLayout({
             display: 'flex',
             height: '100vh',
             overflow: 'hidden',
-            background: '#0a0a0b',
+            background: 'var(--color-bg)',
         }}>
             <Sidebar />
             <div style={{

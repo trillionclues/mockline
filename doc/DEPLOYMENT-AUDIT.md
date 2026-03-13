@@ -246,3 +246,61 @@ The explicit `environment` takes precedence, which is correct for Docker network
 The project structure is **well-organized** and closely follows the DEPLOYMENT-FLOW.md guide. The main gap is the **mock container Traefik labels** — without the TLS labels, dynamically provisioned mock servers won't be reachable over HTTPS in production. The `build-image.ts` single-stage Dockerfile and the slim `.dockerignore` are the next priorities since they directly impact the constrained resources on a t2.micro instance.
 
 Everything else (GitHub Actions, docker-compose, Prisma, health endpoints, security) is solid and ready to go.
+
+
+
+<!-- ENVIRONMENTS AND SECRETS -->
+Yes — you need to set up GitHub secrets, GitHub environments, and Vercel environment variables before your workflows will function. Here's the exact checklist:
+
+1. GitHub Environments
+Go to Repo → Settings → Environments and create two:
+
+Environment	Protection Rules
+staging	None (auto-deploys on push to main)
+production	Required reviewers → add yourself (manual approval gate for tag deploys)
+
+2. GitHub Secrets
+Go to Repo → Settings → Secrets and variables → Actions → New repository secret:
+
+API / EC2 (needed after you provision)
+Secret	Value	Used by
+API_HOST	Your Elastic IP (e.g. 54.x.x.x)	
+
+deploy-api.yml
+API_USER	deploy	
+
+deploy-api.yml
+API_SSH_KEY	Full contents of your .pem private key	
+
+deploy-api.yml
+
+<!-- Production (separate server, when ready) -->
+Secret	Value	Used by
+PROD_HOST	Production server IP	
+
+deploy-api-prod.yml
+PROD_USER	deploy	
+
+deploy-api-prod.yml
+PROD_SSH_KEY	Production SSH private key	
+
+deploy-api-prod.yml
+PROD_SSH_PORT	SSH port (e.g. 22 or 2222)	
+
+deploy-api-prod.yml
+PROD_API_URL	(optional) Falls back to https://api.mockline.xyz	
+
+deploy-api-prod.yml
+
+
+<!-- Vercel / Web -->
+Secret	Value	Used by
+VERCEL_TOKEN	From vercel.com → Account Settings → Tokens	
+
+deploy-web.yml
+VERCEL_ORG_ID	From .vercel/project.json after first Vercel deploy	
+
+deploy-web.yml
+VERCEL_PROJECT_ID	From .vercel/project.json after first Vercel deploy	
+
+deploy-web.yml

@@ -1,5 +1,6 @@
 'use client'
 import { usePathname } from 'next/navigation'
+import { ThemeToggle } from '../theme-toggle'
 
 const TITLES: Record<string, string> = {
     '/overview': 'Overview',
@@ -25,16 +26,17 @@ export function Topbar() {
             alignItems: 'center',
             justifyContent: 'space-between',
             padding: '0 24px',
-            borderBottom: '1px solid #1a1a2e',
-            background: '#0a0a0b',
+            borderBottom: '1px solid var(--color-border)',
+            background: 'var(--color-bg)',
         }}>
             <span style={{
                 fontSize: '14px',
                 fontWeight: 500,
-                color: '#f4f4f5',
+                color: 'var(--color-text-strong)',
             }}>
                 {title}
             </span>
+            <ThemeToggle size="small" />
         </header>
     )
 }

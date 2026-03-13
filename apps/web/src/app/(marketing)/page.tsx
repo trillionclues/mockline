@@ -6,7 +6,7 @@ import { Pricing } from '@/components/marketing/section/Pricing'
 
 export default function LandingPage() {
     return (
-        <div style={{ background: '#0a0a0b' }}>
+        <div style={{ background: 'var(--color-bg)' }}>
             <HeroSection />
             <LogoMarquee />
             <HowItWorks />

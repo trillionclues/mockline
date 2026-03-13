@@ -1,40 +1,94 @@
 @import "tailwindcss";
 
-@theme {
-    /* Backgrounds */
+/* ── Dark palette (default) ── */
+:root {
     --color-bg: #0a0a0b;
     --color-surface: #111114;
     --color-surface-2: #16161a;
 
-    /* Borders */
-    --color-border: #1a1a2e;
+    --color-border: #33334d;
     --color-border-highlight: rgba(242, 227, 187, 0.2);
 
-    /* Primary — Contour/Mockline cream */
     --color-primary: #F2E3BB;
     --color-primary-muted: rgba(242, 227, 187, 0.08);
 
-    /* Text */
     --color-text: #e4e4e7;
     --color-text-muted: #71717a;
     --color-text-subtle: #52525b;
     --color-text-strong: #f4f4f5;
+    --color-nav-text: #959598;
 
-    /* Status */
+    --color-nav-bg-scrolled: rgba(10, 10, 11, 0.85);
+    --color-grid-line: rgba(255, 255, 255, 0.02);
+    --color-shadow: rgba(0, 0, 0, 0.4);
+    --color-cta-text: #0a0a0b;
+
     --color-status-running: #22c55e;
     --color-status-building: #C0B87A;
     --color-status-stopped: #71717a;
     --color-status-failed: #ef4444;
 
-    /* Semantic */
     --color-destructive: #ef4444;
     --color-warning: #C0B87A;
     --color-success: #22c55e;
 
-    /* Typography — three fonts, three roles, no overlap */
+    --color-logo-line: #F2E3BB;
+
     --font-family-heading: var(--font-bricolage), sans-serif;
     --font-family-sans: var(--font-inter), sans-serif;
     --font-family-mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+/* ── Light palette ── */
+:root.light {
+    --color-bg: #fafafa;
+    --color-surface: #ffffff;
+    --color-surface-2: #f5f5f5;
+
+    --color-border: #ededf3;
+    --color-border-highlight: rgba(180, 160, 100, 0.25);
+
+    --color-primary: #F2E3BB;
+    --color-primary-muted: rgba(242, 227, 187, 0.12);
+
+    --color-text: #1a1a2e;
+    --color-text-muted: #52525b;
+    --color-text-subtle: #a1a1aa;
+    --color-text-strong: #09090b;
+    --color-nav-text: #71717a;
+
+    --color-logo-line: #0a0a0b;
+
+    --color-status-building: #b3ac72;
+
+    --color-nav-bg-scrolled: rgba(255, 255, 255, 0.85);
+    --color-grid-line: rgba(0, 0, 0, 0.04);
+    --color-shadow: rgba(0, 0, 0, 0.08);
+    --color-cta-text: #0a0a0b;
+}
+
+@theme {
+    --color-bg: var(--color-bg);
+    --color-surface: var(--color-surface);
+    --color-surface-2: var(--color-surface-2);
+    --color-border: var(--color-border);
+    --color-border-highlight: var(--color-border-highlight);
+    --color-primary: var(--color-primary);
+    --color-primary-muted: var(--color-primary-muted);
+    --color-text: var(--color-text);
+    --color-text-muted: var(--color-text-muted);
+    --color-text-subtle: var(--color-text-subtle);
+    --color-text-strong: var(--color-text-strong);
+    --color-status-running: var(--color-status-running);
+    --color-status-building: var(--color-status-building);
+    --color-status-stopped: var(--color-status-stopped);
+    --color-status-failed: var(--color-status-failed);
+    --color-destructive: var(--color-destructive);
+    --color-warning: var(--color-warning);
+    --color-success: var(--color-success);
+    --font-family-heading: var(--font-family-heading);
+    --font-family-sans: var(--font-family-sans);
+    --font-family-mono: var(--font-family-mono);
 }
 
 * {
@@ -57,8 +111,8 @@ body::before {
     position: fixed;
     inset: 0;
     background-image:
-        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+        linear-gradient(var(--color-grid-line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--color-grid-line) 1px, transparent 1px);
     background-size: 60px 60px;
     pointer-events: none;
     z-index: 0;
@@ -92,16 +146,20 @@ h4 {
 }
 
 
-.footer-github-link:hover {
-    color: #e4e4e7 !important;
+.footer-github-link:hover,
+.footer-npm-link:hover,
+.footer-link:hover,
+.nav-link:hover,
+.nav-signin:hover {
+    color: var(--color-text) !important;
 }
 
 .footer-built-link:hover {
-    color: #71717a !important;
+    color: var(--color-text-muted) !important;
 }
 
-.footer-link:hover {
-    color: #e4e4e7 !important;
+.nav-cta:hover {
+    opacity: 0.85 !important;
 }
 
 @keyframes pulse {
@@ -131,19 +189,6 @@ h4 {
         padding: 0 20px !important;
     }
 }
-
-.nav-link:hover {
-    color: #e4e4e7 !important;
-}
-
-.nav-signin:hover {
-    color: #e4e4e7 !important;
-}
-
-.nav-cta:hover {
-    opacity: 0.85 !important;
-}
-
 
 @media (max-width: 768px) {
     .footer-grid {
