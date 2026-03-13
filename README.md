@@ -1,6 +1,6 @@
 
 <p align="center">
-  <img src="mockline.svg" alt="mockline" height="48" />
+  <img src="mockline.svg" alt="mockline" height="50" />
 </p>
 
 <p align="center">
