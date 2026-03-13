@@ -18,11 +18,9 @@ jobs:
       name: staging
     steps:
       - uses: actions/checkout@v4
-
       - uses: pnpm/action-setup@v4
         with:
-          package_json_file: 'package.json'
-
+          version: 9.15.0
       - uses: actions/setup-node@v4
         with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }
 
