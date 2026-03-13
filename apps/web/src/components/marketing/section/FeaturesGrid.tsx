@@ -10,9 +10,9 @@ export function FeaturesGrid() {
     return (
         <section style={{
             padding: '96px 0',
-            background: '#111114',
-            borderTop: '1px solid #1a1a2e',
-            borderBottom: '1px solid #1a1a2e',
+            background: 'var(--color-surface)',
+            borderTop: '1px solid var(--color-border)',
+            borderBottom: '1px solid var(--color-border)',
         }}>
             <div style={{
                 maxWidth: '1300px',
@@ -32,7 +32,7 @@ export function FeaturesGrid() {
                     <h2 style={{
                         fontWeight: 700,
                         fontSize: 'clamp(24px, 3vw, 36px)',
-                        color: '#e4e4e7',
+                        color: 'var(--color-text)',
                         letterSpacing: '-0.02em',
                         marginBottom: '10px',
                     }}>
@@ -40,7 +40,7 @@ export function FeaturesGrid() {
                     </h2>
                     <p style={{
                         fontSize: '16px',
-                        color: '#959598ff',
+                        color: 'var(--color-nav-text)',
                         maxWidth: '420px',
                         margin: '0 auto',
                         lineHeight: 1.6,
@@ -55,10 +55,10 @@ export function FeaturesGrid() {
                         display: 'grid',
                         gridTemplateColumns: 'repeat(3, 1fr)',
                         gap: '3px',
-                        background: '#1a1a2e',
-                        borderRadius: '8px',
+                        background: 'var(--color-border)',
+                        borderRadius: '4px',
                         overflow: 'hidden',
-                        border: '1px solid #1a1a2e',
+                        border: '1px solid var(--color-border)',
                     }}
                 >
                     {FEATURES.map((feature, i) => (
@@ -69,7 +69,7 @@ export function FeaturesGrid() {
 
             <style>{`
                 .feature-card:hover {
-                    background: #141418 !important;
+                    background: var(--color-surface-2) !important;
                 }
                 .feature-card:hover .feature-card-accent {
                     opacity: 1 !important;

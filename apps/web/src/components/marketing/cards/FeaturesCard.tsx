@@ -11,7 +11,7 @@ export const FeatureCard = ({ feature, index }: { feature: typeof FEATURES[0]; i
             ref={ref}
             className="feature-card"
             style={{
-                background: '#111114',
+                background: 'var(--color-surface)',
                 padding: '28px',
                 position: 'relative',
                 cursor: 'default',
@@ -44,15 +44,15 @@ export const FeatureCard = ({ feature, index }: { feature: typeof FEATURES[0]; i
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    background: 'rgba(242,227,187,0.06)',
+                    background: 'var(--color-primary-muted)',
                     borderRadius: '6px',
-                    border: '1px solid rgba(242,227,187,0.1)',
+                    border: '1px solid var(--color-border-highlight)',
                 }}>
                     {feature.icon}
                 </div>
                 <span style={{
                     fontSize: '11px',
-                    color: '#959598ff',
+                    color: 'var(--color-nav-text)',
                     letterSpacing: '0.05em',
                 }}>
                     {feature.num}
@@ -62,7 +62,7 @@ export const FeatureCard = ({ feature, index }: { feature: typeof FEATURES[0]; i
             <h3 style={{
                 fontWeight: 600,
                 fontSize: '15px',
-                color: '#e4e4e7',
+                color: 'var(--color-text)',
                 marginBottom: '8px',
                 letterSpacing: '-0.01em',
             }}>
@@ -70,7 +70,7 @@ export const FeatureCard = ({ feature, index }: { feature: typeof FEATURES[0]; i
             </h3>
             <p style={{
                 fontSize: '13px',
-                color: '#71717a',
+                color: 'var(--color-text-muted)',
                 lineHeight: 1.65,
             }}>
                 {feature.body}

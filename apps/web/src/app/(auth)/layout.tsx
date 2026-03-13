@@ -13,7 +13,7 @@ export default function AuthLayout({
             alignItems: 'center',
             justifyContent: 'center',
             minHeight: '100vh',
-            background: '#0a0a0b',
+            background: 'var(--color-bg)',
             padding: '24px',
         }}>
             <Link href="/" style={{
@@ -29,8 +29,8 @@ export default function AuthLayout({
             <div style={{
                 width: '100%',
                 maxWidth: '450px',
-                background: '#111114',
-                border: '1px solid #2e2e49ff',
+                background: 'var(--color-surface)',
+                border: '1px solid var(--color-border)',
                 borderRadius: '12px',
                 padding: '32px',
             }}>
@@ -39,7 +39,7 @@ export default function AuthLayout({
 
             <p style={{
                 fontSize: '12px',
-                color: '#959598ff',
+                color: 'var(--color-nav-text)',
                 marginTop: '24px',
             }}>
                 © {new Date().getFullYear()} Mockline

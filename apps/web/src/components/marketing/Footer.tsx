@@ -14,8 +14,8 @@ export const Footer = () => {
 
     return (
         <footer ref={ref} style={{
-            background: '#111114',
-            borderTop: '1px solid #1a1a2e',
+            background: 'var(--color-surface)',
+            borderTop: '1px solid var(--color-border)',
             padding: '56px 0 32px',
         }}>
             <div style={{
@@ -39,12 +39,11 @@ export const Footer = () => {
                             gap: '8px',
                             marginBottom: '12px',
                         }}>
-                            {/* <MocklineLogo /> */}
                             <MocklineWordmark size={20} />
                         </div>
                         <p style={{
                             fontSize: '13px',
-                            color: '#959598ff',
+                            color: 'var(--color-nav-text)',
                             maxWidth: '200px',
                             lineHeight: 1.6,
                         }}>
@@ -60,7 +59,7 @@ export const Footer = () => {
                                 style={{
                                     display: 'inline-block',
                                     marginTop: '16px',
-                                    color: '#71717a',
+                                    color: 'var(--color-text-muted)',
                                     transition: 'color 120ms ease',
                                 }}
                             >
@@ -76,7 +75,7 @@ export const Footer = () => {
                                 style={{
                                     display: 'inline-block',
                                     marginTop: '16px',
-                                    color: '#71717a',
+                                    color: 'var(--color-text-muted)',
                                     transition: 'color 120ms ease',
                                 }}
                             >
@@ -97,7 +96,7 @@ export const Footer = () => {
                         >
                             <div style={{
                                 fontSize: '12px',
-                                color: '#71717a',
+                                color: 'var(--color-text-muted)',
                                 marginBottom: '14px',
                                 fontWeight: 500,
                             }}>
@@ -116,7 +115,7 @@ export const Footer = () => {
                     animate={inView ? { opacity: 1 } : {}}
                     transition={{ duration: 0.5, delay: 0.35, ease }}
                     style={{
-                        borderTop: '1px solid #1a1a2e',
+                        borderTop: '1px solid var(--color-border)',
                         marginTop: '40px',
                         paddingTop: '24px',
                         display: 'flex',
@@ -124,7 +123,7 @@ export const Footer = () => {
                         alignItems: 'center',
                     }}
                 >
-                    <span style={{ fontSize: '12px', color: '#959598ff', }}>
+                    <span style={{ fontSize: '12px', color: 'var(--color-nav-text)', }}>
                         © {new Date().getFullYear()} Mockline
                     </span>
 
@@ -135,7 +134,7 @@ export const Footer = () => {
                         className="footer-built-link"
                         style={{
                             fontSize: '12px',
-                            color: '#959598ff',
+                            color: 'var(--color-nav-text)',
                             textDecoration: 'none',
                             transition: 'color 120ms ease',
                         }}
@@ -166,7 +165,7 @@ function FooterLink({ href, children }: { href: string; children: React.ReactNod
     const isExternal = href.startsWith('http')
     const style: React.CSSProperties = {
         fontSize: '13px',
-        color: '#959598ff',
+        color: 'var(--color-nav-text)',
         textDecoration: 'none',
         display: 'block',
         marginBottom: '10px',

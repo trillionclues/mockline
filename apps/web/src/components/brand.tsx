@@ -3,7 +3,7 @@ export const MocklineWordmark = ({ size = 15 }: { size?: number }) => {
         <span style={{
             fontWeight: 600,
             fontSize: `${size}px`,
-            color: '#f4f4f5',
+            color: 'var(--color-text-strong)',
             letterSpacing: '-0.01em',
             position: 'relative',
             display: 'inline-flex',
@@ -24,7 +24,7 @@ export const MocklineWordmark = ({ size = 15 }: { size?: number }) => {
                     top: `${size * -0.55}px`,
                     bottom: `${size * -0.35}px`,
                     width: '1.5px',
-                    background: '#F2E3BB',
+                    background: 'var(--color-logo-line)',
                     borderRadius: '1px',
                 }} />
             </span>

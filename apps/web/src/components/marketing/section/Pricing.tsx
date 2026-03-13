@@ -28,7 +28,7 @@ export function Pricing() {
 
                     <p style={{
                         fontSize: '16px',
-                        color: '#71717a',
+                        color: 'var(--color-text-muted)',
                         marginBottom: '28px',
                     }}>
                         Start free. Scale when you need to.
@@ -39,8 +39,8 @@ export function Pricing() {
                         alignItems: 'center',
                         gap: '12px',
                         padding: '4px',
-                        background: '#111114',
-                        border: '1px solid #1a1a2e',
+                        background: 'var(--color-surface)',
+                        border: '1px solid var(--color-border)',
                         borderRadius: '8px',
                     }}>
                         <button
@@ -53,8 +53,8 @@ export function Pricing() {
                                 fontWeight: 500,
                                 cursor: 'pointer',
                                 transition: 'background 150ms ease, color 150ms ease',
-                                background: !yearly ? '#1a1a2e' : 'transparent',
-                                color: !yearly ? '#e4e4e7' : '#71717a',
+                                background: !yearly ? 'var(--color-border)' : 'transparent',
+                                color: !yearly ? 'var(--color-text)' : 'var(--color-text-muted)',
                             }}
                         >
                             Monthly
@@ -69,8 +69,8 @@ export function Pricing() {
                                 fontWeight: 500,
                                 cursor: 'pointer',
                                 transition: 'background 150ms ease, color 150ms ease',
-                                background: yearly ? '#1a1a2e' : 'transparent',
-                                color: yearly ? '#e4e4e7' : '#71717a',
+                                background: yearly ? 'var(--color-border)' : 'transparent',
+                                color: yearly ? 'var(--color-text)' : 'var(--color-text-muted)',
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '8px',
@@ -119,7 +119,7 @@ export function Pricing() {
                     style={{
                         textAlign: 'center',
                         fontSize: '12px',
-                        color: '#52525b',
+                        color: 'var(--color-text-subtle)',
                         marginTop: '32px',
                     }}
                 >
@@ -130,8 +130,8 @@ export function Pricing() {
             <style>{`
                 .pricing-cta-primary:hover { opacity: 0.88 !important; }
                 .pricing-cta-secondary:hover {
-                    background: #1a1a2e !important;
-                    border-color: #2a2a3e !important;
+                    background: var(--color-border) !important;
+                    border-color: var(--color-border-highlight) !important;
                 }
                 @media (max-width: 768px) {
                     .pricing-grid {

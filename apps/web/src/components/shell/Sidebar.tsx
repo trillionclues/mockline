@@ -26,9 +26,9 @@ export function Sidebar() {
         padding: '0 12px',
         borderRadius: '6px',
         fontSize: '13px',
-        color: active ? '#f4f4f5' : '#71717a',
-        background: active ? 'rgba(242, 227, 187, 0.08)' : 'transparent',
-        borderLeft: active ? '2px solid #F2E3BB' : '2px solid transparent',
+        color: active ? 'var(--color-text-strong)' : 'var(--color-text-muted)',
+        background: active ? 'var(--color-primary-muted)' : 'transparent',
+        borderLeft: active ? '2px solid var(--color-primary)' : '2px solid transparent',
         textDecoration: 'none',
         transition: 'color 120ms ease, background 120ms ease',
         cursor: 'pointer',
@@ -39,8 +39,8 @@ export function Sidebar() {
             width: '220px',
             flexShrink: 0,
             height: '100vh',
-            background: '#111114',
-            borderRight: '1px solid #1a1a2e',
+            background: 'var(--color-surface)',
+            borderRight: '1px solid var(--color-border)',
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
@@ -50,10 +50,10 @@ export function Sidebar() {
                 display: 'flex',
                 alignItems: 'center',
                 padding: '0 16px',
-                borderBottom: '1px solid #1a1a2e',
+                borderBottom: '1px solid var(--color-border)',
                 fontSize: '15px',
                 fontWeight: 600,
-                color: '#f4f4f5',
+                color: 'var(--color-text-strong)',
                 flexShrink: 0,
             }}>
                 mockline
@@ -75,7 +75,7 @@ export function Sidebar() {
 
                 <div style={{
                     fontSize: '11px',
-                    color: '#52525b',
+                    color: 'var(--color-text-subtle)',
                     padding: '12px 12px 4px',
                     letterSpacing: 'normal',
                     textTransform: 'none',
@@ -92,7 +92,7 @@ export function Sidebar() {
 
             <div style={{
                 padding: '12px',
-                borderTop: '1px solid #1a1a2e',
+                borderTop: '1px solid var(--color-border)',
                 flexShrink: 0,
             }}>
                 <Link href="/settings" style={itemStyle(isActive('/settings'))}>

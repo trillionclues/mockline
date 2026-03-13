@@ -7,7 +7,7 @@ const ease = [0.21, 0.47, 0.32, 0.98] as const;
 
 export const HeroSection = () => {
     return (
-        <div style={{ background: '#0a0a0b' }}>
+        <div style={{ background: 'var(--color-bg)' }}>
             <section style={{
                 position: 'relative',
                 textAlign: 'center',
@@ -42,19 +42,19 @@ export const HeroSection = () => {
                             alignItems: 'center',
                             gap: '8px',
                             padding: '6px 16px',
-                            border: '1px solid #1a1a2e',
+                            border: '1px solid var(--color-border)',
                             borderRadius: '999px',
                             fontSize: '12px',
                             fontWeight: 500,
-                            color: '#71717a',
+                            color: 'var(--color-text-muted)',
                             marginBottom: '32px',
-                            background: 'rgba(255,255,255,0.02)',
+                            background: 'var(--color-primary-muted)',
                         }}
                     >
                         <span style={{
                             width: '6px',
                             height: '6px',
-                            background: '#F2E3BB',
+                            background: 'var(--color-logo-line)',
                             borderRadius: '50%',
                             display: 'inline-block',
                             animation: 'pulse 2s ease-in-out infinite',
@@ -73,7 +73,7 @@ export const HeroSection = () => {
                             initial={{ opacity: 0, y: 24 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.5, delay: 0.1, ease }}
-                            style={{ color: '#e4e4e7', display: 'block' }}
+                            style={{ color: 'var(--color-text)', display: 'block' }}
                         >
                             Stop waiting for the backend.
                         </motion.span>
@@ -81,7 +81,7 @@ export const HeroSection = () => {
                             initial={{ opacity: 0, y: 24 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.5, delay: 0.2, ease }}
-                            style={{ color: '#F2E3BB', display: 'block' }}
+                            style={{ color: 'var(--color-primary)', display: 'block', }}
                         >
                             Ship against live mocks.
                         </motion.span>
@@ -93,7 +93,7 @@ export const HeroSection = () => {
                         transition={{ duration: 0.5, delay: 0.3, ease }}
                         style={{
                             fontSize: '17px',
-                            color: '#71717a',
+                            color: 'var(--color-text-muted)',
                             maxWidth: '520px',
                             margin: '0 auto 36px',
                             lineHeight: 1.7,
@@ -125,8 +125,8 @@ export const HeroSection = () => {
                                     gap: '8px',
                                     height: '44px',
                                     padding: '0 24px',
-                                    background: '#F2E3BB',
-                                    color: '#0a0a0b',
+                                    background: 'var(--color-primary)',
+                                    color: 'var(--color-cta-text)',
                                     borderRadius: '6px',
                                     fontWeight: 600,
                                     fontSize: '14px',
@@ -148,12 +148,12 @@ export const HeroSection = () => {
                                     height: '44px',
                                     padding: '0 24px',
                                     background: 'transparent',
-                                    color: '#e4e4e7',
+                                    color: 'var(--color-text)',
                                     borderRadius: '6px',
                                     fontWeight: 600,
                                     fontSize: '14px',
                                     textDecoration: 'none',
-                                    border: '1px solid #1a1a2e',
+                                    border: '1px solid var(--color-border)',
                                     transition: 'border-color 120ms ease',
                                 }}
                             >
@@ -166,7 +166,7 @@ export const HeroSection = () => {
 
                         <p style={{
                             fontSize: '12px',
-                            color: '#52525b',
+                            color: 'var(--color-text-subtle)',
                         }}>
                             No credit card required. Free tier forever.
                         </p>
@@ -184,16 +184,16 @@ export const HeroSection = () => {
                         }}
                     >
                         <div style={{
-                            background: '#111114',
-                            border: '1px solid #1a1a2e',
+                            background: 'var(--color-surface)',
+                            border: '1px solid var(--color-border)',
                             borderRadius: '8px 8px 0 0',
                             overflow: 'hidden',
-                            boxShadow: '0 20px 60px rgba(0,0,0,0.4)',
+                            boxShadow: `0 20px 60px var(--color-shadow)`,
                         }}>
                             <div style={{
                                 height: '32px',
-                                background: '#16161a',
-                                borderBottom: '1px solid #1a1a2e',
+                                background: 'var(--color-surface-2)',
+                                borderBottom: '1px solid var(--color-border)',
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '6px',
@@ -205,14 +205,14 @@ export const HeroSection = () => {
                             </div>
                             <div style={{
                                 height: '520px',
-                                background: '#16161a',
+                                background: 'var(--color-surface-2)',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
                             }}>
                                 <span style={{
                                     fontSize: '13px',
-                                    color: '#52525b',
+                                    color: 'var(--color-text-subtle)',
                                 }}>
                                     Dashboard preview
                                 </span>
@@ -220,7 +220,7 @@ export const HeroSection = () => {
                         </div>
                         <div style={{
                             height: '140px',
-                            background: 'linear-gradient(to bottom, transparent, #0a0a0b)',
+                            background: 'linear-gradient(to bottom, transparent, var(--color-bg))',
                             marginTop: '-140px',
                             position: 'relative',
                             zIndex: 1,

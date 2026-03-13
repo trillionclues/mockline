@@ -14,7 +14,7 @@ function CheckIcon() {
 function CrossIcon() {
     return (
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-            <path d="M4 4L10 10M10 4L4 10" stroke="#2a2a3e" strokeWidth="1.5"
+            <path d="M4 4L10 10M10 4L4 10" stroke="var(--color-border)" strokeWidth="1.5"
                 strokeLinecap="round" strokeLinejoin="round" />
         </svg>
     )
@@ -44,10 +44,10 @@ export const PricingCard = ({
             whileHover={!plan.highlighted ? { y: -4, transition: { duration: 0.2 } } : {}}
             style={{
                 position: 'relative',
-                background: plan.highlighted ? '#141418' : '#111114',
+                background: plan.highlighted ? 'var(--color-surface-2)' : 'var(--color-surface)',
                 border: plan.highlighted
-                    ? '1px solid #F2E3BB'
-                    : '1px solid #1a1a2e',
+                    ? '1px solid var(--color-primary)'
+                    : '1px solid var(--color-border)',
                 borderRadius: '8px',
                 padding: '32px 28px',
                 display: 'flex',
@@ -60,8 +60,8 @@ export const PricingCard = ({
                     top: '-1px',
                     left: '50%',
                     transform: 'translateX(-50%)',
-                    background: '#F2E3BB',
-                    color: '#0a0a0b',
+                    background: 'var(--color-primary)',
+                    color: 'var(--color-cta-text)',
                     fontWeight: 600,
                     fontSize: '10px',
                     letterSpacing: '0.06em',
@@ -77,14 +77,14 @@ export const PricingCard = ({
                 <div style={{
                     fontWeight: 500,
                     fontSize: '13px',
-                    color: plan.highlighted ? '#F2E3BB' : '#71717a',
+                    color: plan.highlighted ? 'var(--color-status-building)' : 'var(--color-text-muted)',
                     marginBottom: '6px',
                 }}>
                     {plan.name}
                 </div>
                 <div style={{
                     fontSize: '12px',
-                    color: '#52525b',
+                    color: 'var(--color-text-muted)',
                     lineHeight: 1.5,
                 }}>
                     {plan.description}
@@ -107,7 +107,7 @@ export const PricingCard = ({
                         style={{
                             fontWeight: 700,
                             fontSize: '40px',
-                            color: '#f4f4f5',
+                            color: 'var(--color-text-strong)',
                             lineHeight: 1,
                             letterSpacing: '-0.03em',
                         }}
@@ -118,7 +118,7 @@ export const PricingCard = ({
             </div>
             <div style={{
                 fontSize: '12px',
-                color: '#52525b',
+                color: 'var(--color-text-muted)',
                 marginBottom: '28px',
                 minHeight: '16px',
             }}>
@@ -132,7 +132,7 @@ export const PricingCard = ({
 
             <div style={{
                 height: '1px',
-                background: '#1a1a2e',
+                background: 'var(--color-border)',
                 marginBottom: '24px',
             }} />
 
@@ -156,7 +156,7 @@ export const PricingCard = ({
                             alignItems: 'center',
                             gap: '10px',
                             fontSize: '13px',
-                            color: feature.included ? '#c4c4cc' : '#3a3a4a',
+                            color: feature.included ? 'var(--color-text)' : 'var(--color-text-subtle)',
                         }}
                     >
                         <span style={{ flexShrink: 0 }}>
@@ -181,13 +181,13 @@ export const PricingCard = ({
                     transition: 'opacity 120ms ease, background 120ms ease',
                     ...(plan.highlighted
                         ? {
-                            background: '#F2E3BB',
-                            color: '#0a0a0b',
+                            background: 'var(--color-primary)',
+                            color: 'var(--color-cta-text)',
                         }
                         : {
                             background: 'transparent',
-                            color: '#e4e4e7',
-                            border: '1px solid #1a1a2e',
+                            color: 'var(--color-text)',
+                            border: '1px solid var(--color-border)',
                         }),
                 }}
                 className={plan.highlighted ? 'pricing-cta-primary' : 'pricing-cta-secondary'}

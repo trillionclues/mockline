@@ -11,15 +11,15 @@ function CodeBlock({ lines }: {
 }) {
     return (
         <div style={{
-            background: '#0d0d10',
-            border: '1px solid #1a1a2e',
+            background: 'var(--color-bg)',
+            border: '1px solid var(--color-border)',
             borderRadius: '8px',
             overflow: 'hidden',
         }}>
             <div style={{
                 height: '32px',
-                background: '#111114',
-                borderBottom: '1px solid #1a1a2e',
+                background: 'var(--color-surface)',
+                borderBottom: '1px solid var(--color-border)',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
@@ -84,7 +84,7 @@ function Step({ step, index }: { step: typeof STEPS[0]; index: number }) {
                     style={{
                         fontWeight: 800,
                         fontSize: '72px',
-                        color: '#2e2e51ff',
+                        color: 'var(--color-border)',
                         lineHeight: 1,
                         display: 'block',
                         letterSpacing: '-0.03em',
@@ -101,7 +101,7 @@ function Step({ step, index }: { step: typeof STEPS[0]; index: number }) {
                     style={{
                         fontWeight: 700,
                         fontSize: '22px',
-                        color: '#e4e4e7',
+                        color: 'var(--color-text)',
                         marginTop: '-12px',
                         letterSpacing: '-0.02em',
                     }}
@@ -116,7 +116,7 @@ function Step({ step, index }: { step: typeof STEPS[0]; index: number }) {
                     custom={0.16}
                     style={{
                         fontSize: '15px',
-                        color: '#71717a',
+                        color: 'var(--color-text-muted)',
                         lineHeight: 1.7,
                         marginTop: '12px',
                         maxWidth: '340px',
@@ -162,7 +162,7 @@ export function HowItWorks() {
                     <h2 style={{
                         fontWeight: 700,
                         fontSize: 'clamp(24px, 3vw, 36px)',
-                        color: '#e4e4e7',
+                        color: 'var(--color-text)',
                         letterSpacing: '-0.02em',
                         marginBottom: '10px',
                     }}>
@@ -170,7 +170,7 @@ export function HowItWorks() {
                     </h2>
                     <p style={{
                         fontSize: '16px',
-                        color: '#71717a',
+                        color: 'var(--color-text-muted)',
                         maxWidth: '440px',
                         margin: '0 auto',
                         lineHeight: 1.6,
