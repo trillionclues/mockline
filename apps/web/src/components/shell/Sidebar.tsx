@@ -1,6 +1,12 @@
 'use client'
+import { useState } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
+import { authClient } from '@/lib/auth-client'
+import { MocklineWordmark } from '@/components/brand'
+import { LogOut, Settings } from 'lucide-react'
+import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
+import { useUpgradeModal } from '@/contexts/upgrade-modal'
 
 const NAV = [
     { href: '/overview', label: 'Overview' },
@@ -14,91 +20,120 @@ const TOOLS = [
     { href: '/explorer', label: 'API Explorer' },
 ]
 
-export function Sidebar() {
+type User = { name?: string | null; email?: string | null; image?: string | null, tier?: 'FREE' | 'PRO' | 'TEAM' | null }
+type Props = { user?: User; onMobileMenuOpen?: () => void, onNavigate?: () => void }
+
+export function Sidebar({ user, onMobileMenuOpen, onNavigate }: Props) {
     const pathname = usePathname()
+    const router = useRouter()
+    const [logoutOpen, setLogoutOpen] = useState(false)
+    const { open: openUpgrade } = useUpgradeModal()
 
     const isActive = (href: string) => pathname.startsWith(href)
 
-    const itemStyle = (active: boolean): React.CSSProperties => ({
-        display: 'flex',
-        alignItems: 'center',
-        height: '36px',
-        padding: '0 12px',
-        borderRadius: '6px',
-        fontSize: '13px',
-        color: active ? 'var(--color-text-strong)' : 'var(--color-text-muted)',
-        background: active ? 'var(--color-primary-muted)' : 'transparent',
-        borderLeft: active ? '2px solid var(--color-primary)' : '2px solid transparent',
-        textDecoration: 'none',
-        transition: 'color 120ms ease, background 120ms ease',
-        cursor: 'pointer',
-    })
+    const handleLogout = async () => {
+        await authClient.signOut()
+        router.push('/login')
+    }
 
     return (
-        <aside style={{
-            width: '220px',
-            flexShrink: 0,
-            height: '100vh',
-            background: 'var(--color-surface)',
-            borderRight: '1px solid var(--color-border)',
-            display: 'flex',
-            flexDirection: 'column',
-            overflow: 'hidden',
-        }}>
-            <div style={{
-                height: '48px',
-                display: 'flex',
-                alignItems: 'center',
-                padding: '0 16px',
-                borderBottom: '1px solid var(--color-border)',
-                fontSize: '15px',
-                fontWeight: 600,
-                color: 'var(--color-text-strong)',
-                flexShrink: 0,
-            }}>
-                mockline
+        <aside className="sidebar">
+            <div className="sidebar-header">
+                <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+                    <MocklineWordmark size={16} />
+                </Link>
+                <button className="sidebar-hamburger" onClick={onMobileMenuOpen} aria-label="Close menu">
+                    ✕
+                </button>
             </div>
 
-            <nav style={{
-                flex: 1,
-                padding: '8px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '2px',
-                overflowY: 'auto',
-            }}>
+            <nav className="sidebar-nav">
                 {NAV.map(item => (
-                    <Link key={item.href} href={item.href} style={itemStyle(isActive(item.href))}>
+                    <Link key={item.href} href={item.href} onClick={onNavigate} className={`sidebar-nav-item ${isActive(item.href) ? 'active' : ''}`}>
                         {item.label}
                     </Link>
                 ))}
 
-                <div style={{
-                    fontSize: '11px',
-                    color: 'var(--color-text-subtle)',
-                    padding: '12px 12px 4px',
-                    letterSpacing: 'normal',
-                    textTransform: 'none',
-                }}>
-                    Tools
-                </div>
+                <span className="sidebar-section-label" style={{
+                    marginTop: 10
+                }}>Tools</span>
 
                 {TOOLS.map(item => (
-                    <Link key={item.href} href={item.href} style={itemStyle(isActive(item.href))}>
+                    <Link key={item.href} href={item.href} onClick={onNavigate} className={`sidebar-nav-item ${isActive(item.href) ? 'active' : ''}`}>
                         {item.label}
                     </Link>
                 ))}
             </nav>
 
-            <div style={{
-                padding: '12px',
-                borderTop: '1px solid var(--color-border)',
-                flexShrink: 0,
-            }}>
-                <Link href="/settings" style={itemStyle(isActive('/settings'))}>
+            <div className="sidebar-footer">
+                <Link href="/settings" onClick={onNavigate} className={`sidebar-nav-item ${isActive('/settings') ? 'active' : ''}`}>
+                    <Settings size={14} style={{ marginRight: '8px', opacity: 0.6 }} />
                     Settings
                 </Link>
+
+                <button
+                    className="sidebar-nav-item"
+                    onClick={() => setLogoutOpen(true)}
+                    style={{ border: 'none', width: '100%', textAlign: 'left', cursor: 'pointer' }}
+                >
+                    <LogOut size={14} style={{ marginRight: '8px', opacity: 0.6 }} />
+                    Sign out
+                </button>
+
+                {(!user?.tier || user.tier === 'FREE') && (
+                    <div style={{ display: 'flex', gap: '6px', margin: '10px 0px' }}>
+                        <span
+                            style={{
+                                flex: 1,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                height: '32px',
+                                background: 'transparent',
+                                borderRadius: '6px',
+                                fontSize: '11px',
+                                fontWeight: 600,
+                                color: 'var(--color-text-muted)',
+                                textDecoration: 'none',
+                            }}
+                        >
+                            {user?.tier ?? 'FREE'}
+                        </span>
+                        <button
+                            onClick={openUpgrade}
+                            className="sidebar-upgrade-btn cursor-pointer"
+                            style={{
+                                flex: 1,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                height: '32px',
+                                background: 'var(--color-primary-muted)',
+                                border: '1px solid var(--color-border-highlight)',
+                                borderRadius: '6px',
+                                fontSize: '11px',
+                                fontWeight: 600,
+                                color: 'var(--color-logo-line)',
+                                textDecoration: 'none',
+                                transition: 'background 120ms ease',
+                                letterSpacing: '0.03em',
+                            }}
+                        >
+                            {user?.tier !== 'PRO' ? 'Upgrade' : 'TEAM'}
+                        </button>
+                    </div>
+                )}
+
             </div>
+
+            <ConfirmDialog
+                open={logoutOpen}
+                onClose={() => setLogoutOpen(false)}
+                title="Sign out"
+                description="Are you sure you want to sign out of Mockline?"
+                onConfirm={handleLogout}
+                variant="default"
+            />
         </aside>
     )
 }

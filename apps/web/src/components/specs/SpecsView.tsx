@@ -19,9 +19,6 @@ export function SpecsView({ initialSpecs }: { initialSpecs: Spec[] }) {
 
     return (
         <div style={{
-            padding: '32px 48px',
-            maxWidth: '1200px',
-            margin: '0 auto',
             width: '100%',
             height: '100%',
         }}>
@@ -43,7 +40,7 @@ export function SpecsView({ initialSpecs }: { initialSpecs: Spec[] }) {
                     style={{
                         height: '36px',
                         padding: '0 16px',
-                        background: 'var(--color-primary)',
+                        background: 'var(--color-logo-line)',
                         color: 'var(--color-bg)',
                         border: 'none',
                         borderRadius: '6px',

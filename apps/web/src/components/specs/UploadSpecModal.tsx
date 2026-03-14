@@ -175,7 +175,7 @@ export function UploadSpecModal({ open, onClose }: Props) {
                         style={{
                             height: '36px',
                             padding: '0 16px',
-                            background: 'var(--color-primary)',
+                            background: 'var(--color-logo-line)',
                             color: 'var(--color-bg)',
                             border: 'none',
                             borderRadius: '6px',

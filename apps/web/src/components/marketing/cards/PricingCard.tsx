@@ -24,13 +24,37 @@ export const PricingCard = ({
     plan,
     index,
     yearly,
+    onCtaClick,
 }: {
     plan: typeof PLANS[0]
     index: number
     yearly: boolean
+    onCtaClick?: (planName: string) => void
 }) => {
     const price = yearly ? plan.yearlyPrice : plan.monthlyPrice
     const period = plan.monthlyPrice === 0 ? 'forever' : yearly ? '/ month, billed yearly' : '/ month'
+
+    const ctaStyle = {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '40px',
+        borderRadius: '6px',
+        fontWeight: 600,
+        fontSize: '13px',
+        textDecoration: 'none',
+        transition: 'opacity 120ms ease, background 120ms ease',
+        cursor: 'pointer',
+        border: 'none',
+        width: '100%',
+        ...(plan.highlighted
+            ? { background: 'var(--color-primary)', color: 'var(--color-cta-text)' }
+            : { background: 'transparent', color: 'var(--color-text)', border: '1px solid var(--color-border)' }),
+    }
+
+    const ctaLabel = onCtaClick
+        ? plan.monthlyPrice === 0 ? 'Current plan' : `Upgrade to ${plan.name}`
+        : plan.cta
 
     return (
         <motion.div
@@ -167,33 +191,28 @@ export const PricingCard = ({
                 ))}
             </ul>
 
-            <Link
-                href={plan.ctaHref}
-                style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    height: '40px',
-                    borderRadius: '6px',
-                    fontWeight: 600,
-                    fontSize: '13px',
-                    textDecoration: 'none',
-                    transition: 'opacity 120ms ease, background 120ms ease',
-                    ...(plan.highlighted
-                        ? {
-                            background: 'var(--color-primary)',
-                            color: 'var(--color-cta-text)',
-                        }
-                        : {
-                            background: 'transparent',
-                            color: 'var(--color-text)',
-                            border: '1px solid var(--color-border)',
-                        }),
-                }}
-                className={plan.highlighted ? 'pricing-cta-primary' : 'pricing-cta-secondary'}
-            >
-                {plan.cta}
-            </Link>
+            {onCtaClick ? (
+                <button
+                    onClick={() => onCtaClick(plan.name)}
+                    disabled={plan.monthlyPrice === 0}
+                    style={{
+                        ...ctaStyle,
+                        opacity: plan.monthlyPrice === 0 ? 0.5 : 1,
+                        cursor: plan.monthlyPrice === 0 ? 'default' : 'pointer',
+                    }}
+                    className={plan.highlighted ? 'pricing-cta-primary' : 'pricing-cta-secondary'}
+                >
+                    {ctaLabel}
+                </button>
+            ) : (
+                <Link
+                    href={plan.ctaHref}
+                    style={ctaStyle}
+                    className={plan.highlighted ? 'pricing-cta-primary' : 'pricing-cta-secondary'}
+                >
+                    {plan.cta}
+                </Link>
+            )}
         </motion.div>
     )
 }

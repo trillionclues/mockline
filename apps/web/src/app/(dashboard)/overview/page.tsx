@@ -1,17 +1,17 @@
-export default function OverviewPage() {
-    return (
-        <div>
-            <h2 style={{
-                fontSize: '18px',
-                fontWeight: 600,
-                color: 'var(--color-text-strong)',
-                marginBottom: '16px',
-            }}>
-                Overview
-            </h2>
-            <p style={{ fontSize: '13px', color: 'var(--color-text-muted)' }}>
-                Dashboard shell verification — this content should appear to the right of the sidebar and below the topbar.
-            </p>
-        </div>
-    )
+import { specsApi, mocksApi } from '@/lib/api-client'
+import { headers } from 'next/headers'
+import { OverviewView } from '@/components/overview/OverviewView'
+
+export default async function OverviewPage() {
+    const reqHeaders = await headers()
+    const cookie = reqHeaders.get('cookie')
+    const apiHeaders: Record<string, string> = {}
+    if (cookie) apiHeaders.cookie = cookie
+
+    const [specs, mocks] = await Promise.all([
+        specsApi.list({ headers: apiHeaders }),
+        mocksApi.list({ headers: apiHeaders }),
+    ])
+
+    return <OverviewView specs={specs} mocks={mocks} />
 }
