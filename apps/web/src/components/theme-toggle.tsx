@@ -40,7 +40,7 @@ export function ThemeToggle({ size = 'default' }: { size?: 'default' | 'small' }
                 width: btnSize,
                 height: btnSize,
                 borderRadius: '6px',
-                border: '1px solid var(--color-border)',
+                // border: '1px solid var(--color-border)',
                 background: 'transparent',
                 color: 'var(--color-text-muted)',
                 cursor: 'pointer',

@@ -17,6 +17,7 @@
         "mock:build": "docker build -t mockline-mock-server ./docker/mock-server",
         "mock:test": "docker run --rm -p 3001:3001 mockline-mock-server",
         "docker:dev": "docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d",
+        "docker:build:api": "docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build && sleep 10 && docker compose ps && docker compose logs api",
         "docker:down": "docker compose down"
     },
     "devDependencies": {

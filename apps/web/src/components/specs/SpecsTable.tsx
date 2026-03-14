@@ -1,112 +1,133 @@
-import type { Spec } from '@/lib/api-client'
-import { MoreHorizontal } from 'lucide-react'
+'use client'
+import { useRouter } from 'next/navigation'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { specsApi, type Spec } from '@/lib/api-client'
+import { queryKeys } from '@/lib/query-keys'
+import { Trash2 } from 'lucide-react'
+import { useState } from 'react'
+import { ConfirmDialog } from '../shared/ConfirmDialog'
+import { DateDisplay } from '../shared/DateDisplay'
 
 export function SpecsTable({ specs }: { specs: Spec[] }) {
+    const router = useRouter()
+    const queryClient = useQueryClient()
+    const [deleteTarget, setDeleteTarget] = useState<Spec | null>(null)
+
+    const deleteMutation = useMutation({
+        mutationFn: (id: string) => specsApi.delete(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: queryKeys.specs.all() })
+            setDeleteTarget(null)
+        },
+    })
+
     return (
-        <div style={{
-            background: 'var(--color-surface)',
-            border: '1px solid var(--color-border)',
-            borderRadius: '12px',
-            overflowX: 'auto',
-        }}>
-            <table style={{
-                width: '100%',
-                borderCollapse: 'collapse',
-                textAlign: 'left',
+        <>
+            <div style={{
+                background: 'var(--color-surface)',
+                border: '1px solid var(--color-border)',
+                borderRadius: '8px',
+                overflowX: 'auto',
             }}>
-                <thead>
-                    <tr style={{
-                        borderBottom: '1px solid var(--color-border)',
-                        background: 'var(--color-surface-2)',
-                    }}>
-                        <th style={thStyle}>Name</th>
-                        <th style={thStyle}>Versions</th>
-                        <th style={thStyle}>Mocks</th>
-                        <th style={thStyle}>Added</th>
-                        <th style={{ ...thStyle, width: '40px', textAlign: 'center' }}></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {specs.map((spec) => (
-                        <tr key={spec.id} style={{
-                            borderBottom: '1px solid var(--color-border)',
-                            transition: 'background 120ms ease',
-                        }}
-                            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--color-surface-2)' }}
-                            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent' }}
-                        >
-                            <td style={tdStyle}>
-                                <div style={{
-                                    fontWeight: 500,
-                                    color: 'var(--color-text-strong)',
-                                    marginBottom: '2px',
-                                }}>
-                                    {spec.name}
-                                </div>
-                                <div style={{
-                                    fontSize: '11px',
-                                    color: 'var(--color-text-muted)',
-                                }}>
-                                    {spec.id.substring(0, 8)}
-                                </div>
-                            </td>
-                            <td style={tdStyle}>
-                                <span style={{
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    padding: '2px 8px',
-                                    background: 'var(--color-surface-2)',
-                                    border: '1px solid var(--color-border)',
-                                    borderRadius: '12px',
-                                    fontSize: '12px',
-                                    color: 'var(--color-text-subtle)',
-                                }}>
-                                    {spec.versions?.length ?? 0}
-                                </span>
-                            </td>
-                            <td style={tdStyle}>
-                                <span style={{ color: 'var(--color-text-muted)' }}>
-                                    {spec._count?.mockServers ?? 0}
-                                </span>
-                            </td>
-                            <td style={tdStyle}>
-                                <span style={{ color: 'var(--color-text-muted)' }}>
-                                    {new Date(spec.createdAt).toLocaleDateString()}
-                                </span>
-                            </td>
-                            <td style={{ ...tdStyle, textAlign: 'center' }}>
-                                <button style={{
-                                    background: 'transparent',
-                                    border: 'none',
-                                    color: 'var(--color-text-muted)',
-                                    cursor: 'pointer',
-                                    padding: '4px',
-                                    borderRadius: '4px',
-                                    transition: 'color 120ms ease',
-                                }}
-                                    onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--color-text-strong)' }}
-                                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--color-text-muted)' }}
-                                >
-                                    <MoreHorizontal size={16} />
-                                </button>
-                            </td>
+                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                    <thead>
+                        <tr style={{ borderBottom: '1px solid var(--color-border)', background: 'var(--color-surface-2)' }}>
+                            <th style={thStyle}>Name</th>
+                            <th style={thStyle}>Format</th>
+                            <th style={thStyle}>Versions</th>
+                            <th style={thStyle}>Mocks</th>
+                            <th style={thStyle}>Added</th>
+                            <th style={{ ...thStyle, width: '40px' }}></th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody>
+                        {specs.map(spec => (
+                            <tr
+                                key={spec.id}
+                                onClick={() => router.push(`/specs/${spec.id}`)}
+                                style={{ borderBottom: '1px solid var(--color-border)', cursor: 'pointer', transition: 'background 120ms ease' }}
+                                onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--color-surface-2)'}
+                                onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'transparent'}
+                            >
+                                <td style={tdStyle}>
+                                    <div style={{ fontWeight: 500, color: 'var(--color-text-strong)' }}>
+                                        {spec.name}
+                                    </div>
+                                    <div style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>
+                                        {spec.id.substring(0, 8)}
+                                    </div>
+                                </td>
+                                <td style={tdStyle}>
+                                    <span style={{
+                                        display: 'inline-block',
+                                        padding: '1px 6px',
+                                        background: 'var(--color-surface-2)',
+                                        border: '1px solid var(--color-border)',
+                                        borderRadius: '4px',
+                                        fontSize: '11px',
+                                        fontFamily: 'var(--font-family-mono)',
+                                        color: 'var(--color-text-muted)',
+                                    }}>
+                                        {spec.versions?.[0]?.format}
+                                    </span>
+                                </td>
+                                <td style={tdStyle}>
+                                    <span style={{ color: 'var(--color-text-muted)' }}>
+                                        {spec.versions?.length ?? 0}
+                                    </span>
+                                </td>
+                                <td style={tdStyle}>
+                                    <span style={{ color: 'var(--color-text-muted)' }}>
+                                        {spec._count?.mockServers ?? 0}
+                                    </span>
+                                </td>
+                                <td style={tdStyle}>
+                                    <span style={{ color: 'var(--color-text-muted)' }}>
+                                        <DateDisplay date={spec.createdAt} />
+                                    </span>
+                                </td>
+                                <td style={{ ...tdStyle, textAlign: 'center' }}>
+                                    <button
+                                        className="btn-icon destructive"
+                                        onClick={e => {
+                                            e.stopPropagation()
+                                            setDeleteTarget(spec)
+                                        }}
+                                        title="Delete spec"
+                                    >
+                                        <Trash2 size={14} />
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+
+            <ConfirmDialog
+                open={!!deleteTarget}
+                onClose={() => setDeleteTarget(null)}
+                title={`Delete "${deleteTarget?.name}"`}
+                description="This will permanently delete the spec, all its versions, and any associated mock servers."
+                confirmWord="DELETE"
+                variant="destructive"
+                onConfirm={() => deleteMutation.mutateAsync(deleteTarget!.id)}
+            />
+        </>
     )
 }
+
 
 const thStyle: React.CSSProperties = {
     fontSize: '12px',
     fontWeight: 500,
     color: 'var(--color-text-subtle)',
-    padding: '12px 24px',
+    padding: '10px 16px',
 }
 
 const tdStyle: React.CSSProperties = {
-    fontSize: '14px',
+    fontSize: '13px',
     color: 'var(--color-text)',
-    padding: '16px 24px',
+    padding: '14px 16px',
 }
+
