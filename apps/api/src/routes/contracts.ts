@@ -7,6 +7,39 @@ import type { AppEnv } from '../types/env'
 
 export const contractsRouter = new Hono<AppEnv>()
 
+// Transform Prisma contractTestRun record into the shape the frontend expects
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function transformRun(run: any) {
+    const summary = (run.summary ?? {}) as Record<string, number>
+    const rawResults = (run.results ?? []) as Array<Record<string, unknown>>
+
+    const results = rawResults.map((r) => ({
+        method: r.method as string,
+        path: r.path as string,
+        match: r.status === 'pass',
+        expectedStatus: 200,
+        receivedStatus: r.status === 'pass' ? 200 : 0,
+        detail: (r.message as string) ?? undefined,
+    }))
+
+    const totalDuration = rawResults.reduce((sum, r) => sum + (Number(r.responseTime) || 0), 0)
+
+    return {
+        id: run.id,
+        specId: run.specId,
+        baseUrl: run.baseUrl,
+        totalEndpoints: summary.total ?? results.length,
+        passed: summary.passed ?? results.filter((r) => r.match).length,
+        failed: (summary.failed ?? 0) + (summary.errors ?? 0),
+        duration: totalDuration,
+        status: run.status === 'completed'
+            ? ((summary.failed ?? 0) > 0 || (summary.errors ?? 0) > 0 ? 'FAILED' : 'PASSED')
+            : run.status === 'failed' ? 'FAILED' : 'RUNNING',
+        results,
+        createdAt: run.createdAt,
+    }
+}
+
 const RunContractSchema = z.object({
     specId: z.string().min(1),
     baseUrl: z.string().url(),
@@ -109,7 +142,7 @@ contractsRouter.get('/:id', async (c) => {
         )
     }
 
-    return c.json({ data: testRun, error: null })
+    return c.json({ data: transformRun(testRun), error: null })
 })
 
 // GET /contracts — List test runs for a spec
@@ -126,5 +159,5 @@ contractsRouter.get('/', async (c) => {
         take: 20,
     })
 
-    return c.json({ data: testRuns, error: null })
+    return c.json({ data: testRuns.map(transformRun), error: null })
 })

@@ -30,7 +30,9 @@ export async function runContractTest(params: {
         // Only GET endpoints tests in MVP (POST/PUT/DELETE need request bodies)
         if (endpoint.method !== 'GET') continue
 
-        const url = `${baseUrl.replace(/\/$/, '')}${endpoint.path}`
+        // Substitute path params with placeholder values for testing
+        const resolvedPath = endpoint.path.replace(/\{(\w+)\}/g, '1')
+        const url = `${baseUrl.replace(/\/$/, '')}${resolvedPath}`
         const start = Date.now()
 
         try {

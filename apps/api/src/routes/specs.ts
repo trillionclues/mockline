@@ -1,6 +1,8 @@
 import { Hono } from 'hono'
 import { z } from 'zod'
 import { db } from '@mockline/db'
+import { parseEndpoints, detectFormat } from '@mockline/spec-parser'
+import yaml from 'yaml'
 import { createSpec, addSpecVersion } from '../services/mock-provisioner'
 import type { AppEnv } from '../types/env'
 
@@ -53,7 +55,7 @@ specsRouter.post('/', async (c) => {
     }
 })
 
-// GET /specs/:id — Get spec + versions
+// GET /specs/:id — Get spec + versions + parsed endpoints
 specsRouter.get('/:id', async (c) => {
     const userId = c.get('user').id
     const spec = await db.spec.findFirst({
@@ -64,7 +66,23 @@ specsRouter.get('/:id', async (c) => {
     if (!spec) {
         return c.json({ data: null, error: { code: 'NOT_FOUND', message: 'Spec not found' } }, 404)
     }
-    return c.json({ data: spec, error: null })
+
+    // Parse endpoints from the latest version for the API Explorer
+    let endpoints: ReturnType<typeof parseEndpoints> = []
+    const latestVersion = spec.versions[0]
+    if (latestVersion) {
+        try {
+            const format = detectFormat(latestVersion.content)
+            const specObject = format === 'YAML'
+                ? yaml.parse(latestVersion.content)
+                : JSON.parse(latestVersion.content)
+            endpoints = parseEndpoints(specObject)
+        } catch {
+            // If parsing fails, return empty endpoints rather than erroring
+        }
+    }
+
+    return c.json({ data: { ...spec, endpoints }, error: null })
 })
 
 // DELETE /specs/:id — Soft delete spec
