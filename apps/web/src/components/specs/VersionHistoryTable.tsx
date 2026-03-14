@@ -1,6 +1,7 @@
 'use client'
 import { useRouter } from 'next/navigation'
 import type { SpecVersion } from '@/lib/api-client'
+import { DateDisplay } from '../shared/DateDisplay';
 
 type Props = { specId: string; versions: SpecVersion[] }
 
@@ -50,7 +51,7 @@ export function VersionHistoryTable({ specId, versions }: Props) {
                                 </td>
                                 <td style={tdStyle}>
                                     <span style={{ color: 'var(--color-text-muted)' }}>
-                                        {new Date(v.createdAt).toLocaleDateString()}
+                                        <DateDisplay date={v.createdAt} />
                                     </span>
                                 </td>
                                 <td style={tdStyle}>

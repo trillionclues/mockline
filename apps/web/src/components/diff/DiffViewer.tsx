@@ -1,8 +1,8 @@
 import { DiffEntry, SchemaDiff } from "@/types"
 
 export function DiffViewer({ diff }: { diff: SchemaDiff }) {
-    const hasBreaking = diff.breaking.length > 0
-    const hasNonBreaking = diff.nonBreaking.length > 0
+    const hasBreaking = diff?.breaking?.length > 0
+    const hasNonBreaking = diff?.nonBreaking?.length > 0
 
     if (!hasBreaking && !hasNonBreaking) {
         return (

@@ -86,7 +86,12 @@ export function ProvisionMockModal({ open, onClose, specs, prefilledSpecId, pref
                 </div>
 
                 <div className="modal-actions">
-                    <button onClick={onClose} disabled={mutation.isPending} className="btn-secondary">Cancel</button>
+                    <button onClick={() => {
+                        onClose();
+                        setSpecId('');
+                        setSpecVersionId('');
+                        setError(null);
+                    }} disabled={mutation.isPending} className="btn-secondary">Cancel</button>
                     <button onClick={() => mutation.mutate()} disabled={!canSubmit} className="btn-primary" style={{ background: 'var(--color-logo-line)', color: 'var(--color-bg)' }}>
                         {mutation.isPending ? 'Deploying...' : 'Deploy Mock'}
                     </button>

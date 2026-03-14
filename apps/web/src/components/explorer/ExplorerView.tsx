@@ -58,7 +58,7 @@ export function ExplorerView({ initialMocks }: { initialMocks: MockServer[] }) {
                     <option value="">Select a running mock...</option>
                     {runningMocks.map(m => (
                         <option key={m.id} value={m.id}>
-                            {m.spec.name} v{m.specVersion.version}
+                            {m?.spec?.name} v{m?.specVersion?.version}
                         </option>
                     ))}
                 </select>

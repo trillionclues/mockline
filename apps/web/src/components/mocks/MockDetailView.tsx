@@ -59,13 +59,21 @@ export function MockDetailView({ initialMock }: { initialMock: MockServer }) {
                 </div>
                 <div style={{ display: 'flex', gap: '8px' }}>
                     {mock.status === 'STOPPED' && (
-                        <button className="btn-secondary" onClick={() => startMutation.mutate()} disabled={startMutation.isPending}>
+                        <button className="btn-secondary" onClick={() => startMutation.mutate()} style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                        }} disabled={startMutation.isPending}>
                             <Play size={13} style={{ marginRight: '6px' }} />
                             Start
                         </button>
                     )}
                     {mock.status === 'RUNNING' && (
-                        <button className="btn-secondary" onClick={() => stopMutation.mutate()} disabled={stopMutation.isPending}>
+                        <button className="btn-secondary" onClick={() => stopMutation.mutate()} style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                        }} disabled={stopMutation.isPending}>
                             <Square size={13} style={{ marginRight: '6px' }} />
                             Stop
                         </button>

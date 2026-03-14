@@ -84,7 +84,7 @@ export function RunContractModal({ open, onClose, specs, mocks }: Props) {
                             </option>
                             {eligibleMocks.map(m => (
                                 <option key={m.id} value={m.id}>
-                                    {m.spec.name} v{m.specVersion.version} — {m.publicUrl}
+                                    {m?.spec?.name} v{m?.specVersion?.version} — {m.publicUrl}
                                 </option>
                             ))}
                         </select>
