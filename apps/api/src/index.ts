@@ -8,6 +8,7 @@ import { specsRouter } from './routes/specs'
 import { mocksRouter } from './routes/mocks'
 import { contractsRouter } from './routes/contracts'
 import { startAutoStopScheduler } from './services/auto-stop'
+import { ensureContourBaseImage } from '@mockline/docker-manager/src/base-image'
 
 const app = new Hono()
 
@@ -43,6 +44,12 @@ console.log(`Mockline API starting on port ${port}`)
 serve({ fetch: app.fetch, port }, (info) => {
     console.log(`Mockline API running at http://localhost:${info.port}`)
     startAutoStopScheduler()
+
+    // Build base image in background — first provision will be fast
+    const contourVersion = process.env.CONTOUR_VERSION ?? '1.1.1'
+    ensureContourBaseImage(contourVersion).catch(err =>
+        console.error('[base-image] Failed to build base image:', err)
+    )
 })
 
 export default app

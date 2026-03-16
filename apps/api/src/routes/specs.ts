@@ -96,6 +96,29 @@ specsRouter.delete('/:id', async (c) => {
         return c.json({ data: null, error: { code: 'NOT_FOUND', message: 'Spec not found' } }, 404)
     }
 
+    // Cascade: stop and remove all mock containers for this spec
+    const mocks = await db.mockServer.findMany({
+        where: { specId: spec.id, deletedAt: null },
+    });
+
+    const { removeContainer } = await import('@mockline/docker-manager')
+
+    await Promise.allSettled(
+        mocks.map(async (mock) => {
+            if (mock.dockerContainerId) {
+                try {
+                    await removeContainer(mock.dockerContainerId)
+                } catch {
+                    // container may already be gone, continue
+                }
+            }
+            await db.mockServer.update({
+                where: { id: mock.id },
+                data: { status: 'REMOVED', deletedAt: new Date() },
+            })
+        })
+    )
+
     await db.spec.update({
         where: { id: spec.id },
         data: { deletedAt: new Date() },
