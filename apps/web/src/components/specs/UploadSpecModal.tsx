@@ -8,16 +8,23 @@ type Props = {
     onClose: () => void
 }
 
+type SourceMode = 'paste' | 'url'
+
 export function UploadSpecModal({ open, onClose }: Props) {
     const [name, setName] = useState('')
     const [content, setContent] = useState('')
+    const [specUrl, setSpecUrl] = useState('')
     const [format, setFormat] = useState<'yaml' | 'json'>('yaml')
+    const [source, setSource] = useState<SourceMode>('paste')
     const [error, setError] = useState<string | null>(null)
 
     const queryClient = useQueryClient()
 
     const mutation = useMutation({
         mutationFn: async () => {
+            if (source === 'url') {
+                return specsApi.create({ name, url: specUrl })
+            }
             return specsApi.create({ name, content, format })
         },
         onSuccess: () => {
@@ -25,7 +32,9 @@ export function UploadSpecModal({ open, onClose }: Props) {
             queryClient.invalidateQueries({ queryKey: queryKeys.specs.all() })
             setName('')
             setContent('')
+            setSpecUrl('')
             setFormat('yaml')
+            setSource('paste')
             setError(null)
             onClose()
         },
@@ -33,6 +42,10 @@ export function UploadSpecModal({ open, onClose }: Props) {
             setError(err.message)
         }
     })
+
+    const canSubmit = name.trim() && (
+        source === 'paste' ? content.trim() : specUrl.trim()
+    )
 
     if (!open) return null
 
@@ -69,7 +82,7 @@ export function UploadSpecModal({ open, onClose }: Props) {
                     color: 'var(--color-text-muted)',
                     marginBottom: '24px',
                 }}>
-                    Upload your OpenAPI 3.0 specification in YAML or JSON format.
+                    Paste your OpenAPI spec or import from a remote URL.
                 </p>
 
                 {error && (
@@ -101,48 +114,101 @@ export function UploadSpecModal({ open, onClose }: Props) {
                         />
                     </div>
 
+                    {/* Source toggle */}
                     <div>
-                        <label style={labelStyle}>Format</label>
+                        <label style={labelStyle}>Source</label>
                         <div style={{ display: 'flex', gap: '8px' }}>
-                            <label style={radioContainerStyle(format === 'yaml')}>
+                            <label style={radioContainerStyle(source === 'paste')}>
                                 <input
                                     type="radio"
-                                    name="format"
-                                    value="yaml"
-                                    checked={format === 'yaml'}
-                                    onChange={() => setFormat('yaml')}
+                                    name="source"
+                                    value="paste"
+                                    checked={source === 'paste'}
+                                    onChange={() => { setSource('paste'); setError(null) }}
                                     style={{ display: 'none' }}
                                 />
-                                YAML
+                                Paste Content
                             </label>
-                            <label style={radioContainerStyle(format === 'json')}>
+                            <label style={radioContainerStyle(source === 'url')}>
                                 <input
                                     type="radio"
-                                    name="format"
-                                    value="json"
-                                    checked={format === 'json'}
-                                    onChange={() => setFormat('json')}
+                                    name="source"
+                                    value="url"
+                                    checked={source === 'url'}
+                                    onChange={() => { setSource('url'); setError(null) }}
                                     style={{ display: 'none' }}
                                 />
-                                JSON
+                                Import URL
                             </label>
                         </div>
                     </div>
 
-                    <div>
-                        <label style={labelStyle}>Spec Content</label>
-                        <textarea
-                            placeholder="Paste your OpenAPI spec here..."
-                            rows={8}
-                            value={content}
-                            onChange={(e) => setContent(e.target.value)}
-                            style={{
-                                ...inputStyle,
-                                resize: 'vertical',
-                                minHeight: '120px',
-                            }}
-                        />
-                    </div>
+                    {source === 'paste' && (
+                        <>
+                            <div>
+                                <label style={labelStyle}>Format</label>
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                    <label style={radioContainerStyle(format === 'yaml')}>
+                                        <input
+                                            type="radio"
+                                            name="format"
+                                            value="yaml"
+                                            checked={format === 'yaml'}
+                                            onChange={() => setFormat('yaml')}
+                                            style={{ display: 'none' }}
+                                        />
+                                        YAML
+                                    </label>
+                                    <label style={radioContainerStyle(format === 'json')}>
+                                        <input
+                                            type="radio"
+                                            name="format"
+                                            value="json"
+                                            checked={format === 'json'}
+                                            onChange={() => setFormat('json')}
+                                            style={{ display: 'none' }}
+                                        />
+                                        JSON
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label style={labelStyle}>Spec Content</label>
+                                <textarea
+                                    placeholder="Paste your OpenAPI spec here..."
+                                    rows={8}
+                                    value={content}
+                                    onChange={(e) => setContent(e.target.value)}
+                                    style={{
+                                        ...inputStyle,
+                                        resize: 'vertical',
+                                        minHeight: '120px',
+                                    }}
+                                />
+                            </div>
+                        </>
+                    )}
+
+                    {source === 'url' && (
+                        <div>
+                            <label style={labelStyle}>Spec URL</label>
+                            <input
+                                type="url"
+                                placeholder="https://petstore.swagger.io/v2/swagger.json"
+                                value={specUrl}
+                                onChange={(e) => setSpecUrl(e.target.value)}
+                                style={inputStyle}
+                            />
+                            <p style={{
+                                fontSize: '12px',
+                                color: 'var(--color-text-subtle)',
+                                marginTop: '6px',
+                            }}>
+                                URL to a .yaml or .json OpenAPI spec. Format is auto-detected.
+                            </p>
+                        </div>
+                    )}
                 </div>
 
                 <div style={{
@@ -171,7 +237,7 @@ export function UploadSpecModal({ open, onClose }: Props) {
                     </button>
                     <button
                         onClick={() => mutation.mutate()}
-                        disabled={mutation.isPending || !name.trim() || !content.trim()}
+                        disabled={mutation.isPending || !canSubmit}
                         style={{
                             height: '36px',
                             padding: '0 16px',
@@ -180,12 +246,14 @@ export function UploadSpecModal({ open, onClose }: Props) {
                             border: 'none',
                             borderRadius: '6px',
                             fontWeight: 500,
-                            cursor: mutation.isPending || !name.trim() || !content.trim() ? 'not-allowed' : 'pointer',
-                            opacity: mutation.isPending || !name.trim() || !content.trim() ? 0.5 : 1,
+                            cursor: mutation.isPending || !canSubmit ? 'not-allowed' : 'pointer',
+                            opacity: mutation.isPending || !canSubmit ? 0.5 : 1,
                             transition: 'opacity 120ms ease',
                         }}
                     >
-                        {mutation.isPending ? 'Uploading...' : 'Upload Spec'}
+                        {mutation.isPending
+                            ? (source === 'url' ? 'Importing...' : 'Uploading...')
+                            : (source === 'url' ? 'Import Spec' : 'Upload Spec')}
                     </button>
                 </div>
             </div>

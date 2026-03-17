@@ -30,7 +30,7 @@ certificatesResolvers:
   # HTTP challenge — named subdomains
   letsencrypt:
     acme:
-      email: trillionclues@gmail.com
+      email: admin@mockline.xyz
       storage: /letsencrypt/acme.json
       httpChallenge:
         entryPoint: web
@@ -38,7 +38,7 @@ certificatesResolvers:
   # DNS challenge via Cloudflare — required for *.mockline.xyz wildcard
   letsencrypt-wildcard:
     acme:
-      email: trillionclues@gmail.com
+      email: admin@mockline.xyz
       storage: /letsencrypt/acme-wildcard.json
       dnsChallenge:
         provider: cloudflare

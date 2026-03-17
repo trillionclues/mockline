@@ -68,7 +68,7 @@ export const Footer = () => {
                                 </svg>
                             </Link>
                             <Link
-                                href="https://www.npmjs.com/package/@trillionclues/contour"
+                                href="https://contour.trillionclues.dev"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="footer-npm-link"
@@ -82,7 +82,23 @@ export const Footer = () => {
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M0 7.334v8h6.666v1.333H12V15.334h12v-8H0zm6.666 6.666H5.333V8.667h-1.333v5.333H1.333v-5.333h4v6.667zm6.667 0h-1.333v1.333H9.333V8.667h4v5.333zm8-1.333h-1.333v1.333h-1.333v-1.333h-1.334v1.333H14.667V8.667h8v5.333zM12 11.334h-1.333v2.667H12v-2.667zM21.333 10h-1.333v4h1.333V10zm-2.666 0h-1.334v4h1.334V10z" />
                                 </svg>
+                            </Link>
 
+                            <Link
+                                href="https://twitter.com/getmockline"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="footer-twitter-link"
+                                style={{
+                                    display: 'inline-block',
+                                    marginTop: '16px',
+                                    color: 'var(--color-text-muted)',
+                                    transition: 'color 120ms ease',
+                                }}
+                            >
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                                </svg>
 
                             </Link>
                         </div>

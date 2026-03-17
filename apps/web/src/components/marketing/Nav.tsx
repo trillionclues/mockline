@@ -54,8 +54,9 @@ export const Nav = () => {
                     gap: '36px',
                 }}>
                     <NavLink href="/docs">Docs</NavLink>
-                    <NavLink href="#pricing">Pricing</NavLink>
+                    <NavLink href="/pricing">Pricing</NavLink>
                     <NavLink href="/changelog">Changelog</NavLink>
+                    <NavLink href="/roadmap">Roadmap</NavLink>
                 </div>
 
                 <div style={{

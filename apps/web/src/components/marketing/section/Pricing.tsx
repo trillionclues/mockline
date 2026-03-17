@@ -13,7 +13,7 @@ export function Pricing() {
     const isInView = useInView(sectionRef, { once: true, margin: '-80px' })
 
     return (
-        <section style={{ padding: '96px 0' }} ref={sectionRef} id='pricing'>
+        <section style={{ padding: '96px 0' }} ref={sectionRef}>
             <div style={{
                 maxWidth: '1300px',
                 margin: '0 auto',
