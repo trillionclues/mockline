@@ -34,7 +34,7 @@ export function SettingsView({ user }: { user?: User }) {
                 </section>
 
                 <section className="settings-section settings-card">
-                    <h2 className="section-title">API Access</h2>
+                    <h2 className="section-title">API Access (Coming Soon)</h2>
                     <p style={{ fontSize: '13px', color: 'var(--color-text-muted)', marginBottom: '16px' }}>
                         Authenticate direct requests to the Mockline API.
                     </p>
@@ -55,7 +55,7 @@ export function SettingsView({ user }: { user?: User }) {
                         </span>
                         <CopyButton value="coming-soon" />
                     </div>
-                    <p className="form-hint" style={{ marginTop: '8px' }}>API key management coming soon.</p>
+                    {/* <p className="form-hint" style={{ marginTop: '8px' }}>API key management coming soon.</p> */}
                 </section>
             </div>
 

@@ -10,7 +10,12 @@ export default async function middleware(request: NextRequest) {
         pathname.startsWith('/login') ||
         pathname.startsWith('/api/auth') ||
         pathname.startsWith('/docs') ||
-        pathname.startsWith('/changelog')
+        pathname.startsWith('/changelog') ||
+        pathname.startsWith('/roadmap') ||
+        pathname.startsWith('/about') ||
+        pathname.startsWith('/privacy') ||
+        pathname.startsWith('/terms') ||
+        pathname.startsWith('/blog')
 
     // allow static files and Next.js internals
     if (

@@ -31,8 +31,9 @@ export type Endpoint = {
 
 export type CreateSpecInput = {
     name: string
-    content: string
-    format: 'yaml' | 'json'
+    content?: string
+    url?: string
+    format?: 'yaml' | 'json'
 }
 
 export type UploadVersionInput = {
@@ -102,3 +103,13 @@ export type RunContractInput = {
     baseUrl: string
 }
 
+export type ChangelogTag = 'feature' | 'fix' | 'performance' | 'breaking' | 'improvement'
+
+export type ChangelogEntry = {
+    version: string
+    date: string
+    title: string
+    body: string
+    bullets: string[]
+    tags: ChangelogTag[]
+}

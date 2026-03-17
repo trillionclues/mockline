@@ -25,7 +25,7 @@ export const COLUMNS = [
         label: 'Developers',
         links: [
             { label: 'API Reference', href: '/docs/api' },
-            { label: 'CLI Docs', href: 'https://www.npmjs.com/package/@trillionclues/contour' },
+            { label: 'CLI Docs', href: 'https://contour.trillionclues.dev' },
             { label: 'GitHub', href: 'https://github.com/trillionclues/mockline' },
             { label: 'npm', href: 'https://www.npmjs.com/package/@trillionclues/contour' },
         ],

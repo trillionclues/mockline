@@ -10,7 +10,10 @@ export const specsRouter = new Hono<AppEnv>()
 
 const CreateSpecSchema = z.object({
     name: z.string().min(1).max(100),
-    content: z.string().min(1).max(1024 * 1024), // 1MB limit
+    content: z.string().max(1024 * 1024).optional(), // 1MB limit
+    url: z.string().url().optional(),
+}).refine(data => data.content || data.url, {
+    message: 'Either content or url must be provided',
 })
 
 const AddVersionSchema = z.object({
@@ -31,7 +34,7 @@ specsRouter.get('/', async (c) => {
     return c.json({ data: specs, error: null })
 })
 
-// POST /specs — Upload new spec
+// POST /specs — Upload new spec (paste content OR import from URL)
 specsRouter.post('/', async (c) => {
     const userId = c.get('user').id
     const body = await c.req.json()
@@ -44,8 +47,39 @@ specsRouter.post('/', async (c) => {
         )
     }
 
+    let { content } = parsed.data
+    const { name, url } = parsed.data
+
+    // If URL provided, fetch the spec content from it
+    if (url && !content) {
+        try {
+            const res = await fetch(url, {
+                headers: { Accept: 'application/json, application/x-yaml, text/yaml, text/plain' },
+                signal: AbortSignal.timeout(15000),
+            })
+            if (!res.ok) {
+                return c.json(
+                    { data: null, error: { code: 'URL_FETCH_FAILED', message: `Failed to fetch URL: HTTP ${res.status}` } },
+                    400,
+                )
+            }
+            content = await res.text()
+            if (!content.trim()) {
+                return c.json(
+                    { data: null, error: { code: 'URL_EMPTY', message: 'URL returned empty content' } },
+                    400,
+                )
+            }
+        } catch (error) {
+            return c.json(
+                { data: null, error: { code: 'URL_FETCH_FAILED', message: `Could not fetch URL: ${(error as Error).message}` } },
+                400,
+            )
+        }
+    }
+
     try {
-        const result = await createSpec({ ...parsed.data, userId })
+        const result = await createSpec({ name, content: content!, userId })
         return c.json({ data: result, error: null }, 201)
     } catch (error) {
         return c.json(
