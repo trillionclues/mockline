@@ -6,6 +6,7 @@ export default async function middleware(request: NextRequest) {
 
     const isPublic =
         pathname === '/' ||
+        pathname === '/waitlist' ||
         pathname.startsWith('/api/waitlist') ||
         pathname === '/pricing' ||
         pathname.startsWith('/login') ||

@@ -26,16 +26,16 @@ export async function POST(request: NextRequest) {
     const { email, name } = parsed.data
 
     // Check if already registered
-    const existing = await db.waitlistEntry.findUnique({
-      where: { email },
-    })
+    // const existing = await db.waitlistEntry.findUnique({
+    //   where: { email },
+    // })
 
-    if (existing) {
-      return NextResponse.json(
-        { error: "You're already on the waitlist." },
-        { status: 409 }
-      )
-    }
+    // if (existing) {
+    //   return NextResponse.json(
+    //     { error: "You're already on the waitlist." },
+    //     { status: 409 }
+    //   )
+    // }
 
     // Store in database
     await db.waitlistEntry.create({
