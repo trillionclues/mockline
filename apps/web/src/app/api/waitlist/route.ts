@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { db } from '@mockline/db'
+// import { db } from '@mockline/db'
 import { Resend } from 'resend'
 import { z } from 'zod'
 
@@ -38,13 +38,13 @@ export async function POST(request: NextRequest) {
     // }
 
     // Store in database
-    await db.waitlistEntry.create({
-      data: {
-        email,
-        name: name ?? null,
-        source: 'waitlist-page',
-      },
-    })
+    // await db.waitlistEntry.create({
+    //   data: {
+    //     email,
+    //     name: name ?? null,
+    //     source: 'waitlist-page',
+    //   },
+    // })
 
     // save to resend audience for now
     const audienceResult = await resend.contacts.create({
