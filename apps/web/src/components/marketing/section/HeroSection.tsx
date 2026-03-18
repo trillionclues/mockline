@@ -117,7 +117,8 @@ export const HeroSection = () => {
                             flexWrap: 'wrap',
                         }}>
                             <Link
-                                href="/login?intent=register"
+                                // href="/login?intent=register"
+                                href="/waitlist"
                                 className="nav-cta"
                                 style={{
                                     display: 'inline-flex',
@@ -134,7 +135,8 @@ export const HeroSection = () => {
                                     transition: 'opacity 120ms ease',
                                 }}
                             >
-                                Get started free
+                                {/* Get started free */}
+                                Join waitlist
                             </Link>
                             <Link
                                 href="https://github.com/trillionclues/mockline"
@@ -217,6 +219,23 @@ export const HeroSection = () => {
                                     Dashboard preview
                                 </span>
                             </div>
+                            {/* <div style={{
+                                position: 'relative',
+                                width: '100%',
+                                aspectRatio: '16/9',
+                                background: 'var(--color-surface-2)',
+                            }}>
+                                <Image
+                                    src="/images/dash-prev2.png"
+                                    alt="Mockline Dashboard API Explorer Preview"
+                                    fill
+                                    priority
+                                    style={{
+                                        objectFit: 'cover',
+                                        objectPosition: 'top',
+                                    }}
+                                />
+                            </div> */}
                         </div>
                         <div style={{
                             height: '140px',

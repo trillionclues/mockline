@@ -65,7 +65,7 @@ export const Nav = () => {
                     gap: '12px',
                 }}>
                     <ThemeToggle />
-                    <Link
+                    {/* <Link
                         href="/login"
                         className="nav-signin-link nav-signin"
                         style={{
@@ -76,9 +76,10 @@ export const Nav = () => {
                         }}
                     >
                         Sign in
-                    </Link>
+                    </Link> */}
                     <Link
-                        href="/login?intent=register"
+                        // href="/login?intent=register"
+                        href="/waitlist"
                         className="nav-cta"
                         style={{
                             display: 'inline-flex',
@@ -95,7 +96,8 @@ export const Nav = () => {
                             transition: 'opacity 120ms ease',
                         }}
                     >
-                        Get started
+                        {/* Get started */}
+                        Join waitlist
                     </Link>
                 </div>
             </div>

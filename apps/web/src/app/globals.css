@@ -741,7 +741,7 @@ h4 {
 
 .overview-count {
     font-weight: 600;
-    color: var(--color-primary);
+    color: var(--color-logo-line);
 }
 
 .overview-label {
@@ -1439,4 +1439,13 @@ h4 {
 
 .docs-item:hover {
     background: var(--color-surface);
+}
+
+/* ── Waitlist page ── */
+.waitlist-footer-link:hover {
+    color: var(--color-text-muted) !important;
+}
+
+.waitlist-back-btn:hover {
+    border-color: var(--color-text-subtle) !important;
 }
