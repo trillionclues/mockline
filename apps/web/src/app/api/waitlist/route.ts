@@ -46,6 +46,26 @@ export async function POST(request: NextRequest) {
       },
     })
 
+    // save to resend audience for now
+    const audienceResult = await resend.contacts.create({
+      email,
+      firstName: name?.split(' ')[0] ?? '',
+      lastName: name?.split(' ').slice(1).join(' ') ?? '',
+      unsubscribed: false,
+      audienceId: process.env.RESEND_AUDIENCE_ID!,
+    })
+
+    if (audienceResult.error) {
+      // Error code 'validation_error' with duplicate email
+      const isDuplicate = audienceResult.error.message
+        ?.toLowerCase()
+        .includes('already exists')
+      return NextResponse.json(
+        { error: isDuplicate ? "You're already on the waitlist." : audienceResult.error.message },
+        { status: isDuplicate ? 409 : 500 }
+      )
+    }
+
     // Send confirmation to subscriber
     await resend.emails.send({
       from: `Mockline <${RESEND_FROM_EMAIL}>`,
