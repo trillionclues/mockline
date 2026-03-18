@@ -136,6 +136,21 @@ model ContractTestRun {
 }
 
 // ============================================
+// Resend Models
+// ============================================
+
+model WaitlistEntry {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  source    String?  // e.g. "landing-page", "waitlist-page"
+  notified  Boolean  @default(false) // flip to true when launch email sent
+
+  @@map("waitlist_entries")
+}
+
+// ============================================
 // BetterAuth Models
 // ============================================
 
