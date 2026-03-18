@@ -42,6 +42,7 @@ export function WaitlistView() {
     }
 
     return (
+
         <div style={{
             minHeight: '100vh',
             background: 'var(--color-bg)',
@@ -51,6 +52,7 @@ export function WaitlistView() {
             justifyContent: 'center',
             padding: '48px 24px',
             position: 'relative',
+            overflowX: 'hidden',
         }}>
 
             <div style={{
@@ -58,7 +60,8 @@ export function WaitlistView() {
                 top: 0,
                 left: '50%',
                 transform: 'translateX(-50%)',
-                width: '600px',
+                width: '100%',
+                maxWidth: '600px',
                 height: '400px',
                 background: 'radial-gradient(ellipse at center top, rgba(242,227,187,0.06), transparent 70%)',
                 pointerEvents: 'none',
@@ -145,7 +148,7 @@ export function WaitlistView() {
                                     border: '1px solid var(--color-border)',
                                     background: 'transparent',
                                     color: 'var(--color-text)',
-                                    fontSize: '14px',
+                                    fontSize: '16px',
                                     outline: 'none',
                                 }}
                                 onFocus={e => (e.target.style.borderColor = 'var(--color-primary)')}
@@ -174,7 +177,7 @@ export function WaitlistView() {
                                             }`,
                                         background: 'transparent',
                                         color: 'var(--color-text)',
-                                        fontSize: '14px',
+                                        fontSize: '16px',
                                         outline: 'none',
                                     }}
                                     onFocus={e => (e.target.style.borderColor = 'var(--color-primary)')}
