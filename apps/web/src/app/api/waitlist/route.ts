@@ -3,15 +3,15 @@ import { db } from '@mockline/db'
 import { Resend } from 'resend'
 import { z } from 'zod'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-const RESEND_FROM_EMAIL = process.env.RESEND_FROM_EMAIL
-
 const WaitlistSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
   name: z.string().max(100).optional(),
 })
 
 export async function POST(request: NextRequest) {
+  const resend = new Resend(process.env.RESEND_API_KEY)
+  const RESEND_FROM_EMAIL = process.env.RESEND_FROM_EMAIL
+
   try {
     const body = await request.json()
     const parsed = WaitlistSchema.safeParse(body)
