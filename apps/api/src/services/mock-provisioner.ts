@@ -61,7 +61,7 @@ export async function provisionMockServer(params: {
             specContent: specVersion.content,
             specFormat: specVersion.format,
             imageTag,
-            contourVersion: process.env.CONTOUR_VERSION ?? 'latest',
+            contourVersion: process.env.CONTOUR_VERSION ?? '1.2.0',
         })
 
         const { containerId, port } = await startMockContainer({

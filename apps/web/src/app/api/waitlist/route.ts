@@ -137,17 +137,19 @@ function confirmationEmailHtml(name?: string): string {
             </p>
 
             <p style="margin:0 0 20px;font-size:14px;color:#e4e4e7;line-height:1.6;">
-              ${greeting} 
-              <br>
-              Thanks for joining — we'll reach out as soon as early access opens.
+              ${greeting}
             </p>
-
-            <div style="height:1px;background:#1a1a2e;margin-bottom:20px;"></div>
 
             <p style="margin:0 0 24px;font-size:13px;color:#e4e4e7;line-height:1.7;">
               Mockline lets you spin up a live mock API from your OpenAPI spec in seconds —
               no waiting on the backend, no manually maintaining fake data that drifts
               from the real thing.
+            </p>
+
+            <div style="height:1px;background:#1a1a2e;margin-bottom:20px;"></div>
+
+            <p style="font-size:14px;color:#e4e4e7;line-height:1.6;">
+              Thanks for joining — we'll reach out as soon as early access opens.
             </p>
 
             <table cellpadding="0" cellspacing="0" style="margin-bottom:20px;">

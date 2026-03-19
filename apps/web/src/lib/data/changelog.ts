@@ -10,6 +10,19 @@ export const TAG_STYLES: Record<ChangelogTag, { background: string; color: strin
 
 export const ENTRIES: ChangelogEntry[] = [
     {
+        version: 'v0.3.2',
+        date: 'March 19, 2026',
+        title: 'Upstream Patch Eliminated',
+        tags: ['improvement', 'performance'],
+        body: 'Updated to Contour CLI v1.2.0 which now binds to 0.0.0.0 by default. Removed the sed patch from Docker image builds — provision time reduced slightly and the build process much cleaner.',
+        bullets: [
+            'Contour CLI now supports --host flag and HOST env variable',
+            'Default host changed to 0.0.0.0 — correct for Docker environments',
+            'Removed runtime source patching from mock server image builds',
+            'CONTOUR_VERSION bumped to 1.2.0',
+        ],
+    },
+    {
         version: 'v0.3.1',
         date: 'March 18, 2026',
         title: 'Remote URL Spec Import',

@@ -31,7 +31,7 @@ export async function ensureContourBaseImage(contourVersion: string): Promise<st
         // Make the binary executable by all users
         'RUN chmod -R 755 /usr/local/share/pnpm',
         // Patch contour to bind to 0.0.0.0
-        `RUN find /usr/local/share/pnpm -path "*/@trillionclues/contour/dist/*" -name "*.js" -exec sed -i "s/'127.0.0.1'/'0.0.0.0'/g" {} +`,
+        // `RUN find /usr/local/share/pnpm -path "*/@trillionclues/contour/dist/*" -name "*.js" -exec sed -i "s/'127.0.0.1'/'0.0.0.0'/g" {} +`,
     ].join('\n')
 
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'mockline-base-'))
