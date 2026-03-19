@@ -596,7 +596,7 @@ NEXT_PUBLIC_AUTH_URL=https://api.mockline.xyz
 # ── Docker ────────────
 DOCKER_HOST=unix:///var/run/docker.sock
 MOCK_BASE_DOMAIN=mockline.xyz
-CONTOUR_VERSION=1.1.1
+CONTOUR_VERSION=1.2.0
 
 # ── Traefik ────────────
 CF_DNS_API_TOKEN= # from Cloudflare API token step

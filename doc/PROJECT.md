@@ -332,7 +332,7 @@ DOCKER_HOST="unix:///var/run/docker.sock"   # local
 MOCK_BASE_DOMAIN="localhost"                 # prod: mockline.xyz
 
 # Contour version to bake into containers
-CONTOUR_VERSION="latest"                     # pin to e.g. "0.4.2" in prod
+CONTOUR_VERSION="1.2.0"                     # pin to e.g. "0.4.2" in prod
 
 # Internal
 INTERNAL_API_SECRET="generate-random-secret" # used by web→api server calls
