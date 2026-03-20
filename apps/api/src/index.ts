@@ -4,6 +4,7 @@ import { logger } from 'hono/logger'
 import { serve } from '@hono/node-server'
 import { auth } from './lib/auth'
 import { requireAuth } from './middleware/auth'
+import { rateLimit } from './middleware/rate-limit'
 import { specsRouter } from './routes/specs'
 import { mocksRouter } from './routes/mocks'
 import { contractsRouter } from './routes/contracts'
@@ -29,10 +30,10 @@ app.get('/health', (c) => c.json({ status: 'ok', timestamp: new Date().toISOStri
 // (no auth middleware — handles login/callback itself)
 app.on(['POST', 'GET'], '/api/auth/**', (c) => auth.handler(c.req.raw))
 
-// Protected routes
-app.use('/specs/*', requireAuth)
-app.use('/mocks/*', requireAuth)
-app.use('/contracts/*', requireAuth)
+// Protected routes — auth + general rate limit
+app.use('/specs/*', requireAuth, rateLimit('GENERAL'))
+app.use('/mocks/*', requireAuth, rateLimit('GENERAL'))
+app.use('/contracts/*', requireAuth, rateLimit('GENERAL'))
 
 app.route('/specs', specsRouter)
 app.route('/mocks', mocksRouter)

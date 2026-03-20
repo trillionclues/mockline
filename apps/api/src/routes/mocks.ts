@@ -4,6 +4,7 @@ import { db } from '@mockline/db'
 import { stopContainer, removeContainer, getContainerStatus } from '@mockline/docker-manager'
 import { provisionMockServer } from '../services/mock-provisioner'
 import type { AppEnv } from '../types/env'
+import { rateLimit } from '../middleware/rate-limit'
 
 export const mocksRouter = new Hono<AppEnv>()
 
@@ -32,7 +33,7 @@ mocksRouter.get('/', async (c) => {
 })
 
 // POST /mocks — Provision new mock server
-mocksRouter.post('/', async (c) => {
+mocksRouter.post('/', rateLimit('PROVISION'), async (c) => {
     const userId = c.get('user').id
     const user = c.get('user')
     const body = await c.req.json()
