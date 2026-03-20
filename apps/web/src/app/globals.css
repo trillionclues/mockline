@@ -479,7 +479,7 @@ h4 {
 .section-title {
     font-size: 13px;
     font-weight: 500;
-    color: var(--color-text-muted);
+    color: var(--color-text);
     margin-bottom: 12px;
 }
 
@@ -917,19 +917,19 @@ h4 {
 
 .settings-email {
     font-size: 12px;
-    color: var(--color-text-muted);
+    color: var(--color-text);
     margin-top: 2px;
 }
 
 .settings-oauth-note {
     font-size: 11px;
-    color: var(--color-text-subtle);
+    color: var(--color-text);
     margin-top: 4px;
 }
 
 .settings-danger-desc {
     font-size: 13px;
-    color: var(--color-text-muted);
+    color: var(--color-text);
     margin-top: 8px;
     margin-bottom: 16px;
     max-width: 480px;

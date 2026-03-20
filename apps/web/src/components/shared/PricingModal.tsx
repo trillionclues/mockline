@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { PLANS } from '@/lib/data/data'
 import { X } from 'lucide-react'
 import { PricingCard } from '../marketing/cards/PricingCard'
+import { billingApi } from '@/lib/api-client'
 
 type Props = {
     open: boolean
@@ -14,9 +15,21 @@ export function PricingModal({ open, onClose }: Props) {
 
     if (!open) return null
 
-    const handleCtaClick = (planName: string) => {
-        console.log('Upgrade to:', planName)
-        onClose();
+    const handleCtaClick = async (planName: string) => {
+        if (planName === 'Free' || planName === 'FREE') {
+            onClose()
+            return
+        }
+
+        try {
+            const data = await billingApi.checkout(planName.toLowerCase(), yearly)
+            if (data?.checkoutUrl) {
+                window.location.href = data.checkoutUrl
+            }
+        } catch (err: any) {
+            alert('Error preparing checkout: ' + err.message)
+            console.error('Checkout failed', err)
+        }
     }
 
     return (

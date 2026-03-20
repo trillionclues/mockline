@@ -11,8 +11,14 @@ import { contractsRouter } from './routes/contracts'
 import { userRouter } from './routes/user'
 import { startAutoStopScheduler } from './services/auto-stop'
 import { ensureContourBaseImage } from '@mockline/docker-manager/src/base-image'
+import { billingRouter } from './routes/billing'
+import { webhookLemonSqueezyRouter } from './routes/webhook-lemonsqueezy'
+import { initLemonSqueezy } from './lib/lemonsqueezy'
 
 const app = new Hono()
+
+// Initialize billing integration
+initLemonSqueezy()
 
 // Global middleware
 app.use('*', logger())
@@ -30,6 +36,9 @@ app.get('/health', (c) => c.json({ status: 'ok', timestamp: new Date().toISOStri
 // (no auth middleware — handles login/callback itself)
 app.on(['POST', 'GET'], '/api/auth/**', (c) => auth.handler(c.req.raw))
 
+// Webhook route — public, verified by HMAC (must be before auth middleware)
+app.route('/webhooks/lemonsqueezy', webhookLemonSqueezyRouter)
+
 // Protected routes — auth + general rate limit
 app.use('/specs/*', requireAuth, rateLimit('GENERAL'))
 app.use('/mocks/*', requireAuth, rateLimit('GENERAL'))
@@ -42,6 +51,10 @@ app.route('/contracts', contractsRouter)
 // User account routes
 app.use('/user/*', requireAuth)
 app.route('/user', userRouter)
+
+// Billing routes — protected
+app.use('/billing/*', requireAuth)
+app.route('/billing', billingRouter)
 
 const port = parseInt(process.env.PORT ?? '4000', 10)
 

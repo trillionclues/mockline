@@ -1,4 +1,4 @@
-import { ApiError, type ApiResponse, type ApiPaginatedResponse } from '@mockline/types'
+import { ApiError, type ApiResponse } from '@mockline/types'
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000'
 
@@ -18,6 +18,11 @@ export async function request<T>(
     const json = await res.json() as ApiResponse<T>
 
     if (!res.ok || json.error) {
+        // expired/invalid session
+        if (res.status === 401 && typeof window !== 'undefined') {
+            window.location.href = '/login'
+            return undefined as never
+        }
         throw new ApiError(res.status, json.error?.message ?? `HTTP ${res.status}`, json.error?.code ?? 'UNKNOWN')
     }
 
@@ -60,5 +65,11 @@ export const contractsApi = {
     run: (body: RunContractInput, opts?: RequestInit) => request<ContractTestRun>('/contracts', { ...opts, method: 'POST', body: JSON.stringify(body) }),
     get: (id: string, opts?: RequestInit) => request<ContractTestRun>(`/contracts/${id}`, opts),
     list: (specId?: string, opts?: RequestInit) => request<ContractTestRun[]>(`/contracts${specId ? `?specId=${specId}` : ''}`, opts),
+}
+
+// ── Billing ──
+export const billingApi = {
+    checkout: (variantId: string, yearly: boolean, opts?: RequestInit) => request<{ checkoutUrl: string }>('/billing/checkout', { ...opts, method: 'POST', body: JSON.stringify({ variantId, yearly }) }),
+    cancel: (opts?: RequestInit) => request<{ cancelled: boolean }>('/billing/cancel', { ...opts, method: 'POST' }),
 }
 
