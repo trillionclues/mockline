@@ -146,6 +146,12 @@ export const CONTAINER_LIMITS = {
     TEAM: 20,
 } as const satisfies Record<Tier, number>
 
+export const SPEC_LIMITS = {
+    FREE: 1,
+    PRO: Infinity,
+    TEAM: Infinity,
+} as const satisfies Record<Tier, number>
+
 export const AUTO_STOP_MINUTES = {
     FREE: 60, // 1 hour
     PRO: 24 * 60, // 24 hours

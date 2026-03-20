@@ -97,7 +97,7 @@ export const PLANS = [
             { text: 'Audit logs', included: true },
         ],
         cta: 'Contact us',
-        ctaHref: 'mailto:team@mockline.xyz',
+        ctaHref: 'mailto:admin@mockline.xyz',
     },
 ]
 
