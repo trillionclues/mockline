@@ -10,6 +10,17 @@ export const TAG_STYLES: Record<ChangelogTag, { background: string; color: strin
 
 export const ENTRIES: ChangelogEntry[] = [
     {
+        version: 'v0.5.1',
+        date: 'March 21, 2026',
+        title: 'Google OAuth Authentication',
+        tags: ['feature'],
+        body: 'Added Google OAuth as an alternative sign-in method, alongside the existing GitHub OAuth. Existing users can link their accounts seamlessly.',
+        bullets: [
+            'Sign in using your Google account',
+            'Settings page now correctly reflects your authentication method(s)'
+        ],
+    },
+    {
         version: 'v0.5.0',
         date: 'March 21, 2026',
         title: 'Subscription Billing & Payment Integration',

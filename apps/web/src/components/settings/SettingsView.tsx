@@ -28,7 +28,7 @@ export function SettingsView({ user }: { user?: User }) {
                         <div>
                             <div className="settings-name">{user?.name ?? 'User'}</div>
                             <div className="settings-email">{user?.email}</div>
-                            <div className="settings-oauth-note">Managed via GitHub OAuth</div>
+                            <div className="settings-oauth-note">Managed via GitHub/Google OAuth</div>
                         </div>
                     </div>
                 </section>

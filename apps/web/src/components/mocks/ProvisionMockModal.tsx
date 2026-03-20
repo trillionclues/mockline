@@ -170,7 +170,7 @@ export function ProvisionMockModal({ open, onClose, specs, prefilledSpecId, pref
                                 style={{
                                     marginTop: '10px',
                                     fontSize: '12px',
-                                    color: 'var(--color-primary)',
+                                    color: 'var(--color-logo-line)',
                                     background: 'none',
                                     border: 'none',
                                     cursor: 'pointer',

@@ -48,12 +48,13 @@ export const PricingCard = ({
         border: 'none',
         width: '100%',
         ...(plan.highlighted
-            ? { background: 'var(--color-primary)', color: 'var(--color-cta-text)' }
+            ? { background: 'var(--color-logo-line)', color: 'var(--color-bg)' }
             : { background: 'transparent', color: 'var(--color-text)', border: '1px solid var(--color-border)' }),
     }
 
+    // if team, it should be contact us
     const ctaLabel = onCtaClick
-        ? plan.monthlyPrice === 0 ? 'Current plan' : `Upgrade to ${plan.name}`
+        ? plan.monthlyPrice === 0 ? 'Current plan' : plan.name === 'Team' ? 'Contact us' : `Upgrade to ${plan.name}`
         : plan.cta
 
     return (
@@ -70,7 +71,7 @@ export const PricingCard = ({
                 position: 'relative',
                 background: plan.highlighted ? 'var(--color-surface-2)' : 'var(--color-surface)',
                 border: plan.highlighted
-                    ? '1px solid var(--color-primary)'
+                    ? '1px solid var(--color-logo-line)'
                     : '1px solid var(--color-border)',
                 borderRadius: '8px',
                 padding: '32px 28px',
@@ -84,8 +85,8 @@ export const PricingCard = ({
                     top: '-1px',
                     left: '50%',
                     transform: 'translateX(-50%)',
-                    background: 'var(--color-primary)',
-                    color: 'var(--color-cta-text)',
+                    background: 'var(--color-logo-line)',
+                    color: 'var(--color-bg)',
                     fontWeight: 600,
                     fontSize: '10px',
                     letterSpacing: '0.06em',
@@ -101,7 +102,7 @@ export const PricingCard = ({
                 <div style={{
                     fontWeight: 500,
                     fontSize: '13px',
-                    color: plan.highlighted ? 'var(--color-status-building)' : 'var(--color-text-muted)',
+                    color: plan.highlighted ? 'var(--color-logo-line)' : 'var(--color-text)',
                     marginBottom: '6px',
                 }}>
                     {plan.name}
