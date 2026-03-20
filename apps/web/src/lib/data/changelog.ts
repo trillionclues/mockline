@@ -10,6 +10,21 @@ export const TAG_STYLES: Record<ChangelogTag, { background: string; color: strin
 
 export const ENTRIES: ChangelogEntry[] = [
     {
+        version: 'v0.5.0',
+        date: 'March 21, 2026',
+        title: 'Subscription Billing & Payment Integration',
+        tags: ['feature'],
+        body: 'Integrated Lemon Squeezy for subscription management with full webhook lifecycle handling.',
+        bullets: [
+            'One-click checkout for PRO and TEAM plans with monthly/yearly billing cycles.',
+            'Full webhook lifecycle: subscription created, updated, cancelled, expired, payment success/failure/recovered.',
+            'Subscription cancellation keeps access active until billing period ends.',
+            'Payment failure detection marks account as past_due with dashboard warning banner.',
+            'Subscription management section added to Settings page with cancel option.',
+            'Automated payment failure notification emails via Resend.',
+        ],
+    },
+    {
         version: 'v0.4.0',
         date: 'March 20, 2026',
         title: 'Tier Limits & Feature Paywalls',

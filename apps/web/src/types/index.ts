@@ -1,4 +1,12 @@
-export type User = { name?: string | null; email?: string | null; image?: string | null, tier?: 'FREE' | 'PRO' | 'TEAM' | null }
+export type User = { 
+    name?: string | null; 
+    email?: string | null; 
+    image?: string | null, 
+    tier?: 'FREE' | 'PRO' | 'TEAM' | null;
+    subscriptionStatus?: string | null;
+    subscriptionRenewsAt?: Date | string | null;
+    subscriptionEndsAt?: Date | string | null;
+}
 
 export type Spec = {
     id: string

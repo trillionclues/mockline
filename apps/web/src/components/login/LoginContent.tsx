@@ -53,7 +53,7 @@ export const LoginContent = () => {
             }}>
                 {isRegister
                     ? 'Sign up to start mocking APIs in seconds.'
-                    : 'Sign in to our Mockline dashboard.'}
+                    : 'Sign in to your Mockline dashboard.'}
             </p>
 
             <button

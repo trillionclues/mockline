@@ -13,6 +13,7 @@
     },
     "dependencies": {
         "@hono/node-server": "^1.13.0",
+        "@lemonsqueezy/lemonsqueezy.js": "^4.0.0",
         "@mockline/db": "workspace:*",
         "@mockline/docker-manager": "workspace:*",
         "@mockline/spec-parser": "workspace:*",
@@ -20,6 +21,7 @@
         "better-auth": "^1.2.0",
         "hono": "^4.6.0",
         "ioredis": "^5.4.0",
+        "resend": "^6.9.4",
         "yaml": "^2.6.0",
         "zod": "^3.23.0"
     },

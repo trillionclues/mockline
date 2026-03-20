@@ -48,6 +48,13 @@ model User {
   avatarUrl String?
   tier      Tier     @default(FREE)
 
+  // Lemon Squeezy billing
+  lemonSqueezyCustomerId     String?
+  lemonSqueezySubscriptionId String?
+  subscriptionStatus         String?   // active | cancelled | expired | past_due
+  subscriptionRenewsAt       DateTime?
+  subscriptionEndsAt         DateTime?
+
   specs       Spec[]
   mockServers MockServer[]
   sessions    Session[]

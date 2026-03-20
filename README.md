@@ -13,12 +13,16 @@ Automated Mock API PaaS
   <a href="doc/PROJECT.md">Project Doc</a>
 </p>
 
-Mockline is an automated PaaS for engineering teams to deploy and manage isolated, Docker-powered mock API servers from OpenAPI specs.
+Mockline is an automated PaaS for engineering teams to deploy and manage isolated, Docker-powered mock API servers from OpenAPI specs. Each mock server runs [`@trillionclues/contour`](https://www.npmjs.com/package/@trillionclues/contour) inside an isolated Docker container with resource limits, automatic health checks, and auto-stop after idle timeout.
 
-Each mock server runs [`@trillionclues/contour`](https://www.npmjs.com/package/@trillionclues/contour) inside an isolated Docker container with resource limits, automatic health checks, and auto-stop after idle timeout.
-
-```
-Upload spec.yaml  →  Validate + parse  →  Build Docker image  →  Start container  →  mock-abc123.mockline.xyz
+```mermaid
+graph LR
+    A[Upload OpenAPI Spec] --> B[Mockline]
+    B --> C["Docker Container (with @trillionclues/contour engine)"]
+    C --> D["Live Mock Server URL (mock-abc123.mockline.xyz)"]
+    B --> E[Contract Test Runner]
+    B --> F[Schema Version Diff]
+    D --> G[Share Link with Team]
 ```
 
 ## Features
