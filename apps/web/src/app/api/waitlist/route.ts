@@ -176,7 +176,7 @@ function confirmationEmailHtml(name?: string): string {
               You signed up at
               <a href="https://mockline.xyz" style="color:#52525b;text-decoration:none;">mockline.xyz</a>
               <br>
-              © 2026 Mockline. All rights reserved.
+              © ${new Date().getFullYear()} Mockline. All rights reserved.
             </p>
           </td>
         </tr>
