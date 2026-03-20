@@ -1,6 +1,7 @@
 import { DashboardShell } from '@/components/shell/DashboardShell'
 import { getSession } from '@/lib/auth'
 import { redirect } from 'next/navigation'
+import type { User } from '@/types'
 
 export default async function DashboardLayout({
     children,
@@ -11,7 +12,7 @@ export default async function DashboardLayout({
     if (!session) redirect('/login')
 
     return (
-        <DashboardShell user={session.user}>
+        <DashboardShell user={session.user as User}>
             {children}
         </DashboardShell>
     )

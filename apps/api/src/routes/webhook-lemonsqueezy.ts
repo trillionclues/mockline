@@ -16,7 +16,6 @@ webhookLemonSqueezyRouter.post('/', async (c) => {
         return c.json({ data: null, error: { code: 'MISSING_SIG', message: 'Missing signature' } }, 401)
     }
 
-    // Verify webhook signature
     const secret = process.env.LEMONSQUEEZY_WEBHOOK_SECRET
     if (!secret) {
         return c.json({ data: null, error: { code: 'CONFIG_ERROR', message: 'Webhook secret not configured' } }, 500)
@@ -32,7 +31,6 @@ webhookLemonSqueezyRouter.post('/', async (c) => {
         return c.json({ data: null, error: { code: 'BAD_SIG', message: 'Invalid signature' } }, 401)
     }
 
-    // --- Parse payload ---
     const payload = JSON.parse(rawBody)
     const eventName: string = payload.meta?.event_name
     const userId: string | undefined = payload.meta?.custom_data?.user_id
@@ -43,7 +41,7 @@ webhookLemonSqueezyRouter.post('/', async (c) => {
         return c.json({ data: null, error: { code: 'NO_USER', message: 'No userId in webhook custom data' } }, 400)
     }
 
-    // Verify user exists and fetch email/name for potential notifications
+    // Verify user and fetch email/name for potential notifications
     const dbUser = await db.user.findUnique({ where: { id: userId }, select: { id: true, email: true, name: true } })
     if (!dbUser) {
         return c.json({ data: null, error: { code: 'USER_NOT_FOUND', message: 'User not found' } }, 404)
