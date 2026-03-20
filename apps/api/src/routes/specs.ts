@@ -4,6 +4,7 @@ import { db } from '@mockline/db'
 import { parseEndpoints, detectFormat } from '@mockline/spec-parser'
 import yaml from 'yaml'
 import { createSpec, addSpecVersion } from '../services/mock-provisioner'
+import { SPEC_LIMITS } from '@mockline/types'
 import type { AppEnv } from '../types/env'
 
 export const specsRouter = new Hono<AppEnv>()
@@ -37,6 +38,7 @@ specsRouter.get('/', async (c) => {
 // POST /specs — Upload new spec (paste content OR import from URL)
 specsRouter.post('/', async (c) => {
     const userId = c.get('user').id
+    const userTier = c.get('user').tier
     const body = await c.req.json()
     const parsed = CreateSpecSchema.safeParse(body)
 
@@ -45,6 +47,28 @@ specsRouter.post('/', async (c) => {
             { data: null, error: { code: 'VALIDATION_ERROR', message: parsed.error.message } },
             400,
         )
+    }
+
+    // Enforce spec limit by tier
+    const specLimit = SPEC_LIMITS[userTier ?? 'FREE']
+    if (specLimit !== Infinity) {
+        const existingCount = await db.spec.count({
+            where: { userId, deletedAt: null },
+        })
+        if (existingCount >= specLimit) {
+            return c.json(
+                {
+                    data: null,
+                    error: {
+                        code: 'UPGRADE_REQUIRED',
+                        message: `Spec limit reached. Upgrade to Pro for unlimited specs.`,
+                        // message: `Spec limit reached (${specLimit} for ${userTier} tier). Upgrade to Pro for unlimited specs.`,
+                        requiredTier: 'PRO',
+                    },
+                },
+                403,
+            )
+        }
     }
 
     let { content } = parsed.data
