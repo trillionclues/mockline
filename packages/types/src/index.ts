@@ -158,8 +158,23 @@ export const AUTO_STOP_MINUTES = {
     TEAM: 7 * 24 * 60, // 1 week
 } as const satisfies Record<Tier, number>
 
-export const RATE_LIMITS = {
-    PROVISION: { window: 3600, max: 10 },
-    CONTRACT_TEST: { window: 3600, max: 20 },
-    GENERAL: { window: 60, max: 200 },
-} as const
+export const RATE_LIMITS_BY_TIER = {
+    FREE: {
+        GENERAL:       { window: 60,   max: 60  },
+        PROVISION:     { window: 3600, max: 5   },
+        CONTRACT_TEST: { window: 3600, max: 5   },
+    },
+    PRO: {
+        GENERAL:       { window: 60,   max: 300 },
+        PROVISION:     { window: 3600, max: 20  },
+        CONTRACT_TEST: { window: 3600, max: 50  },
+    },
+    TEAM: {
+        GENERAL:       { window: 60,   max: 600 },
+        PROVISION:     { window: 3600, max: 50  },
+        CONTRACT_TEST: { window: 3600, max: 200 },
+    },
+} as const satisfies Record<Tier, Record<string, { window: number; max: number }>>
+
+// Backwards-compat alias — maps to FREE defaults
+export const RATE_LIMITS = RATE_LIMITS_BY_TIER.FREE

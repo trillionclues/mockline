@@ -4,6 +4,7 @@ import { db, Prisma } from '@mockline/db'
 import { validateSpec } from '@mockline/spec-parser'
 import { runContractTest } from '../services/contract-runner'
 import { requireTier } from '../middleware/tier-guard'
+import { rateLimit } from '../middleware/rate-limit'
 import type { AppEnv } from '../types/env'
 
 export const contractsRouter = new Hono<AppEnv>()
@@ -50,7 +51,7 @@ const RunContractSchema = z.object({
 })
 
 // POST /contracts — Run contract test
-contractsRouter.post('/', async (c) => {
+contractsRouter.post('/', rateLimit('CONTRACT_TEST'), async (c) => {
     const userId = c.get('user').id
     const body = await c.req.json()
     const parsed = RunContractSchema.safeParse(body)
