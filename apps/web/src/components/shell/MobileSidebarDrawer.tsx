@@ -1,8 +1,8 @@
 'use client'
 import { useEffect } from 'react'
 import { Sidebar } from './Sidebar'
+import type { User } from '@/types'
 
-type User = { name?: string | null; email?: string | null; image?: string | null }
 
 type Props = {
     open: boolean

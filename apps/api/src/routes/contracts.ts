@@ -3,11 +3,15 @@ import { z } from 'zod'
 import { db, Prisma } from '@mockline/db'
 import { validateSpec } from '@mockline/spec-parser'
 import { runContractTest } from '../services/contract-runner'
+import { requireTier } from '../middleware/tier-guard'
 import type { AppEnv } from '../types/env'
 
 export const contractsRouter = new Hono<AppEnv>()
 
-// Transform Prisma contractTestRun record into the shape the frontend expects
+// Gate all contract routes to PRO+
+contractsRouter.use('*', requireTier('PRO'))
+
+// Transform Prisma contractTestRun record into shape the frontend expects
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function transformRun(run: any) {
     const summary = (run.summary ?? {}) as Record<string, number>

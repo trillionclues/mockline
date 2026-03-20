@@ -7,6 +7,7 @@ import { MocklineWordmark } from '@/components/brand'
 import { LogOut, Settings } from 'lucide-react'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { useUpgradeModal } from '@/contexts/upgrade-modal'
+import type { User } from '@/types'
 
 const NAV = [
     { href: '/overview', label: 'Overview' },
@@ -20,7 +21,6 @@ const TOOLS = [
     { href: '/explorer', label: 'API Explorer' },
 ]
 
-type User = { name?: string | null; email?: string | null; image?: string | null, tier?: 'FREE' | 'PRO' | 'TEAM' | null }
 type Props = { user?: User; onMobileMenuOpen?: () => void, onNavigate?: () => void }
 
 export function Sidebar({ user, onMobileMenuOpen, onNavigate }: Props) {

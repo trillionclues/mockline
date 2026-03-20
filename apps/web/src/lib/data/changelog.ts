@@ -10,6 +10,19 @@ export const TAG_STYLES: Record<ChangelogTag, { background: string; color: strin
 
 export const ENTRIES: ChangelogEntry[] = [
     {
+        version: 'v0.4.0',
+        date: 'March 20, 2026',
+        title: 'Tier Limits & Feature Paywalls',
+        tags: ['feature', 'improvement'],
+        body: 'Introduced tiered limits for free and pro users, enforcing limits on endpoints and spec uploads.',
+        bullets: [
+            'Pro users get unlimited specs; Free users limit to 1.',
+            'Contract testing and Schema diffing now exclusive to PRO and TEAM tiers.',
+            'Advanced mock options (stateful, delay, error rate) moved to PRO.',
+            'User deletion correctly cascades to delete specs, mocks, and terminates running containers.',
+        ],
+    },
+    {
         version: 'v0.3.2',
         date: 'March 19, 2026',
         title: 'Upstream Patch Eliminated',

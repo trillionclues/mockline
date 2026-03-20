@@ -4,8 +4,7 @@ import { useRouter } from 'next/navigation'
 import { authClient } from '@/lib/auth-client'
 import { ConfirmDialog } from '../shared/ConfirmDialog'
 import { CopyButton } from '../shared/CopyButton'
-
-type User = { name?: string | null; email?: string | null; image?: string | null, tier?: 'FREE' | 'PRO' | 'TEAM' | null }
+import type { User } from '@/types'
 
 export function SettingsView({ user }: { user?: User }) {
     const [deleteOpen, setDeleteOpen] = useState(false)

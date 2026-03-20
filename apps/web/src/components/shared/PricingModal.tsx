@@ -110,7 +110,7 @@ export function PricingModal({ open, onClose }: Props) {
 
                 <div style={{
                     display: 'grid',
-                    gridTemplateColumns: 'repeat(3, 1fr)',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
                     gap: '12px',
                 }}>
                     {PLANS.map((plan, i) => (
