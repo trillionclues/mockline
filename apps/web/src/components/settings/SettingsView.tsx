@@ -80,7 +80,15 @@ export function SettingsView({ user }: { user?: User }) {
                 confirmWord="DELETE"
                 variant="destructive"
                 onConfirm={async () => {
-                    await authClient.deleteUser()
+                    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/me`, {
+                        method: 'DELETE',
+                        credentials: 'include',
+                    })
+                    if (!res.ok) {
+                        const body = await res.json().catch(() => null)
+                        throw new Error(body?.error?.message ?? 'Failed to delete account')
+                    }
+                    await authClient.signOut()
                     router.push('/')
                 }}
             />

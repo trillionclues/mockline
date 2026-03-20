@@ -7,6 +7,7 @@ import { requireAuth } from './middleware/auth'
 import { specsRouter } from './routes/specs'
 import { mocksRouter } from './routes/mocks'
 import { contractsRouter } from './routes/contracts'
+import { userRouter } from './routes/user'
 import { startAutoStopScheduler } from './services/auto-stop'
 import { ensureContourBaseImage } from '@mockline/docker-manager/src/base-image'
 
@@ -36,6 +37,10 @@ app.use('/contracts/*', requireAuth)
 app.route('/specs', specsRouter)
 app.route('/mocks', mocksRouter)
 app.route('/contracts', contractsRouter)
+
+// User account routes
+app.use('/user/*', requireAuth)
+app.route('/user', userRouter)
 
 const port = parseInt(process.env.PORT ?? '4000', 10)
 
