@@ -304,3 +304,32 @@ deploy-web.yml
 VERCEL_PROJECT_ID	From .vercel/project.json after first Vercel deploy	
 
 deploy-web.yml
+
+
+
+
+
+
+
+
+## NOTES ON LOCAL EC2 DEPLOYMENT AND SIMULATION
+On simulating EC2 locally — yes, use Multipass.Vagrant needs VirtualBox or VMware as a backend and is heavy. Multipass is the lightweight answer — it spins up real Ubuntu VMs on your Mac in seconds using the same Ubuntu images EC2 uses.
+
+# Install
+brew install multipass
+
+# Launch an Ubuntu 24.04 VM — same as your EC2 AMI
+multipass launch 24.04 --name mockline-staging --cpus 1 --memory 1G --disk 10G
+
+# Shell into it
+multipass shell mockline-staging
+
+# It's a real Ubuntu VM — run your exact hardening scripts from the deployment doc
+# SSH config, UFW, Fail2ban, Docker install — all work identically to EC2
+
+When you're done:
+multipass stop mockline-staging
+multipass delete mockline-staging
+multipass purge
+
+It's free, uses Apple Hypervisor on Mac so it's fast, and the environment is byte-for-byte the same Ubuntu 24.04 you'll deploy to. The only difference from real EC2 is no Elastic IP and no security groups — you use UFW directly instead.
