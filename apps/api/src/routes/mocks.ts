@@ -45,6 +45,29 @@ mocksRouter.post('/', async (c) => {
         )
     }
 
+    // PRO-only contour options
+    if (parsed.data.contourOptions && (user.tier === 'FREE')) {
+        const opts = parsed.data.contourOptions
+        const usesProFeature =
+            opts.stateful ||
+            opts.delay ||
+            (opts.errorRate !== undefined && opts.errorRate > 0)
+
+        if (usesProFeature) {
+            return c.json(
+                {
+                    data: null,
+                    error: {
+                        code: 'UPGRADE_REQUIRED',
+                        message: 'Stateful mocks, delay simulation, and error rate require PRO tier.',
+                        requiredTier: 'PRO',
+                    },
+                },
+                403,
+            )
+        }
+    }
+
     try {
         const result = await provisionMockServer({
             specVersionId: parsed.data.specVersionId,

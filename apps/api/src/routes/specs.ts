@@ -5,6 +5,7 @@ import { parseEndpoints, detectFormat } from '@mockline/spec-parser'
 import yaml from 'yaml'
 import { createSpec, addSpecVersion } from '../services/mock-provisioner'
 import { SPEC_LIMITS } from '@mockline/types'
+import { requireTier } from '../middleware/tier-guard'
 import type { AppEnv } from '../types/env'
 
 export const specsRouter = new Hono<AppEnv>()
@@ -231,8 +232,8 @@ specsRouter.post('/:id/versions', async (c) => {
     }
 })
 
-// GET /specs/:id/versions/:v1/diff/:v2 — Diff two versions
-specsRouter.get('/:id/versions/:v1/diff/:v2', async (c) => {
+// GET /specs/:id/versions/:v1/diff/:v2 — Diff two versions (PRO+)
+specsRouter.get('/:id/versions/:v1/diff/:v2', requireTier('PRO'), async (c) => {
     const userId = c.get('user').id
     const specId = c.req.param('id')
     const v1 = parseInt(c.req.param('v1'))

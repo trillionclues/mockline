@@ -4,6 +4,8 @@ import { useQuery } from '@tanstack/react-query'
 import { specsApi, type Spec } from '@/lib/api-client'
 import { queryKeys } from '@/lib/query-keys'
 import { DiffViewer } from './DiffViewer'
+import { useTierGuard } from '@/hooks/useTierGuard'
+import { LockedFeatureState } from '../shared/LockedFeatureState'
 
 type Props = {
     specs: Spec[]
@@ -13,6 +15,9 @@ type Props = {
 }
 
 export function DiffView({ specs, prefilledSpecId, prefilledV1, prefilledV2 }: Props) {
+    const { canAccess } = useTierGuard()
+    const hasAccess = canAccess('PRO')
+
     const [specId, setSpecId] = useState(prefilledSpecId ?? '')
     const [v1, setV1] = useState<number | null>(prefilledV1 ?? null)
     const [v2, setV2] = useState<number | null>(prefilledV2 ?? null)
@@ -21,7 +26,7 @@ export function DiffView({ specs, prefilledSpecId, prefilledV1, prefilledV2 }: P
     const { data: versions } = useQuery({
         queryKey: queryKeys.specs.versions(specId),
         queryFn: () => specsApi.getVersions(specId),
-        enabled: !!specId,
+        enabled: !!specId && hasAccess,
     })
 
     const { data: diff, isFetching, refetch } = useQuery({
@@ -32,11 +37,27 @@ export function DiffView({ specs, prefilledSpecId, prefilledV1, prefilledV2 }: P
 
     // Auto-run diff when navigated from spec detail with pre-filled values
     useEffect(() => {
-        if (prefilledSpecId && prefilledV1 && prefilledV2) {
+        if (hasAccess && prefilledSpecId && prefilledV1 && prefilledV2) {
             refetch()
             setHasDiffed(true)
         }
     }, [])
+
+    if (!hasAccess) {
+        return (
+            <div>
+                <h1 className="page-title">Schema Diff</h1>
+                <p className="page-description" style={{ marginBottom: '24px' }}>
+                    Compare two versions of the same spec to identify breaking changes.
+                </p>
+                <LockedFeatureState
+                    title="Schema diff is a PRO feature"
+                    description="Compare two versions of the same spec to identify breaking changes before they hit production."
+                    tier="PRO"
+                />
+            </div>
+        )
+    }
 
     const canCompare = !!specId && v1 !== null && v2 !== null && v1 !== v2
 

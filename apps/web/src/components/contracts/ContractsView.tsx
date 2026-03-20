@@ -8,6 +8,9 @@ import { RunContractModal } from './RunContractModal'
 import { ContractResultsTable } from './ContractResultsTable'
 import { PageHeader } from '../shared/PageHeader'
 import { EmptyState } from '../shared/EmptyState'
+import { LockedFeatureState } from '../shared/LockedFeatureState'
+import { useTierGuard } from '@/hooks/useTierGuard'
+import { TierBadge } from '../shared/TierBadge'
 
 type Props = {
     initialRuns: ContractTestRun[]
@@ -17,11 +20,14 @@ type Props = {
 
 export function ContractsView({ initialRuns, specs, mocks }: Props) {
     const [runOpen, setRunOpen] = useState(false)
+    const { canAccess, guardAction } = useTierGuard()
+    const hasAccess = canAccess('PRO')
 
     const { data: runs } = useQuery({
         queryKey: queryKeys.contracts.all(),
         queryFn: () => contractsApi.list(),
         initialData: initialRuns,
+        enabled: hasAccess,
     })
 
     return (
@@ -29,10 +35,23 @@ export function ContractsView({ initialRuns, specs, mocks }: Props) {
             <PageHeader
                 title="Contracts"
                 description="Run contract tests to validate mock servers against OpenAPI specs."
-                action={{ label: 'Run Tests', onClick: () => setRunOpen(true) }}
+                action={{
+                    label: 'Run Tests',
+                    onClick: () => {
+                        if (!guardAction('PRO')) return
+                        setRunOpen(true)
+                    },
+                    badge: !hasAccess ? <TierBadge tier="PRO" /> : undefined,
+                }}
             />
 
-            {runs.length === 0 ? (
+            {!hasAccess ? (
+                <LockedFeatureState
+                    title="Contract testing is a PRO feature"
+                    description="Validate your mock servers against their OpenAPI specifications automatically."
+                    tier="PRO"
+                />
+            ) : runs.length === 0 ? (
                 <EmptyState
                     icon={<ClipboardCheck size={24} />}
                     title="No contract tests run yet"

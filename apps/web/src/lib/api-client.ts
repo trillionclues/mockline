@@ -1,6 +1,6 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000'
+import { ApiError, type ApiResponse, type ApiPaginatedResponse } from '@mockline/types'
 
-type ApiResponse<T> = { data: T; error: null } | { data: null; error: { code: string; message: string } }
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000'
 
 export async function request<T>(
     path: string,
@@ -18,7 +18,7 @@ export async function request<T>(
     const json = await res.json() as ApiResponse<T>
 
     if (!res.ok || json.error) {
-        throw new Error(json.error?.message ?? `HTTP ${res.status}`)
+        throw new ApiError(res.status, json.error?.message ?? `HTTP ${res.status}`, json.error?.code ?? 'UNKNOWN')
     }
 
     return json.data

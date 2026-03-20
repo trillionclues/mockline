@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { specsApi } from '@/lib/api-client'
 import { queryKeys } from '@/lib/query-keys'
+import { useUpgradeModal } from '@/contexts/upgrade-modal'
 
 type Props = {
     open: boolean
@@ -17,6 +18,7 @@ export function UploadSpecModal({ open, onClose }: Props) {
     const [format, setFormat] = useState<'yaml' | 'json'>('yaml')
     const [source, setSource] = useState<SourceMode>('paste')
     const [error, setError] = useState<string | null>(null)
+    const { open: openUpgrade } = useUpgradeModal()
 
     const queryClient = useQueryClient()
 
@@ -39,6 +41,11 @@ export function UploadSpecModal({ open, onClose }: Props) {
             onClose()
         },
         onError: (err: Error) => {
+            if (err.message.includes('UPGRADE_REQUIRED') || err.message.includes('limit reached') || err.message.includes('Spec limit')) {
+                openUpgrade()
+                onClose()
+                return
+            }
             setError(err.message)
         }
     })

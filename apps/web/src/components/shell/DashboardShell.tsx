@@ -4,8 +4,7 @@ import { Sidebar } from './Sidebar'
 import { Topbar } from './Topbar'
 import { MobileSidebarDrawer } from './MobileSidebarDrawer'
 import { UpgradeModalProvider } from '@/contexts/upgrade-modal'
-
-type User = { name?: string | null; email?: string | null; image?: string | null }
+import type { User } from '@/types'
 
 export function DashboardShell({
     children,

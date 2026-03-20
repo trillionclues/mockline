@@ -1,3 +1,5 @@
+export type User = { name?: string | null; email?: string | null; image?: string | null, tier?: 'FREE' | 'PRO' | 'TEAM' | null }
+
 export type Spec = {
     id: string
     name: string
