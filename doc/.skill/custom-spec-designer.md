@@ -465,7 +465,6 @@ export function EndpointList({ endpoints, selectedId, onSelect, onAdd, onDelete 
                         </span>
                         <span style={{
                             fontSize: '12px',
-                            fontFamily: 'var(--font-family-mono)',
                             color: 'var(--color-text)',
                             flex: 1,
                             overflow: 'hidden',
@@ -595,7 +594,7 @@ export function EndpointEditor({ endpoint, onChange }: Props) {
                                     value={endpoint.path}
                                     onChange={e => update({ path: e.target.value })}
                                     placeholder="/users/{id}"
-                                    style={{ fontFamily: 'var(--font-family-mono)', fontSize: '13px' }}
+                                    style={{ fontSize: '13px' }}
                                 />
                             </div>
                         </div>
@@ -774,7 +773,7 @@ export function SchemaFieldBuilder({ fields, onChange, depth = 0 }: Props) {
                                 value={field.name}
                                 onChange={e => updateField(field.id, { name: e.target.value })}
                                 placeholder="fieldName"
-                                style={{ flex: 1, fontFamily: 'var(--font-family-mono)', fontSize: '12px', height: '32px' }}
+                                style={{ flex: 1, fontSize: '12px', height: '32px' }}
                             />
 
                             {/* Type select */}
@@ -1002,7 +1001,7 @@ export function ResponseBuilder({ responses, onChange }: Props) {
                                 onChange={e => { e.stopPropagation(); updateResponse(response.id, { statusCode: e.target.value }) }}
                                 onClick={e => e.stopPropagation()}
                                 className="form-select"
-                                style={{ width: '80px', height: '28px', fontSize: '12px', fontFamily: 'var(--font-family-mono)', color: statusColor }}
+                                style={{ width: '80px', height: '28px', fontSize: '12px', color: statusColor }}
                             >
                                 {COMMON_CODES.map(c => <option key={c} value={c}>{c}</option>)}
                             </select>
@@ -1111,7 +1110,6 @@ export function YamlPreviewPanel({ content, format, onToggleFormat }: Props) {
                         border: 'none',
                         cursor: 'pointer',
                         padding: 0,
-                        fontFamily: 'var(--font-family-mono)',
                     }}
                 >
                     {format} ↕
@@ -1129,7 +1127,6 @@ export function YamlPreviewPanel({ content, format, onToggleFormat }: Props) {
                 overflow: 'auto',
                 margin: 0,
                 padding: '12px',
-                fontFamily: 'var(--font-family-mono)',
                 fontSize: '11px',
                 lineHeight: 1.6,
                 color: 'var(--color-text-muted)',
@@ -1583,7 +1580,7 @@ PHASE 1 — SHELL
 [ ] lib/spec-builder/types.ts created with all builder types
 [ ] app/(dashboard)/specs/new/page.tsx created with PRO gate
 [ ] app/(dashboard)/specs/[id]/design/page.tsx created
-[ ] SpecDesignerView.tsx created — three panel layout
+[ ] SpecDesignerView.tsx created — three panel layout (should be responsive on smaller devices)
 [ ] "Design Spec" button added to SpecsView with PRO gate
 [ ] "Design in editor" option added to VersionHistoryTable
 

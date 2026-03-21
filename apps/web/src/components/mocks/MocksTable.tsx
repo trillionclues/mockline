@@ -90,7 +90,7 @@ export function MocksTable({ mocks }: { mocks: MockServer[] }) {
                                 <td style={tdStyle}>
                                     {mock.publicUrl ? (
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                            <span style={{ fontSize: '12px', fontFamily: 'var(--font-family-mono)', color: 'var(--color-text-muted)' }}>
+                                            <span style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>
                                                 {mock.publicUrl}
                                             </span>
                                             <CopyButton value={mock.publicUrl} />

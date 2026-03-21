@@ -10,6 +10,20 @@ export const TAG_STYLES: Record<ChangelogTag, { background: string; color: strin
 
 export const ENTRIES: ChangelogEntry[] = [
     {
+        version: 'v0.6.0',
+        date: 'March 22, 2026',
+        title: 'Visual OpenAPI Spec Designer',
+        tags: ['feature', 'improvement'],
+        body: 'Build openAPI specs visually without writing YAML or JSON. The new Custom Spec Designer allows you to design your definitions and endpoints interactively in the browser.',
+        bullets: [
+            'PRO tier visual editor with real-time YAML/JSON preview',
+            'Full support for endpoints, path/query parameters, request bodies, and multiple responses',
+            'Recursive schema builder handling nested objects and array types smoothly',
+            'Seamlessly edit existing specs using the designer',
+            'Instantly deploy a mock server from your designed spec in a single click',
+        ],
+    },
+    {
         version: 'v0.5.1',
         date: 'March 21, 2026',
         title: 'Google OAuth Authentication',

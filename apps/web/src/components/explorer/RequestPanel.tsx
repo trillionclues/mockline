@@ -86,7 +86,7 @@ export function RequestPanel({ endpoint, baseUrl, onResponse }: Props) {
                 <span className={`method-badge method-${endpoint.method.toLowerCase()}`} style={{ fontSize: '12px', padding: '3px 8px' }}>
                     {endpoint.method}
                 </span>
-                <span style={{ fontFamily: 'var(--font-family-mono)', fontSize: '14px', color: 'var(--color-text-strong)' }}>
+                <span style={{ fontSize: '14px', color: 'var(--color-text-strong)' }}>
                     {endpoint.path}
                 </span>
                 {endpoint.summary && (
@@ -100,7 +100,7 @@ export function RequestPanel({ endpoint, baseUrl, onResponse }: Props) {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         {paramNames.map(name => (
                             <div key={name} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <span style={{ fontFamily: 'var(--font-family-mono)', fontSize: '12px', color: 'var(--color-text-muted)', width: '120px', flexShrink: 0 }}>
+                                <span style={{ fontSize: '12px', color: 'var(--color-text-muted)', width: '120px', flexShrink: 0 }}>
                                     {name}
                                 </span>
                                 <input
@@ -127,7 +127,7 @@ export function RequestPanel({ endpoint, baseUrl, onResponse }: Props) {
                     placeholder={'page=1\nlimit=20'}
                     value={queryParams}
                     onChange={e => setQueryParams(e.target.value)}
-                    style={{ fontFamily: 'var(--font-family-mono)', fontSize: '12px', resize: 'vertical' }}
+                    style={{ fontSize: '12px', resize: 'vertical' }}
                 />
             </div>
 
@@ -140,7 +140,7 @@ export function RequestPanel({ endpoint, baseUrl, onResponse }: Props) {
                         placeholder={'{\n  "key": "value"\n}'}
                         value={body}
                         onChange={e => setBody(e.target.value)}
-                        style={{ fontFamily: 'var(--font-family-mono)', fontSize: '12px', resize: 'vertical' }}
+                        style={{ fontSize: '12px', resize: 'vertical' }}
                     />
                 </div>
             )}

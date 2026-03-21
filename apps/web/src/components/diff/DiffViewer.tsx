@@ -60,10 +60,10 @@ function DiffEntryRow({ entry }: { entry: DiffEntry }) {
             borderRadius: '6px',
             marginBottom: '4px',
         }}>
-            <span style={{ color: config.color, fontWeight: 700, fontFamily: 'var(--font-family-mono)', flexShrink: 0 }}>
+            <span style={{ color: config.color, fontWeight: 700, flexShrink: 0 }}>
                 {config.prefix}
             </span>
-            <span style={{ fontFamily: 'var(--font-family-mono)', fontSize: '13px', color: 'var(--color-text-strong)', flex: 1 }}>
+            <span style={{ fontSize: '13px', color: 'var(--color-text-strong)', flex: 1 }}>
                 {entry.path}
             </span>
             <span style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>

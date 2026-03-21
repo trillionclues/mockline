@@ -1,12 +1,20 @@
 'use client'
 import { useRouter } from 'next/navigation'
 import type { SpecVersion } from '@/lib/api-client'
-import { DateDisplay } from '../shared/DateDisplay';
+import { DateDisplay } from '../shared/DateDisplay'
+import { useTierGuard } from '@/hooks/useTierGuard'
 
 type Props = { specId: string; versions: SpecVersion[] }
 
 export function VersionHistoryTable({ specId, versions }: Props) {
     const router = useRouter()
+    const { guardAction } = useTierGuard()
+
+    const handleDesignEdit = () => {
+        if (guardAction('PRO')) {
+            router.push(`/specs/${specId}/design`)
+        }
+    }
 
     if (versions.length === 0) {
         return (
@@ -40,7 +48,7 @@ export function VersionHistoryTable({ specId, versions }: Props) {
                         return (
                             <tr key={v.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
                                 <td style={tdStyle}>
-                                    <span style={{ fontFamily: 'var(--font-family-mono)', fontWeight: 500, color: 'var(--color-text-strong)' }}>
+                                    <span style={{ fontWeight: 500, color: 'var(--color-text-strong)' }}>
                                         v{v.version}
                                     </span>
                                     {i === 0 && (
@@ -55,7 +63,7 @@ export function VersionHistoryTable({ specId, versions }: Props) {
                                     </span>
                                 </td>
                                 <td style={tdStyle}>
-                                    <span style={{ fontFamily: 'var(--font-family-mono)', fontSize: '11px', color: 'var(--color-text-muted)' }}>
+                                    <span style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>
                                         {v.format}
                                     </span>
                                 </td>
@@ -75,6 +83,14 @@ export function VersionHistoryTable({ specId, versions }: Props) {
                                         onClick={() => router.push(`/mocks?specId=${specId}&specVersionId=${v.id}`)}
                                     >
                                         Deploy mock
+                                    </button>
+                                    <button
+                                        className="btn-secondary"
+                                        style={{ height: '28px', fontSize: '12px', opacity: 0.5 }}
+                                        disabled
+                                    // onClick={handleDesignEdit}
+                                    >
+                                        Edit in designer
                                     </button>
                                 </td>
                             </tr>

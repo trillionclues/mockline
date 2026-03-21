@@ -28,6 +28,7 @@ graph LR
 ## Features
 
 - **Spec management** — Upload OpenAPI 3.x YAML/JSON specs, version history, validation
+- **Visual Spec Designer** — Build specs visually without coding; live preview and instant deploy
 - **Mock servers** — One-click provisioning, live status, shareable URLs
 - **Contract testing** — Test real APIs against their OpenAPI contracts, pass/fail per endpoint
 - **Schema diffing** — Compare spec versions, detect breaking changes

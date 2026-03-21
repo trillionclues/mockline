@@ -49,7 +49,6 @@ export function ConfirmDialog({ open, onClose, title, description, confirmWord, 
                             value={input}
                             onChange={e => setInput(e.target.value)}
                             style={{
-                                fontFamily: 'var(--font-family-mono)',
                                 borderColor: input.length > 0 && !canConfirm
                                     ? 'var(--color-destructive)'
                                     : undefined,

@@ -94,7 +94,7 @@ export function MockDetailView({ initialMock }: { initialMock: MockServer }) {
                     <div style={{ fontSize: '11px', color: 'var(--color-text-subtle)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Public URL</div>
                     {mock.publicUrl ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <span style={{ fontFamily: 'var(--font-family-mono)', fontSize: '14px', color: 'var(--color-text-strong)' }}>
+                            <span style={{ fontSize: '14px', color: 'var(--color-text-strong)' }}>
                                 {mock.publicUrl}
                             </span>
                             <CopyButton value={mock.publicUrl} />
@@ -113,7 +113,7 @@ export function MockDetailView({ initialMock }: { initialMock: MockServer }) {
                     </div>
                     <div>
                         <div style={{ fontSize: '11px', color: 'var(--color-text-subtle)', marginBottom: '4px' }}>Version</div>
-                        <div style={{ fontSize: '13px', fontFamily: 'var(--font-family-mono)', color: 'var(--color-text)' }}>v{mock?.specVersion?.version}</div>
+                        <div style={{ fontSize: '13px', color: 'var(--color-text)' }}>v{mock?.specVersion?.version}</div>
                     </div>
                     <div>
                         <div style={{ fontSize: '11px', color: 'var(--color-text-subtle)', marginBottom: '4px' }}>Created</div>

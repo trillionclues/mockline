@@ -65,24 +65,23 @@ export function SpecsTable({ specs }: { specs: Spec[] }) {
                                         border: '1px solid var(--color-border)',
                                         borderRadius: '4px',
                                         fontSize: '11px',
-                                        fontFamily: 'var(--font-family-mono)',
-                                        color: 'var(--color-text-muted)',
+                                        color: 'var(--color-text)',
                                     }}>
                                         {spec.versions?.[0]?.format}
                                     </span>
                                 </td>
                                 <td style={tdStyle}>
-                                    <span style={{ color: 'var(--color-text-muted)' }}>
+                                    <span style={{ color: 'var(--color-text)' }}>
                                         {spec.versions?.length ?? 0}
                                     </span>
                                 </td>
                                 <td style={tdStyle}>
-                                    <span style={{ color: 'var(--color-text-muted)' }}>
+                                    <span style={{ color: 'var(--color-text)' }}>
                                         {spec._count?.mockServers ?? 0}
                                     </span>
                                 </td>
                                 <td style={tdStyle}>
-                                    <span style={{ color: 'var(--color-text-muted)' }}>
+                                    <span style={{ color: 'var(--color-text)' }}>
                                         <DateDisplay date={spec.createdAt} />
                                     </span>
                                 </td>
