@@ -180,43 +180,57 @@ Only `apps/api` and `docker/mock-server` need Docker images.
 
 ```dockerfile
 FROM node:22-alpine AS base
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN apk add --no-cache openssl
+RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
+
+# ── pruner ─────────
+FROM base AS pruner
+WORKDIR /app
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+RUN pnpm add -g turbo
+COPY . .
+RUN turbo prune @mockline/api --docker
 
 # ── deps ───────────
 FROM base AS deps
 WORKDIR /app
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
-COPY apps/api/package.json ./apps/api/
-COPY packages/db/package.json ./packages/db/
-COPY packages/types/package.json ./packages/types/
-COPY packages/docker-manager/package.json ./packages/docker-manager/
-RUN pnpm install --frozen-lockfile
+COPY --from=pruner /app/out/json/ .
+COPY --from=pruner /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
+COPY --from=pruner /app/out/full/packages/db/prisma/schema.prisma ./packages/db/prisma/schema.prisma
+RUN pnpm install --frozen-lockfile -r
 
 # ── builder ───────
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+COPY --from=deps /app/packages ./packages
+COPY --from=deps /app/apps/api/node_modules ./apps/api/node_modules
+COPY --from=pruner /app/out/full/ .
+COPY --from=pruner /app/tsconfig.json ./tsconfig.json
 RUN pnpm --filter=@mockline/api build
 RUN pnpm --filter=@mockline/db prisma generate
 
 # ── runner ───────────
 FROM node:22-alpine AS runner
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN apk add --no-cache openssl
 WORKDIR /app
 ENV NODE_ENV=production
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 honojs
 
-COPY --from=builder /app/apps/api/dist ./apps/api/dist
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/packages/db/prisma ./packages/db/prisma
-COPY --from=builder /app/package.json ./
+COPY --chown=honojs:nodejs --from=builder /app/apps/api/dist ./apps/api/dist
+COPY --chown=honojs:nodejs --from=builder /app/apps/api/node_modules ./apps/api/node_modules
+COPY --chown=honojs:nodejs --from=builder /app/node_modules ./node_modules
+COPY --chown=honojs:nodejs --from=builder /app/packages/db ./packages/db
+COPY --chown=honojs:nodejs --from=builder /app/package.json ./
 
 USER honojs
 EXPOSE 4000
-CMD ["sh", "-c", "node_modules/.bin/prisma migrate deploy --schema=packages/db/prisma/schema.prisma && node apps/api/dist/index.js"]
+CMD ["sh", "-c", "packages/db/node_modules/.bin/prisma migrate deploy --schema=packages/db/prisma/schema.prisma && node apps/api/dist/index.js"]
+
 ```
 
 ### `docker/mock-server/Dockerfile` — updated with multi-stage
@@ -224,26 +238,32 @@ CMD ["sh", "-c", "node_modules/.bin/prisma migrate deploy --schema=packages/db/p
 ```dockerfile
 FROM node:22-alpine AS installer
 WORKDIR /app
-RUN corepack enable && corepack prepare pnpm@latest --activate
+ENV PNPM_HOME=/usr/local/share/pnpm
+ENV PATH=/usr/local/share/pnpm:$PATH
 
-ARG CONTOUR_VERSION=1.1.1
+ARG CONTOUR_VERSION=1.2.0
+RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
 RUN pnpm add -g @trillionclues/contour@${CONTOUR_VERSION}
+RUN chmod -R 755 /usr/local/share/pnpm
 
 # ── runner ────────────
 FROM node:22-alpine AS runner
 WORKDIR /app
+ENV PNPM_HOME=/usr/local/share/pnpm
+ENV PATH=/usr/local/share/pnpm:$PATH
 
-COPY --from=installer /usr/local/bin/contour /usr/local/bin/contour
-COPY --from=installer /usr/local/lib/node_modules /usr/local/lib/node_modules
+COPY --from=installer /usr/local/share/pnpm /usr/local/share/pnpm
+RUN chmod -R 755 /usr/local/share/pnpm
 
 USER node
 COPY --chown=node:node spec.yaml ./spec.yaml
 
 EXPOSE 3001
 HEALTHCHECK --interval=5s --timeout=3s --retries=5 \
-  CMD wget -qO- http://localhost:3001/health || exit 1
+  CMD wget -qO- http://localhost:3001/_contour/health || exit 1
 
 CMD ["contour", "start", "spec.yaml", "--port", "3001"]
+
 ```
 
 ---
@@ -395,6 +415,8 @@ sudo sed -i 's/PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/s
 sudo systemctl restart sshd
 
 # Firewall
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
 sudo ufw allow 22/tcp  # SSH (Security Group already restricts to your IP)
 sudo ufw allow 80/tcp  # HTTP (Traefik → Let's Encrypt)
 sudo ufw allow 443/tcp # HTTPS
@@ -580,9 +602,14 @@ BETTER_AUTH_URL=https://api.mockline.xyz
 # ── GitHub OAuth ────────────
 # Create NEW OAuth app: github.com/settings/developers/new
 # Homepage URL:  https://mockline.xyz
-# Callback URL:  https://api.mockline.xyz/api/auth/callback/github
-GITHUB_CLIENT_ID=
-GITHUB_CLIENT_SECRET=
+# Use your existing staging OAuth app from GitHub
+# Callback URL must match: https://api.mockline.xyz/api/auth/callback/github
+GITHUB_CLIENT_ID=your_staging_client_id
+GITHUB_CLIENT_SECRET=your_staging_client_secret
+
+# ── Google OAuth ──────
+GOOGLE_CLIENT_ID=your_staging_google_client_id
+GOOGLE_CLIENT_SECRET=your_staging_google_client_secret
 
 # ── Internal ────────────
 INTERNAL_API_SECRET= # openssl rand -hex 32
@@ -600,6 +627,15 @@ CONTOUR_VERSION=1.2.0
 
 # ── Traefik ────────────
 CF_DNS_API_TOKEN= # from Cloudflare API token step
+
+# ── Lemon Squeezy ──────────
+LEMONSQUEEZY_API_KEY=
+LEMONSQUEEZY_STORE_ID=
+LEMONSQUEEZY_WEBHOOK_SECRET=
+LEMONSQUEEZY_PRO_MONTHLY_VARIANT_ID=
+LEMONSQUEEZY_PRO_YEARLY_VARIANT_ID=
+LEMONSQUEEZY_TEAM_MONTHLY_VARIANT_ID=
+LEMONSQUEEZY_TEAM_YEARLY_VARIANT_ID=
 ```
 
 **Note on `DATABASE_URL` hostname:**
@@ -870,7 +906,6 @@ Settings → Secrets and variables → Actions
 # API / EC2
 API_HOST             # Elastic IP (or Hetzner IP later)
 API_USER             # deploy
-API_SSH_KEY          # private key contents
 
 # Vercel (web)
 VERCEL_TOKEN         # from vercel.com → Account Settings → Tokens
@@ -988,7 +1023,6 @@ jobs:
         with:
           host: ${{ secrets.API_HOST }}
           username: ${{ secrets.API_USER }}
-          key: ${{ secrets.API_SSH_KEY }}
           script: |
             set -e
             cd /opt/mockline
@@ -1055,7 +1089,6 @@ jobs:
           host: ${{ secrets.PROD_HOST }}
           username: ${{ secrets.PROD_USER }}
           key: ${{ secrets.PROD_SSH_KEY }}
-          port: ${{ secrets.PROD_SSH_PORT }}
           script: |
             set -e
             cd /opt/mockline
@@ -1182,10 +1215,10 @@ docker compose logs --tail=100 api
 
 [ ] EC2 t2.micro launched (Ubuntu 24.04, 30GB gp3)
 [ ] Elastic IP allocated and associated
-[ ] Security group: 2222, 80, 443 open
+[ ] Security group: 22, 80, 443 open
 [ ] SSH key: chmod 400
 [ ] deploy user created, SSH key copied
-[ ] Server hardened (port 2222, UFW, Fail2ban)
+[ ] Server hardened (UFW, Fail2ban)
 [ ] Swap enabled (2GB)
 [ ] Docker + Docker Compose installed
 [ ] deploy user in docker group
@@ -1204,7 +1237,7 @@ docker compose logs --tail=100 api
 [ ] Login flow works end to end
 [ ] Backup script + cron job active
 [ ] UptimeRobot monitors added
-[ ] GitHub Actions secrets added (API_HOST, API_USER, API_SSH_KEY, VERCEL_*)
+[ ] GitHub Actions secrets added (API_HOST, API_USER, VERCEL_*)
 [ ] staging environment created in GitHub
 [ ] First CI deploys triggered by push to main
 [ ] mockline_default network removed
@@ -1335,7 +1368,6 @@ gunzip -c /tmp/migrate.sql.gz \
 ```
 API_HOST    → new server IP
 API_USER    → deploy (unchanged)
-API_SSH_KEY → new server SSH key (or reuse same key)
 ```
 
 ### Step 4 — Update DNS
