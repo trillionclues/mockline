@@ -230,7 +230,6 @@ COPY --chown=honojs:nodejs --from=builder /app/package.json ./
 USER honojs
 EXPOSE 4000
 CMD ["sh", "-c", "packages/db/node_modules/.bin/prisma migrate deploy --schema=packages/db/prisma/schema.prisma && node apps/api/dist/index.js"]
-
 ```
 
 ### `docker/mock-server/Dockerfile` — updated with multi-stage
@@ -430,6 +429,13 @@ sudo systemctl start fail2ban
 # Auto security updates
 sudo apt install unattended-upgrades -y
 sudo dpkg-reconfigure --priority=low unattended-upgrades
+
+sudo apt install rkhunter -y
+sudo rkhunter --update
+sudo rkhunter --check
+
+sudo apt install lynis -y
+sudo lynis audit system
 ```
 
 **From now on, SSH/connect as:**
@@ -636,6 +642,10 @@ LEMONSQUEEZY_PRO_MONTHLY_VARIANT_ID=
 LEMONSQUEEZY_PRO_YEARLY_VARIANT_ID=
 LEMONSQUEEZY_TEAM_MONTHLY_VARIANT_ID=
 LEMONSQUEEZY_TEAM_YEARLY_VARIANT_ID=
+
+# resend
+RESEND_API_KEY=""
+RESEND_FROM_EMAIL=""
 ```
 
 **Note on `DATABASE_URL` hostname:**
@@ -713,6 +723,9 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     env_file: .env
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public
+      - REDIS_URL=redis://cache:6379
     depends_on:
       db:
         condition: service_healthy
@@ -985,10 +998,10 @@ on:
       - 'packages/types/**'
       - 'packages/docker-manager/**'
       - 'docker-compose.yml'
+  workflow_dispatch:
 
 env:
   NODE_VERSION: '22'
-  PNPM_VERSION: '9'
 
 concurrency:
   group: deploy-api-staging
@@ -1001,7 +1014,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
-        with: { version: '${{ env.PNPM_VERSION }}' }
       - uses: actions/setup-node@v4
         with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }
       - run: pnpm install --frozen-lockfile
@@ -1016,7 +1028,8 @@ jobs:
     name: Deploy to EC2
     runs-on: ubuntu-latest
     needs: quality
-    environment: staging
+    environment:
+      name: staging
     steps:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
@@ -1026,9 +1039,25 @@ jobs:
           script: |
             set -e
             cd /opt/mockline
+
+            # Save current image ID for rollback
+            PREV_IMAGE=$(docker inspect --format='{{.Image}}' mockline-api 2>/dev/null || echo "none")
+
             git pull origin main
             docker compose up -d --build api
             docker image prune -f
+
+            # Internal health check with rollback
+            sleep 15
+            if ! curl --fail --silent http://localhost:4000/health | grep -q '"status":"ok"'; then
+                echo "⚠ Internal health check failed — rolling back"
+                if [ "$PREV_IMAGE" != "none" ]; then
+                    docker tag "$PREV_IMAGE" mockline-api:rollback
+                fi
+                docker compose down api
+                exit 1
+            fi
+
             echo "✓ API deploy complete — $(git rev-parse --short HEAD)"
 
       - name: Health check
@@ -1051,10 +1080,10 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
 
 env:
   NODE_VERSION: '22'
-  PNPM_VERSION: '9'
 
 concurrency:
   group: deploy-api-production
@@ -1067,7 +1096,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
-        with: { version: '${{ env.PNPM_VERSION }}' }
       - uses: actions/setup-node@v4
         with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }
       - run: pnpm install --frozen-lockfile
@@ -1081,7 +1109,8 @@ jobs:
     name: Deploy to Production
     runs-on: ubuntu-latest
     needs: quality
-    environment: production   # ← manual approval gate
+    environment:
+      name: production
     steps:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
@@ -1089,19 +1118,36 @@ jobs:
           host: ${{ secrets.PROD_HOST }}
           username: ${{ secrets.PROD_USER }}
           key: ${{ secrets.PROD_SSH_KEY }}
+          port: ${{ secrets.PROD_SSH_PORT }}
           script: |
             set -e
             cd /opt/mockline
+
+            # Save current image ID for rollback
+            PREV_IMAGE=$(docker inspect --format='{{.Image}}' mockline-api 2>/dev/null || echo "none")
+
             git fetch --tags
             git checkout ${{ github.ref_name }}
             docker compose up -d --build api
             docker image prune -f
+
+            # Internal health check with rollback
+            sleep 15
+            if ! curl --fail --silent http://localhost:4000/health | grep -q '"status":"ok"'; then
+                echo "⚠ Internal health check failed — rolling back"
+                if [ "$PREV_IMAGE" != "none" ]; then
+                    docker tag "$PREV_IMAGE" mockline-api:rollback
+                fi
+                docker compose down api
+                exit 1
+            fi
+
             echo "✓ Production API deploy complete — ${{ github.ref_name }}"
 
       - name: Health check
         run: |
           sleep 20
-          curl --fail --silent https://api.mockline.xyz/health \
+          curl --fail --silent ${{ secrets.PROD_API_URL || 'https://api.mockline.xyz' }}/health \
             | grep -q '"status":"ok"' \
             || (echo "Production health check failed" && exit 1)
           echo "✓ Production health check passed"
