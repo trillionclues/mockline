@@ -2,19 +2,19 @@
 import { useRouter } from 'next/navigation'
 import type { SpecVersion } from '@/lib/api-client'
 import { DateDisplay } from '../shared/DateDisplay'
-import { useTierGuard } from '@/hooks/useTierGuard'
+// import { useTierGuard } from '@/hooks/useTierGuard'
 
 type Props = { specId: string; versions: SpecVersion[] }
 
 export function VersionHistoryTable({ specId, versions }: Props) {
     const router = useRouter()
-    const { guardAction } = useTierGuard()
+    // const { guardAction } = useTierGuard()
 
-    const handleDesignEdit = () => {
-        if (guardAction('PRO')) {
-            router.push(`/specs/${specId}/design`)
-        }
-    }
+    // const handleDesignEdit = () => {
+    //     if (guardAction('PRO')) {
+    //         router.push(`/specs/${specId}/design`)
+    //     }
+    // }
 
     if (versions.length === 0) {
         return (
