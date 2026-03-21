@@ -17,6 +17,9 @@ ENV PATH=/usr/local/share/pnpm:$PATH
 COPY --from=installer /usr/local/share/pnpm /usr/local/share/pnpm
 RUN chmod -R 755 /usr/local/share/pnpm
 
+# Patch no longer needed — contour 1.2.0 binds to 0.0.0.0 by default
+# RUN find /usr/local/share/pnpm ...
+
 # Patch contour to bind to 0.0.0.0 (all interfaces) instead of 127.0.0.1
 # RUN find /usr/local/share/pnpm -path "*/@trillionclues/contour/dist/*" -name "*.js" -exec sed -i "s/'127.0.0.1'/'0.0.0.0'/g" {} +
 
