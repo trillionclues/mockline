@@ -14,7 +14,7 @@ export function ResponsePanel({ response }: { response: ExplorerResponse }) {
     if (response.error) {
         return (
             <div style={{ background: 'var(--color-surface)', border: '1px solid var(--color-status-failed)', borderRadius: '8px', padding: '16px' }}>
-                <div style={{ fontSize: '13px', color: 'var(--color-status-failed)', fontFamily: 'var(--font-family-mono)' }}>
+                <div style={{ fontSize: '13px', color: 'var(--color-status-failed)', }}>
                     {response.error}
                 </div>
                 <div style={{ fontSize: '11px', color: 'var(--color-text-muted)', marginTop: '8px' }}>{response.duration}ms</div>
@@ -41,14 +41,14 @@ export function ResponsePanel({ response }: { response: ExplorerResponse }) {
                         {headersOpen ? '▾' : '▸'} Response Headers
                     </button>
                     {headersOpen && (
-                        <pre style={{ margin: 0, padding: '8px 16px 12px', fontFamily: 'var(--font-family-mono)', fontSize: '11px', color: 'var(--color-text-muted)', overflowX: 'auto', background: 'var(--color-bg)' }}>
+                        <pre style={{ margin: 0, padding: '8px 16px 12px', fontSize: '11px', color: 'var(--color-text-muted)', overflowX: 'auto', background: 'var(--color-bg)' }}>
                             {Object.entries(response.headers).map(([k, v]) => `${k}: ${v}`).join('\n')}
                         </pre>
                     )}
                 </div>
             )}
 
-            <pre style={{ margin: 0, padding: '16px', fontFamily: 'var(--font-family-mono)', fontSize: '12px', color: 'var(--color-text)', overflowX: 'auto', maxHeight: '400px', overflowY: 'auto' }}>
+            <pre style={{ margin: 0, padding: '16px', fontSize: '12px', color: 'var(--color-text)', overflowX: 'auto', maxHeight: '400px', overflowY: 'auto' }}>
                 {typeof response.body === 'string'
                     ? response.body
                     : JSON.stringify(response.body, null, 2)}

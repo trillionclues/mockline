@@ -46,7 +46,6 @@ export function SettingsView({ user }: { user?: User }) {
                         background: 'var(--color-bg)',
                         border: '1px solid var(--color-border)',
                         borderRadius: '6px',
-                        fontFamily: 'var(--font-family-mono)',
                         fontSize: '13px',
                         color: 'var(--color-text)',
                     }}>

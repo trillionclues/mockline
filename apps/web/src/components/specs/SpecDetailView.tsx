@@ -39,7 +39,7 @@ export function SpecDetailView({ spec, initialVersions }: Props) {
                 <div>
                     <h1 className="page-title">{spec.name}</h1>
                     <div style={{ display: 'flex', gap: '12px', marginTop: '6px', fontSize: '12px', color: 'var(--color-text-muted)' }}>
-                        <span style={{ fontFamily: 'var(--font-family-mono)' }}>{spec.format}</span>
+                        <span>{spec.format}</span>
                         <span>·</span>
                         <span>{versions.length} version{versions.length !== 1 ? 's' : ''}</span>
                         <span>·</span>

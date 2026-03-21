@@ -282,7 +282,7 @@ h4 {
     padding: 0 10px;
     border-radius: 6px;
     font-size: 13px;
-    color: var(--color-text-muted);
+    color: var(--color-text);
     background: transparent;
     border-left: 2px solid transparent;
     text-decoration: none;
@@ -304,7 +304,7 @@ h4 {
 
 .sidebar-section-label {
     font-size: 11px;
-    color: var(--color-text-subtle);
+    color: var(--color-logo-line);
     padding: 12px 12px 4px;
     font-family: var(--font-family-sans);
 }
@@ -597,7 +597,7 @@ h4 {
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    color: var(--color-text-muted);
+    color: var(--color-text);
     transition: color 120ms ease, background 120ms ease;
     padding: 0;
 }
@@ -1448,4 +1448,132 @@ h4 {
 
 .waitlist-back-btn:hover {
     border-color: var(--color-text-subtle) !important;
+}
+
+/* ── Spec Designer ── */
+.spec-designer-root {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 48px);
+    overflow: hidden;
+}
+
+.spec-designer-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 24px;
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-surface);
+    flex-shrink: 0;
+    gap: 8px;
+}
+
+.spec-designer-panels {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+.spec-designer-sidebar {
+    width: 240px;
+    flex-shrink: 0;
+    border-right: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--color-surface);
+}
+
+.spec-designer-center {
+    flex: 1;
+    overflow: auto;
+    padding: 0;
+    min-width: 0;
+}
+
+.spec-designer-preview {
+    width: 360px;
+    flex-shrink: 0;
+    border-left: 1px solid var(--color-border);
+}
+
+.spec-designer-preview-toggle {
+    display: none !important;
+}
+
+.spec-designer-preview-close {
+    display: none !important;
+}
+
+/* Endpoint list delete button — show on row hover */
+.endpoint-list-row:hover .endpoint-delete-btn {
+    opacity: 1 !important;
+}
+
+/* ── Spec Designer Responsive ── */
+@media (max-width: 1024px) {
+    .spec-designer-preview {
+        width: 280px;
+    }
+
+    .spec-designer-sidebar {
+        width: 200px;
+    }
+}
+
+@media (max-width: 768px) {
+    .spec-designer-topbar {
+        padding: 10px 16px;
+        flex-wrap: wrap;
+    }
+
+    .spec-designer-preview-toggle {
+        display: flex !important;
+    }
+
+    .spec-designer-panels {
+        flex-direction: column;
+    }
+
+    .spec-designer-sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--color-border);
+        max-height: 180px;
+        flex-shrink: 0;
+    }
+
+    .spec-designer-center {
+        flex: 1;
+        overflow: auto;
+    }
+
+    .spec-designer-preview {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        width: 100%;
+        border-left: none;
+        background: var(--color-bg);
+    }
+
+    .spec-designer-preview--mobile-open {
+        display: flex !important;
+    }
+
+    .spec-designer-preview--mobile-open .spec-designer-preview-close {
+        display: flex !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .spec-designer-topbar {
+        padding: 8px 12px;
+    }
+
+    .spec-designer-sidebar {
+        max-height: 140px;
+    }
 }

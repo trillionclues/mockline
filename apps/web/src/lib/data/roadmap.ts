@@ -11,10 +11,10 @@ export const SHIPPED: RoadmapItem[] = [
     { title: 'Pro Feature Controls', desc: 'Stateful mocks, response delays, and error rate injection' },
     { title: 'Subscription Billing', desc: 'Lemon Squeezy integration with tier auto-downgrade' },
     { title: 'Dashboard Polish', desc: 'Settings view, mobile drawer, and status banners' },
+    { title: 'In-app OpenAPI Spec Designer', desc: 'PRO feature to build OpenAPI specs visually without writing YAML' },
 ]
 
 export const IN_PROGRESS: RoadmapItem[] = [
-    { title: 'In-app OpenAPI Spec Designer', desc: 'PRO feature to build OpenAPI specs visually without writing YAML' },
     { title: 'EC2 Deployment', desc: 'Production infrastructure on AWS' },
     { title: 'Wildcard SSL', desc: 'Traefik + Let\'s Encrypt for *.mockline.xyz subdomains' },
 ]
