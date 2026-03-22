@@ -33,7 +33,7 @@ services:
       - mockline-network
 
   proxy:
-    image: traefik:v3.2
+    image: traefik:v3
     container_name: mockline-proxy
     restart: unless-stopped
     ports:

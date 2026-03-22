@@ -911,6 +911,20 @@ This creates four tables:
 
 These tables are separate from the app schema. Run this once per
 new database (staging and production separately).  Never again unless you wipe the database.
+
+IF THIS DOESNT WORK
+It could be that the API image is highly optimized for production, it only contains your lean, compiled index.mjs file and Node.js. It purposely does not have raw TypeScript files (src/lib/auth.ts) or heavy package managers like pnpm taking up space. It is incredibly secure and fast
+The clean way to do it: Since the raw source code right there on the server in /opt/mockline (which is cloned via git), we can just spin up a tiny, temporary Node container on the fly. It will connect to your database network, run the migration using the source code, and immediately delete itself!
+
+```bash
+docker run --rm -it \
+  --network mockline-network \
+  --env-file /opt/mockline/.env \
+  -e NODE_ENV=development \
+  node:22-alpine \
+  sh -c "apk add --no-cache git openssl && git clone https://github.com/trillionclues/mockline.git /tmp/mig && cd /tmp/mig && corepack enable && pnpm install && pnpm dlx prisma@5.22.0 generate --schema=packages/db/prisma/schema.prisma && pnpm dlx @better-auth/cli@1.2.7 migrate --config apps/api/src/lib/auth.ts"
+```
+(This command mounts the current /opt/mockline folder into /app inside a fresh Node container, enables pnpm, installs openssl which Prisma often needs, and successfully runs the Better-Auth CLI against the internal database).
 ---
 
 ## 15. DNS Records
