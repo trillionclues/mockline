@@ -18,10 +18,13 @@
         "@mockline/docker-manager": "workspace:*",
         "@mockline/spec-parser": "workspace:*",
         "@mockline/types": "workspace:*",
+        "@readme/openapi-parser": "^5.5.0",
         "better-auth": "^1.2.0",
+        "dockerode": "^4.0.0",
         "hono": "^4.6.0",
         "ioredis": "^5.4.0",
         "resend": "^6.9.4",
+        "tar-fs": "^3.1.2",
         "yaml": "^2.6.0",
         "zod": "^3.23.0"
     },
