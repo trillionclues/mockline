@@ -5,7 +5,7 @@
     "scripts": {
         "dev": "tsx watch --env-file=.env src/index.ts",
         "db:sync": "prisma db push && prisma generate",
-        "build": "tsup src/index.ts --format esm --clean",
+        "build": "tsup",
         "start": "node dist/index.mjs",
         "typecheck": "tsc --noEmit",
         "test": "vitest run",
