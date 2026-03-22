@@ -53,5 +53,8 @@ export const auth = betterAuth({
         expiresIn: 60 * 60 * 24 * 7, // 7 days
         updateAge: 60 * 60 * 24,     // refresh session every 24h
     },
-    trustedOrigins: [process.env.CORS_ORIGIN ?? 'http://localhost:3000'],
+    trustedOrigins: [
+        process.env.CORS_ORIGIN ?? 'http://localhost:3000',
+        process.env.CORS_ORIGIN?.replace('://', '://www.') ?? 'http://www.localhost:3000',
+    ],
 })

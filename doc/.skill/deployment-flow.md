@@ -628,6 +628,16 @@ OR checkin and
 nano .env
 ```
 
+To update the env file
+nano /opt/mockline/.env
+Use the arrow keys to scroll down to the GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET lines. Delete the placeholder values and type in your real ones.
+
+Save and exit: Ctrl + O → Enter → Ctrl + X.
+Then retart the API
+docker compose restart api
+
+
+
 Created manually on the server. Never committed to git.
 API-only. No `NEXT_PUBLIC_*` vars needed here — web is on Vercel.
 
@@ -969,6 +979,11 @@ Settings → Secrets and variables → Actions
 # API / EC2
 API_HOST             # Elastic IP (or Hetzner IP later)
 API_USER             # deploy
+
+<!-- if using aws ec2 -->
+<!-- run this command to copy the entire contents of the .pem file to your clipboard -->
+cat ~/.ssh/mockline-staging.pem | pbcopy
+API_SSH_KEY        <contents of ~/.ssh/mockline-staging.pem>
 
 # Vercel (web)
 VERCEL_TOKEN         # from vercel.com → Account Settings → Tokens
