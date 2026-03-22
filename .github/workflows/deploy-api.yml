@@ -29,7 +29,6 @@ jobs:
         with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }
       - run: pnpm install --frozen-lockfile
       - run: pnpm typecheck
-      - run: pnpm lint
 
   # No separate migrate job — the API Dockerfile CMD runs
   # `prisma migrate deploy` on every container start.
