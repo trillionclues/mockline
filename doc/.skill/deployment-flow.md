@@ -348,8 +348,21 @@ This becomes `CF_DNS_API_TOKEN` in your `.env`.
 1. AWS Console → EC2 → Launch Instance
 2. **Name**: `mockline-staging`
 3. **AMI**: Ubuntu Server 24.04 LTS (free tier eligible)
-4. **Instance type**: t2.micro
+4. **Instance type**: t3.micro
 5. **Key pair**: Create new → ED25519 → download `.pem` → save to `~/.ssh/mockline-staging.pem`
+
+NB: if file is in download folder (move or copy it)
+mv ~/Downloads/new-key.pem ~/.ssh/mockline-staging.pem
+or
+cp ~/Downloads/new-key.pem ~/.ssh/mockline-staging.pem
+
+Key pair (login):
+Click Create new key pair.
+Name it mockline-staging.
+Key pair type: ED25519 (more modern/secure than RSA).
+Format: .pem.
+Click Create key pair and download it to your Mac (move it to ~/.ssh/mockline-staging.pem).
+
 6. **Security group** — new group with rules:
    ```
    SSH    TCP  22   My IP only    
@@ -357,6 +370,14 @@ This becomes `CF_DNS_API_TOKEN` in your `.env`.
    HTTPS  TCP  443    Anywhere
    ```
    Do NOT open ports 5432 (Postgres) or 6379 (Redis) — keep those internal to Docker.
+   Network settings:
+Click Edit in the corner of this panel.
+Select Create security group.
+Name it mockline-sg.
+Under Inbound security group rules:
+Rule 1: Type SSH, Source type My IP. (This restrict SSH to your current location only).
+Rule 2: Click "Add security group rule". Type HTTP, Source type Anywhere.
+Rule 3: Click "Add security group rule". Type HTTPS, Source type Anywhere.
 7. **Storage**: 30GB gp3
 8. Launch
 
@@ -371,7 +392,7 @@ This IP is permanent. Add it to `api`, `api.staging`, and `*` DNS records.
 
 ```bash
 chmod 400 ~/.ssh/mockline-staging.pem
-ssh -i ~/.ssh/mockline-staging.pem ubuntu@
+ssh -i ~/.ssh/mockline-staging.pem ubuntu@<YOUR_ELASTIC_IP>
 ```
 
 Ubuntu 24.04 on EC2 uses `ubuntu` as the default user.
@@ -379,7 +400,7 @@ Ubuntu 24.04 on EC2 uses `ubuntu` as the default user.
 ### Step 4 — Create deploy user
 
 ```bash
-sudo adduser deploy
+sudo adduser --disabled-password --gecos "" deploy
 sudo usermod -aG sudo deploy
 sudo mkdir -p /home/deploy/.ssh
 sudo cp ~/.ssh/authorized_keys /home/deploy/.ssh/
@@ -413,6 +434,11 @@ sudo sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/
 sudo sed -i 's/PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
 sudo systemctl restart sshd
 
+# NOTE
+# In newer versions of Ubuntu, the SSH service is named ssh instead of sshd. Your modifications to the config file were completely successful, it just couldn't find the old name to restart the service.
+# Run this command instead to safely restart it and apply the changes:
+# sudo systemctl restart ssh
+
 # Firewall
 sudo ufw default deny incoming
 sudo ufw default allow outgoing
@@ -421,7 +447,7 @@ sudo ufw allow 80/tcp  # HTTP (Traefik → Let's Encrypt)
 sudo ufw allow 443/tcp # HTTPS
 sudo ufw --force enable
 
-# Fail2ban — blocks IPs after repeated failed SSH attempts
+# Fail2ban — block brute-force IPs attacks after repeated failed SSH attempts
 sudo apt install fail2ban -y
 sudo systemctl enable fail2ban
 sudo systemctl start fail2ban
@@ -448,7 +474,8 @@ ssh -i ~/.ssh/mockline-staging.pem deploy@<ELASTIC_IP>
 ## 9. Docker + Docker Compose on Server
 
 ```bash
-# Install Docker and add deploy user to docker group
+# Install Docker and
+# give deploy user permission to run docker commands
 curl -fsSL https://get.docker.com | sudo sh
 sudo usermod -aG docker deploy
 
@@ -463,7 +490,6 @@ docker compose version
 sudo mkdir -p /opt/mockline
 sudo chown deploy:deploy /opt/mockline
 ```
-
 ---
 
 ## 10. SSL — Traefik + Let's Encrypt
@@ -526,7 +552,8 @@ api:
   dashboard: false
 ```
 
-### Create cert files on VPS
+### Create Traefik cert files on VPS
+Traefik needs a place to securely store the SSL certificates it gets from Let's Encrypt. Run this block to create the empty, secure files:
 
 ```bash
 mkdir -p /opt/mockline/letsencrypt
@@ -534,6 +561,14 @@ touch /opt/mockline/letsencrypt/acme.json
 touch /opt/mockline/letsencrypt/acme-wildcard.json
 chmod 600 /opt/mockline/letsencrypt/acme.json
 chmod 600 /opt/mockline/letsencrypt/acme-wildcard.json
+```
+
+Or if already inside /opt/mockline
+
+```bash
+mkdir -p letsencrypt
+touch letsencrypt/acme.json letsencrypt/acme-wildcard.json
+chmod 600 letsencrypt/acme.json letsencrypt/acme-wildcard.json
 ```
 
 ### Wildcard cert for mock containers
@@ -557,6 +592,14 @@ The wildcard cert is issued once and reused for every `mock-*.mockline.xyz` subd
 ---
 
 ## 11. Environment Variables
+Step 1: Clone the Repository
+Right now, you are connected to an empty server. Let's pull down your code. Run these commands:
+cd /opt/mockline
+git clone https://github.com/trillionclues/mockline.git .
+
+Step 2: Create your .env File
+Your GitHub repository doesn't (and shouldn't) contain your production secrets, so you must create the .env file manually on the server.
+
 
 ### Local dev — current setup is correct
 - `apps/api/.env` — real values, gitignored ✓
@@ -580,6 +623,10 @@ BETTER_AUTH_SECRET           <must match API value>
 ```
 
 ### On VPS — `/opt/mockline/.env`
+OR checkin and 
+```bash
+nano .env
+```
 
 Created manually on the server. Never committed to git.
 API-only. No `NEXT_PUBLIC_*` vars needed here — web is on Vercel.
@@ -616,6 +663,9 @@ GITHUB_CLIENT_SECRET=your_staging_client_secret
 # ── Google OAuth ──────
 GOOGLE_CLIENT_ID=your_staging_google_client_id
 GOOGLE_CLIENT_SECRET=your_staging_google_client_secret
+
+GOOGLE_CLIENT_ID
+GOOGLE_CLIENT_SECRET
 
 # ── Internal ────────────
 INTERNAL_API_SECRET= # openssl rand -hex 32
@@ -779,9 +829,51 @@ Add to root `package.json`:
   }
 }
 ```
+
+# Start everything
+docker compose up -d --build
+
+# Check status
+docker compose ps
+docker compose logs -f
+```
+
+### After containers are healthy
+
+```bash
+# Run BetterAuth migration (once only)
+docker compose exec api pnpm dlx @better-auth/cli migrate \
+  --config apps/api/src/lib/auth.ts
+
+# Verify health
+curl https://api.mockline.xyz/health
+```
+
+Run this command in your server terminal right now to see your hard drive space:
+
+```bash
+df -h /
+```
+
+If you ever modify volume on aws, run these two commands to tell Ubuntu to expand into the new space:
+
+```bash
+sudo growpart /dev/root 1
+sudo resize2fs /dev/root
+```
+
+After doing that, run df -h / again. The Size column should now proudly display ~29G or 30G.
+
+Once you confirm you have the space, clear out the broken Docker files from the first attempt and start the build again!
+
+Clear out the broken Docker files from the first attempt and start the build again!
+docker system prune -a --volumes -f
+docker compose up -d --build
 ---
 
 ## 13. Prisma Migrations + BetterAuth Tables
+To find out errors in any container, run this command to see the error logs for just that container:
+docker compose logs --tail=50 api
 
 ### Create your first migration (not done yet)
 
@@ -805,11 +897,11 @@ Never do this in staging/prod: pnpm prisma db push (no migration history, destru
 
 ### BetterAuth tables — run once per new database
 BetterAuth manages its own schema. After the database is reachable:
+Because this is a brand new database, we need to create the user, session, and account tables that better-auth uses.
 
 ```bash
 # On VPS, after first deploy:
-docker compose exec api pnpm dlx @better-auth/cli migrate \
-  --config apps/api/src/lib/auth.ts
+  docker compose exec api pnpm dlx @better-auth/cli migrate --config apps/api/src/lib/auth.ts
 ```
 This creates four tables:
 - `user` — core user record
@@ -819,62 +911,6 @@ This creates four tables:
 
 These tables are separate from the app schema. Run this once per
 new database (staging and production separately).  Never again unless you wipe the database.
----
-
-## 14. Application Deployment
-
-### Vercel — connect repo and configure
-
-1. vercel.com → New Project → Import from GitHub → select `mockline`
-2. **Root Directory**: `apps/web`
-3. **Framework**: Next.js (auto-detected)
-4. **Environment Variables**: add all `NEXT_PUBLIC_*` vars from Section 11
-5. Deploy
-
-Vercel auto-deploys on every push to `main`. Preview deploys on every PR.
-
-### Connect custom domain to Vercel
-
-Vercel → your project → Settings → Domains → Add:
-- `mockline.xyz`
-- `www.mockline.xyz`
-
-Vercel will show you the DNS values to add. Add them in Cloudflare (Section 15).
-
-### First deploy — manual, run once
-
-```bash
-# On VPS as deploy user
-cd /opt/mockline
-git clone https://github.com/trillionclues/mockline.git .
-
-# Create .env (paste all values from Section 11)
-nano .env
-
-# Create cert files
-mkdir -p letsencrypt
-touch letsencrypt/acme.json letsencrypt/acme-wildcard.json
-chmod 600 letsencrypt/acme.json letsencrypt/acme-wildcard.json
-
-# Start everything
-docker compose up -d --build
-
-# Check status
-docker compose ps
-docker compose logs -f
-```
-
-### After containers are healthy
-
-```bash
-# Run BetterAuth migration (once only)
-docker compose exec api pnpm dlx @better-auth/cli migrate \
-  --config apps/api/src/lib/auth.ts
-
-# Verify health
-curl https://api.mockline.xyz/health
-```
-
 ---
 
 ## 15. DNS Records
