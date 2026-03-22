@@ -5,4 +5,11 @@ export default defineConfig({
   format: ['esm'],
   clean: true,
   noExternal: [/@mockline\/.*/],
+  external: [
+    'dockerode',
+    'tar-fs',
+    '@prisma/client',
+    '@readme/openapi-parser',
+    'yaml'
+  ],
 });
