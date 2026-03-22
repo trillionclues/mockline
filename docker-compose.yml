@@ -56,6 +56,8 @@ services:
     restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    group_add:
+      - "988"
     env_file: .env
     # Explicit values override .env — uses Docker service names for container networking
     environment:
