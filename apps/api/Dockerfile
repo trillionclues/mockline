@@ -18,7 +18,7 @@ WORKDIR /app
 COPY --from=pruner /app/out/json/ .
 COPY --from=pruner /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
 COPY --from=pruner /app/out/full/packages/db/prisma/schema.prisma ./packages/db/prisma/schema.prisma
-RUN pnpm install --frozen-lockfile -r
+RUN pnpm install --frozen-lockfile -r --shamefully-hoist
 
 # ── builder ───────
 FROM base AS builder
