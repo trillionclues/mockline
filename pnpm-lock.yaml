@@ -38,9 +38,15 @@ importers:
       '@mockline/types':
         specifier: workspace:*
         version: link:../../packages/types
+      '@readme/openapi-parser':
+        specifier: ^5.5.0
+        version: 5.5.0(openapi-types@12.1.3)
       better-auth:
         specifier: ^1.2.0
         version: 1.4.20(@prisma/client@5.22.0(prisma@5.22.0))(next@15.5.12(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(prisma@5.22.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@2.1.9(@types/node@22.19.13)(lightningcss@1.31.1))
+      dockerode:
+        specifier: ^4.0.0
+        version: 4.0.9
       hono:
         specifier: ^4.6.0
         version: 4.12.3
@@ -50,6 +56,9 @@ importers:
       resend:
         specifier: ^6.9.4
         version: 6.9.4
+      tar-fs:
+        specifier: ^3.1.2
+        version: 3.1.2
       yaml:
         specifier: ^2.6.0
         version: 2.8.2
