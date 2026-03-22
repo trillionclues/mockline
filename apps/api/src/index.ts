@@ -25,7 +25,10 @@ app.use('*', logger())
 app.use(
     '*',
     cors({
-        origin: process.env.CORS_ORIGIN ?? 'http://localhost:3000',
+        origin: [
+            process.env.CORS_ORIGIN ?? 'http://localhost:3000',
+            process.env.CORS_ORIGIN?.replace('://', '://www.') ?? 'http://www.localhost:3000',
+        ],
         credentials: true,
     }),
 )
