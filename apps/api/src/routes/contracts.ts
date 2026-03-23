@@ -1,10 +1,17 @@
 import { Hono } from 'hono'
 import { z } from 'zod'
-import { db, Prisma } from '@mockline/db'
+import { Prisma } from '@mockline/db'
 import { validateSpec } from '@mockline/spec-parser'
 import { runContractTest } from '../services/contract-runner'
 import { requireTier } from '../middleware/tier-guard'
 import { rateLimit } from '../middleware/rate-limit'
+import { findSpecWithLatestVersion } from '../repositories/spec.repository'
+import {
+    createTestRun,
+    updateTestRun,
+    findTestRun,
+    listTestRuns,
+} from '../repositories/contract.repository'
 import type { AppEnv } from '../types/env'
 
 export const contractsRouter = new Hono<AppEnv>()
@@ -65,11 +72,8 @@ contractsRouter.post('/', rateLimit('CONTRACT_TEST'), async (c) => {
 
     const { specId, baseUrl } = parsed.data
 
-    // Get latest spec version
-    const spec = await db.spec.findFirst({
-        where: { id: specId, userId, deletedAt: null },
-        include: { versions: { orderBy: { version: 'desc' }, take: 1 } },
-    })
+    // get latest spec version
+    const spec = await findSpecWithLatestVersion(specId, userId)
 
     if (!spec || spec.versions.length === 0) {
         return c.json({ data: null, error: { code: 'NOT_FOUND', message: 'Spec not found' } }, 404)
@@ -86,45 +90,30 @@ contractsRouter.post('/', rateLimit('CONTRACT_TEST'), async (c) => {
         )
     }
 
-    // Create test run record
-    const testRun = await db.contractTestRun.create({
-        data: {
-            specId,
-            userId,
-            baseUrl,
-            results: [],
-            summary: { total: 0, passed: 0, failed: 0 },
-            status: 'running',
-        },
-    })
+    // create test run record
+    const testRun = await createTestRun({ specId, userId, baseUrl })
 
-    // Run tests
+    // run tests
     try {
         const results = await runContractTest({
             endpoints: validation.endpoints,
             baseUrl,
         })
 
-        await db.contractTestRun.update({
-            where: { id: testRun.id },
-            data: {
-                results: results.endpoints as unknown as Prisma.InputJsonValue,
-                summary: {
-                    total: results.total,
-                    passed: results.passed,
-                    failed: results.failed,
-                    errors: results.errors,
-                },
-                status: 'completed',
+        await updateTestRun(testRun.id, {
+            results: results.endpoints as unknown as Prisma.InputJsonValue,
+            summary: {
+                total: results.total,
+                passed: results.passed,
+                failed: results.failed,
+                errors: results.errors,
             },
+            status: 'completed',
         })
 
         return c.json({ data: { id: testRun.id, ...results }, error: null }, 201)
     } catch (error) {
-        await db.contractTestRun.update({
-            where: { id: testRun.id },
-            data: { status: 'failed' },
-        })
+        await updateTestRun(testRun.id, { status: 'failed' })
 
         return c.json(
             { data: null, error: { code: 'TEST_FAILED', message: (error as Error).message } },
@@ -133,12 +122,10 @@ contractsRouter.post('/', rateLimit('CONTRACT_TEST'), async (c) => {
     }
 })
 
-// GET /contracts/:id — Get test run results
+// get test run results
 contractsRouter.get('/:id', async (c) => {
     const userId = c.get('user').id
-    const testRun = await db.contractTestRun.findFirst({
-        where: { id: c.req.param('id'), userId },
-    })
+    const testRun = await findTestRun(c.req.param('id'), userId)
 
     if (!testRun) {
         return c.json(
@@ -150,19 +137,12 @@ contractsRouter.get('/:id', async (c) => {
     return c.json({ data: transformRun(testRun), error: null })
 })
 
-// GET /contracts — List test runs for a spec
+// list test runs for a spec
 contractsRouter.get('/', async (c) => {
     const userId = c.get('user').id
     const specId = c.req.query('specId')
 
-    const testRuns = await db.contractTestRun.findMany({
-        where: {
-            userId,
-            ...(specId ? { specId } : {}),
-        },
-        orderBy: { createdAt: 'desc' },
-        take: 20,
-    })
+    const testRuns = await listTestRuns(userId, specId)
 
     return c.json({ data: testRuns.map(transformRun), error: null })
 })

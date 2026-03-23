@@ -1,11 +1,20 @@
 import { Hono } from 'hono'
 import { z } from 'zod'
-import { db } from '@mockline/db'
 import { parseEndpoints, detectFormat } from '@mockline/spec-parser'
 import yaml from 'yaml'
 import { createSpec, addSpecVersion } from '../services/mock-provisioner'
 import { SPEC_LIMITS } from '@mockline/types'
 import { requireTier } from '../middleware/tier-guard'
+import {
+    listSpecs,
+    findSpec,
+    findSpecBasic,
+    countSpecs,
+    softDeleteSpec,
+    listVersions,
+    findVersion,
+} from '../repositories/spec.repository'
+import { findMocksBySpec, updateMockStatus } from '../repositories/mock.repository'
 import type { AppEnv } from '../types/env'
 
 export const specsRouter = new Hono<AppEnv>()
@@ -22,21 +31,14 @@ const AddVersionSchema = z.object({
     content: z.string().min(1).max(1024 * 1024),
 })
 
-// GET /specs — List user's specs
+// list user's specs
 specsRouter.get('/', async (c) => {
     const userId = c.get('user').id
-    const specs = await db.spec.findMany({
-        where: { userId, deletedAt: null },
-        include: {
-            versions: { orderBy: { version: 'desc' }, take: 1 },
-            _count: { select: { mockServers: { where: { deletedAt: null } } } },
-        },
-        orderBy: { updatedAt: 'desc' },
-    })
+    const specs = await listSpecs(userId)
     return c.json({ data: specs, error: null })
 })
 
-// POST /specs — Upload new spec (paste content OR import from URL)
+// upload new spec (paste content OR import from URL)
 specsRouter.post('/', async (c) => {
     const userId = c.get('user').id
     const userTier = c.get('user').tier
@@ -50,12 +52,10 @@ specsRouter.post('/', async (c) => {
         )
     }
 
-    // Enforce spec limit by tier
+    // enforce spec limit by tier
     const specLimit = SPEC_LIMITS[userTier ?? 'FREE']
     if (specLimit !== Infinity) {
-        const existingCount = await db.spec.count({
-            where: { userId, deletedAt: null },
-        })
+        const existingCount = await countSpecs(userId)
         if (existingCount >= specLimit) {
             return c.json(
                 {
@@ -63,7 +63,6 @@ specsRouter.post('/', async (c) => {
                     error: {
                         code: 'UPGRADE_REQUIRED',
                         message: `Spec limit reached. Upgrade to Pro for unlimited specs.`,
-                        // message: `Spec limit reached (${specLimit} for ${userTier} tier). Upgrade to Pro for unlimited specs.`,
                         requiredTier: 'PRO',
                     },
                 },
@@ -114,13 +113,10 @@ specsRouter.post('/', async (c) => {
     }
 })
 
-// GET /specs/:id — Get spec + versions + parsed endpoints
+// get spec + versions + parsed endpoints
 specsRouter.get('/:id', async (c) => {
     const userId = c.get('user').id
-    const spec = await db.spec.findFirst({
-        where: { id: c.req.param('id'), userId, deletedAt: null },
-        include: { versions: { orderBy: { version: 'desc' } } },
-    })
+    const spec = await findSpec(c.req.param('id'), userId)
 
     if (!spec) {
         return c.json({ data: null, error: { code: 'NOT_FOUND', message: 'Spec not found' } }, 404)
@@ -144,21 +140,17 @@ specsRouter.get('/:id', async (c) => {
     return c.json({ data: { ...spec, endpoints }, error: null })
 })
 
-// DELETE /specs/:id — Soft delete spec
+// soft delete spec
 specsRouter.delete('/:id', async (c) => {
     const userId = c.get('user').id
-    const spec = await db.spec.findFirst({
-        where: { id: c.req.param('id'), userId, deletedAt: null },
-    })
+    const spec = await findSpecBasic(c.req.param('id'), userId)
 
     if (!spec) {
         return c.json({ data: null, error: { code: 'NOT_FOUND', message: 'Spec not found' } }, 404)
     }
 
-    // Cascade: stop and remove all mock containers for this spec
-    const mocks = await db.mockServer.findMany({
-        where: { specId: spec.id, deletedAt: null },
-    });
+    // cascade: stop and remove all mock containers for this spec
+    const mocks = await findMocksBySpec(spec.id)
 
     const { removeContainer } = await import('@mockline/docker-manager')
 
@@ -171,36 +163,24 @@ specsRouter.delete('/:id', async (c) => {
                     // container may already be gone, continue
                 }
             }
-            await db.mockServer.update({
-                where: { id: mock.id },
-                data: { status: 'REMOVED', deletedAt: new Date() },
-            })
+            await updateMockStatus(mock.id, 'REMOVED', { deletedAt: new Date() })
         })
     )
 
-    await db.spec.update({
-        where: { id: spec.id },
-        data: { deletedAt: new Date() },
-    })
+    await softDeleteSpec(spec.id)
     return c.json({ data: { deleted: true }, error: null })
 })
 
-// GET /specs/:id/versions — Version history
+// version history
 specsRouter.get('/:id/versions', async (c) => {
     const userId = c.get('user').id
-    const spec = await db.spec.findFirst({
-        where: { id: c.req.param('id'), userId, deletedAt: null },
-    })
+    const spec = await findSpecBasic(c.req.param('id'), userId)
 
     if (!spec) {
         return c.json({ data: null, error: { code: 'NOT_FOUND', message: 'Spec not found' } }, 404)
     }
 
-    const versions = await db.specVersion.findMany({
-        where: { specId: spec.id },
-        orderBy: { version: 'desc' },
-        select: { id: true, version: true, format: true, hash: true, createdAt: true },
-    })
+    const versions = await listVersions(spec.id)
     return c.json({ data: versions, error: null })
 })
 
@@ -232,23 +212,21 @@ specsRouter.post('/:id/versions', async (c) => {
     }
 })
 
-// GET /specs/:id/versions/:v1/diff/:v2 — Diff two versions (PRO+)
+// diff two versions (PRO+)
 specsRouter.get('/:id/versions/:v1/diff/:v2', requireTier('PRO'), async (c) => {
     const userId = c.get('user').id
     const specId = c.req.param('id')
     const v1 = parseInt(c.req.param('v1'))
     const v2 = parseInt(c.req.param('v2'))
 
-    const spec = await db.spec.findFirst({
-        where: { id: specId, userId, deletedAt: null },
-    })
+    const spec = await findSpecBasic(specId, userId)
     if (!spec) {
         return c.json({ data: null, error: { code: 'NOT_FOUND', message: 'Spec not found' } }, 404)
     }
 
     const [version1, version2] = await Promise.all([
-        db.specVersion.findFirst({ where: { specId, version: v1 } }),
-        db.specVersion.findFirst({ where: { specId, version: v2 } }),
+        findVersion(specId, v1),
+        findVersion(specId, v2),
     ])
 
     if (!version1 || !version2) {

@@ -9,6 +9,7 @@ import type { User } from '@/types'
 
 export function SettingsView({ user }: { user?: User }) {
     const [deleteOpen, setDeleteOpen] = useState(false)
+    const [cancelOpen, setCancelOpen] = useState(false)
     const router = useRouter()
 
     return (
@@ -91,16 +92,7 @@ export function SettingsView({ user }: { user?: User }) {
                             <button
                                 className="btn-secondary"
                                 style={{ height: '32px', fontSize: '12px' }}
-                                onClick={async () => {
-                                    if (!confirm('Are you sure you want to cancel your Mockline subscription? You will still have access until the end of the billing period.')) return
-                                    try {
-                                        await billingApi.cancel()
-                                        alert('Subscription cancelled. You will still have access until the end of the billing period.')
-                                        window.location.reload()
-                                    } catch (err: any) {
-                                        alert('Failed to cancel subscription: ' + err.message)
-                                    }
-                                }}
+                                onClick={() => setCancelOpen(true)}
                             >
                                 Cancel plan
                             </button>
@@ -140,6 +132,23 @@ export function SettingsView({ user }: { user?: User }) {
                     }
                     await authClient.signOut()
                     router.push('/')
+                }}
+            />
+
+            <ConfirmDialog
+                open={cancelOpen}
+                onClose={() => setCancelOpen(false)}
+                title="Cancel Subscription"
+                description="Are you sure you want to cancel your Mockline subscription? You will still have access until the end of the current billing period."
+                confirmText="Cancel Subscription"
+                loadingText="Cancelling..."
+                onConfirm={async () => {
+                    try {
+                        await billingApi.cancel()
+                        window.location.reload()
+                    } catch (err: any) {
+                        alert('Failed to cancel subscription: ' + err.message)
+                    }
                 }}
             />
         </div>

@@ -1,8 +1,15 @@
 import { Hono } from 'hono'
 import { z } from 'zod'
-import { db } from '@mockline/db'
 import { stopContainer, removeContainer, getContainerStatus } from '@mockline/docker-manager'
 import { provisionMockServer } from '../services/mock-provisioner'
+import {
+    listMocks,
+    findMock,
+    findMockByStatus,
+    findMockBasic,
+    updateMockStatus,
+    touchLastAccessed,
+} from '../repositories/mock.repository'
 import type { AppEnv } from '../types/env'
 import { rateLimit } from '../middleware/rate-limit'
 
@@ -21,18 +28,14 @@ const ProvisionSchema = z.object({
         .optional(),
 })
 
-// GET /mocks — List user's mock servers
+// list user's mock servers
 mocksRouter.get('/', async (c) => {
     const userId = c.get('user').id
-    const mocks = await db.mockServer.findMany({
-        where: { userId, deletedAt: null },
-        include: { spec: { select: { name: true } } },
-        orderBy: { updatedAt: 'desc' },
-    })
+    const mocks = await listMocks(userId)
     return c.json({ data: mocks, error: null })
 })
 
-// POST /mocks — Provision new mock server
+// provision new mock server
 mocksRouter.post('/', rateLimit('PROVISION'), async (c) => {
     const userId = c.get('user').id
     const user = c.get('user')
@@ -86,39 +89,31 @@ mocksRouter.post('/', rateLimit('PROVISION'), async (c) => {
     }
 })
 
-// GET /mocks/:id — Get mock server details + live status
+// get mock server details + live status
 mocksRouter.get('/:id', async (c) => {
     const userId = c.get('user').id
-    const mock = await db.mockServer.findFirst({
-        where: { id: c.req.param('id'), userId, deletedAt: null },
-        include: { spec: { select: { name: true } }, specVersion: { select: { version: true } } },
-    })
+    const mock = await findMock(c.req.param('id'), userId)
 
     if (!mock) {
         return c.json({ data: null, error: { code: 'NOT_FOUND', message: 'Mock not found' } }, 404)
     }
 
-    // Fetch live container status if running
+    // fetch container status if running
     let containerStatus = null
     if (mock.dockerContainerId) {
         containerStatus = await getContainerStatus(mock.dockerContainerId)
     }
 
     // Update lastAccessedAt
-    await db.mockServer.update({
-        where: { id: mock.id },
-        data: { lastAccessedAt: new Date() },
-    })
+    await touchLastAccessed(mock.id)
 
     return c.json({ data: { ...mock, containerStatus }, error: null })
 })
 
-// POST /mocks/:id/start — Start a stopped server
+// start a stopped server
 mocksRouter.post('/:id/start', async (c) => {
     const userId = c.get('user').id
-    const mock = await db.mockServer.findFirst({
-        where: { id: c.req.param('id'), userId, status: 'STOPPED', deletedAt: null },
-    })
+    const mock = await findMockByStatus(c.req.param('id'), userId, 'STOPPED')
 
     if (!mock?.dockerContainerId) {
         return c.json(
@@ -132,10 +127,7 @@ mocksRouter.post('/:id/start', async (c) => {
         const container = docker.getContainer(mock.dockerContainerId)
         await container.start()
 
-        await db.mockServer.update({
-            where: { id: mock.id },
-            data: { status: 'RUNNING', lastAccessedAt: new Date() },
-        })
+        await updateMockStatus(mock.id, 'RUNNING', { lastAccessedAt: new Date() })
 
         return c.json({ data: { status: 'RUNNING' }, error: null })
     } catch (error) {
@@ -146,12 +138,10 @@ mocksRouter.post('/:id/start', async (c) => {
     }
 })
 
-// POST /mocks/:id/stop — Stop a running server
+// stop a running server
 mocksRouter.post('/:id/stop', async (c) => {
     const userId = c.get('user').id
-    const mock = await db.mockServer.findFirst({
-        where: { id: c.req.param('id'), userId, status: 'RUNNING', deletedAt: null },
-    })
+    const mock = await findMockByStatus(c.req.param('id'), userId, 'RUNNING')
 
     if (!mock?.dockerContainerId) {
         return c.json(
@@ -161,20 +151,15 @@ mocksRouter.post('/:id/stop', async (c) => {
     }
 
     await stopContainer(mock.dockerContainerId)
-    await db.mockServer.update({
-        where: { id: mock.id },
-        data: { status: 'STOPPED' },
-    })
+    await updateMockStatus(mock.id, 'STOPPED')
 
     return c.json({ data: { status: 'STOPPED' }, error: null })
 })
 
-// DELETE /mocks/:id — Stop + remove
+// stop and remove mock
 mocksRouter.delete('/:id', async (c) => {
     const userId = c.get('user').id
-    const mock = await db.mockServer.findFirst({
-        where: { id: c.req.param('id'), userId, deletedAt: null },
-    })
+    const mock = await findMockBasic(c.req.param('id'), userId)
 
     if (!mock) {
         return c.json({ data: null, error: { code: 'NOT_FOUND', message: 'Mock not found' } }, 404)
@@ -188,10 +173,7 @@ mocksRouter.delete('/:id', async (c) => {
         }
     }
 
-    await db.mockServer.update({
-        where: { id: mock.id },
-        data: { status: 'REMOVED', deletedAt: new Date() },
-    })
+    await updateMockStatus(mock.id, 'REMOVED', { deletedAt: new Date() })
 
     return c.json({ data: { deleted: true }, error: null })
 })

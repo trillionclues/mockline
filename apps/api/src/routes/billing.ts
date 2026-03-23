@@ -1,10 +1,10 @@
 import { Hono } from 'hono'
-import { db } from '@mockline/db'
 import { requireAuth } from '../middleware/auth'
 import {
     createCheckout,
     cancelSubscription,
 } from '@lemonsqueezy/lemonsqueezy.js'
+import { findUserSubscription } from '../repositories/subscription.repository'
 import type { AppEnv } from '../types/env'
 
 export const billingRouter = new Hono<AppEnv>()
@@ -53,11 +53,10 @@ billingRouter.post('/checkout', requireAuth, async (c) => {
     return c.json({ data: { checkoutUrl: checkout.data?.data.attributes.url }, error: null })
 })
 
-// POST /billing/cancel
-// Cancels the user's active subscription via Lemon Squeezy API.
+// cancel user's active sub
 billingRouter.post('/cancel', requireAuth, async (c) => {
     const user = c.get('user')
-    const dbUser = await db.user.findUnique({ where: { id: user.id } })
+    const dbUser = await findUserSubscription(user.id)
 
     if (!dbUser?.lemonSqueezySubscriptionId) {
         return c.json(
@@ -77,4 +76,3 @@ billingRouter.post('/cancel', requireAuth, async (c) => {
 
     return c.json({ data: { cancelled: true }, error: null })
 })
-

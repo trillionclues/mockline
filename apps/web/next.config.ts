@@ -3,6 +3,7 @@ const nextConfig = {
     reactStrictMode: true,
     transpilePackages: ['@mockline/types', '@mockline/spec-parser'],
     serverExternalPackages: ['@prisma/client', '@mockline/db'],
+    allowedDevOrigins: ['127.0.0.1', 'localhost', 'mockline.xyz'],
 }
 
 export default nextConfig

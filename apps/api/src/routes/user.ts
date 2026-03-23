@@ -1,21 +1,21 @@
 import { Hono } from 'hono'
-import { db } from '@mockline/db'
 import { cleanupUserResources } from '../services/user-cleanup'
+import { deleteUser } from '../repositories/user.repository'
 import type { AppEnv } from '../types/env'
 
 export const userRouter = new Hono<AppEnv>()
 
-// DELETE /user/me — delete own account
+// delete own account
 userRouter.delete('/me', async (c) => {
     const userId = c.get('user').id
 
     try {
-        // Stop and remove all Docker containers
+        // stop and remove all docker containers
         await cleanupUserResources(userId)
 
-        // Delete the user record - Prisma cascade handles:
+        // delete the user record - prisma cascade handles:
         // specs, spec_versions, mock_servers, sessions, accounts
-        await db.user.delete({ where: { id: userId } })
+        await deleteUser(userId)
 
         return c.json({ data: { deleted: true }, error: null })
     } catch (error) {

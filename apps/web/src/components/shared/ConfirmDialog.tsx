@@ -9,9 +9,11 @@ type Props = {
     confirmWord?: string
     onConfirm: () => Promise<void>
     variant?: 'default' | 'destructive'
+    confirmText?: string
+    loadingText?: string
 }
 
-export function ConfirmDialog({ open, onClose, title, description, confirmWord, onConfirm, variant = 'default' }: Props) {
+export function ConfirmDialog({ open, onClose, title, description, confirmWord, onConfirm, variant = 'default', confirmText, loadingText }: Props) {
     const [input, setInput] = useState('')
     const [loading, setLoading] = useState(false)
 
@@ -71,7 +73,9 @@ export function ConfirmDialog({ open, onClose, title, description, confirmWord, 
                         disabled={!canConfirm || loading}
                         className={isDestructive ? 'btn-destructive' : 'btn-primary'}
                     >
-                        {loading ? 'Deleting...' : isDestructive ? 'Delete' : 'Confirm'}
+                        {loading 
+                            ? (loadingText || (isDestructive ? 'Deleting...' : 'Confirming...')) 
+                            : (confirmText || (isDestructive ? 'Delete' : 'Confirm'))}
                     </button>
                 </div>
             </div>
