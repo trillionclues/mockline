@@ -371,6 +371,7 @@ Click Create key pair and download it to your Mac (move it to ~/.ssh/mockline-st
    ```
    Do NOT open ports 5432 (Postgres) or 6379 (Redis) — keep those internal to Docker.
    Network settings:
+
 Click Edit in the corner of this panel.
 Select Create security group.
 Name it mockline-sg.
@@ -384,6 +385,14 @@ Rule 3: Click "Add security group rule". Type HTTPS, Source type Anywhere.
 ### Step 2 — Allocate Elastic IP
 
 EC2 → Elastic IPs → Allocate → Associate → select your instance
+If you restart your server without this, your IP changes and DNS breaks.
+
+In the EC2 Dashboard left sidebar, under Network & Security, click Elastic IPs.
+Click Allocate Elastic IP address.
+Leave everything default and click Allocate.
+Select the newly created IP address, click the Actions dropdown, and select Associate Elastic IP address.
+Instance: Select your mockline-staging instance from the dropdown.
+Click Associate.
 
 This IP is permanent. Add it to `api`, `api.staging`, and `*` DNS records.
 `@` and `www` go to Vercel — not here.
@@ -420,6 +429,7 @@ Run as `ubuntu`. Do this immediately after provisioning.
 sudo apt update && sudo apt upgrade -y
 
 # Enable swap — critical on t2.micro (1GB RAM)
+# so it doesn't crash when running Docker builds
 sudo fallocate -l 2G /swapfile
 sudo chmod 600 /swapfile
 sudo mkswap /swapfile
@@ -427,12 +437,11 @@ sudo swapon /swapfile
 echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 free -h   # verify
 
-# SSH hardening — keep port 22 (EC2 Security Group restricts to your IP)
-# Disable root login and password auth (key only)
+# SSH hardening by disabling root login and password login (key only)
 sudo sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin no/' /etc/ssh/sshd_config
 sudo sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
 sudo sed -i 's/PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
-sudo systemctl restart sshd
+sudo systemctl restart ssh
 
 # NOTE
 # In newer versions of Ubuntu, the SSH service is named ssh instead of sshd. Your modifications to the config file were completely successful, it just couldn't find the old name to restart the service.
@@ -479,17 +488,124 @@ ssh -i ~/.ssh/mockline-staging.pem deploy@<ELASTIC_IP>
 curl -fsSL https://get.docker.com | sudo sh
 sudo usermod -aG docker deploy
 
-# Log out and back in
-exit
-ssh -i ~/.ssh/mockline-staging.pem deploy@<ELASTIC_IP>
+# Create the project directory
+sudo mkdir -p /opt/mockline
+sudo chown deploy:deploy /opt/mockline
 
 # Verify
 docker --version
 docker compose version
 
-sudo mkdir -p /opt/mockline
-sudo chown deploy:deploy /opt/mockline
+# Log out and back in
+exit
+ssh -i ~/.ssh/mockline-staging.pem deploy@<ELASTIC_IP>
 ```
+---
+
+
+Log back in as deploy tep 1: Clone the Repository
+ssh -i ~/.ssh/mockline-staging.pem deploy@<YOUR_ELASTIC_IP>
+
+Right now, you are connected to an empty server. Let's pull down your code. Run these commands:
+cd /opt/mockline
+git clone https://github.com/trillionclues/mockline.git .
+
+### On VPS — `/opt/mockline/.env`
+OR checkin and 
+```bash
+nano .env
+```
+
+To update the env file
+nano /opt/mockline/.env
+Use the arrow keys to scroll down to the GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET lines. Delete the placeholder values and type in your real ones.
+
+Save and exit: Ctrl + O → Enter → Ctrl + X.
+Then retart the API
+docker compose restart api
+
+
+
+Created manually on the server. Never committed to git.
+API-only. No `NEXT_PUBLIC_*` vars needed here — web is on Vercel.
+
+```bash
+# ── App ────────────
+NODE_ENV=production
+PORT=4000
+CORS_ORIGIN=https://mockline.xyz
+
+# ── Database ────────────
+POSTGRES_USER=mockline
+POSTGRES_PASSWORD=
+POSTGRES_DB=mockline_prod
+# 'db' = Docker service name — correct for container-to-container
+DATABASE_URL=postgresql://mockline:your_secure_db_password@db:5432/mockline_prod
+
+# ── Redis ────────────
+# 'cache' = Docker service name
+REDIS_URL=redis://cache:6379
+
+# ── BetterAuth ────────────
+BETTER_AUTH_SECRET= # openssl rand -hex 32
+BETTER_AUTH_URL=https://api.mockline.xyz
+
+# ── GitHub OAuth ────────────
+# Create NEW OAuth app: github.com/settings/developers/new
+# Homepage URL:  https://mockline.xyz
+# Use your existing staging OAuth app from GitHub
+# Callback URL must match: https://api.mockline.xyz/api/auth/callback/github
+GITHUB_CLIENT_ID=your_staging_client_id
+GITHUB_CLIENT_SECRET=your_staging_client_secret
+
+# ── Google OAuth ──────
+GOOGLE_CLIENT_ID=your_staging_google_client_id
+GOOGLE_CLIENT_SECRET=your_staging_google_client_secret
+
+GOOGLE_CLIENT_ID=your_staging_client_id
+GOOGLE_CLIENT_SECRET=your_staging_client_secret
+
+# ── Internal ────────────
+INTERNAL_API_SECRET= # openssl rand -hex 32
+
+# ── Frontend (vercel)────────────
+NEXT_PUBLIC_API_URL=https://api.mockline.xyz
+NEXT_PUBLIC_APP_URL=https://mockline.xyz
+NEXT_PUBLIC_MOCK_BASE_URL=https://mock.mockline.xyz
+NEXT_PUBLIC_AUTH_URL=https://api.mockline.xyz
+
+# ── Docker ────────────
+DOCKER_HOST=unix:///var/run/docker.sock
+MOCK_BASE_DOMAIN=mockline.xyz
+CONTOUR_VERSION=1.2.0
+
+# ── Traefik ────────────
+CF_DNS_API_TOKEN= # from Cloudflare API token step
+
+# ── Lemon Squeezy ──────────
+LEMONSQUEEZY_API_KEY=
+LEMONSQUEEZY_STORE_ID=
+LEMONSQUEEZY_WEBHOOK_SECRET=
+LEMONSQUEEZY_PRO_MONTHLY_VARIANT_ID=
+LEMONSQUEEZY_PRO_YEARLY_VARIANT_ID=
+LEMONSQUEEZY_TEAM_MONTHLY_VARIANT_ID=
+LEMONSQUEEZY_TEAM_YEARLY_VARIANT_ID=
+
+# resend
+RESEND_API_KEY=""
+RESEND_FROM_EMAIL=""
+```
+
+Save the file and exit:
+Press Ctrl + O then Enter (to save).
+Press Ctrl + X (to exit).
+
+
+**Note on `DATABASE_URL` hostname:**
+In Docker Compose, services talk to each other by service name.
+`db` resolves to the Postgres container inside the Docker network.
+`localhost:5432` only works outside Docker (local dev).
+
 ---
 
 ## 10. SSL — Traefik + Let's Encrypt
@@ -555,6 +671,9 @@ api:
 ### Create Traefik cert files on VPS
 Traefik needs a place to securely store the SSL certificates it gets from Let's Encrypt. Run this block to create the empty, secure files:
 
+Setup Traefik SSL Certificates
+Traefik needs a place to securely store the SSL certificates it gets from Let's Encrypt. Run this block to create the empty, secure files:
+
 ```bash
 mkdir -p /opt/mockline/letsencrypt
 touch /opt/mockline/letsencrypt/acme.json
@@ -592,11 +711,6 @@ The wildcard cert is issued once and reused for every `mock-*.mockline.xyz` subd
 ---
 
 ## 11. Environment Variables
-Step 1: Clone the Repository
-Right now, you are connected to an empty server. Let's pull down your code. Run these commands:
-cd /opt/mockline
-git clone https://github.com/trillionclues/mockline.git .
-
 Step 2: Create your .env File
 Your GitHub repository doesn't (and shouldn't) contain your production secrets, so you must create the .env file manually on the server.
 
@@ -621,99 +735,6 @@ NEXT_PUBLIC_AUTH_URL         https://api.mockline.xyz
 INTERNAL_API_SECRET          <must match API value>
 BETTER_AUTH_SECRET           <must match API value>
 ```
-
-### On VPS — `/opt/mockline/.env`
-OR checkin and 
-```bash
-nano .env
-```
-
-To update the env file
-nano /opt/mockline/.env
-Use the arrow keys to scroll down to the GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET lines. Delete the placeholder values and type in your real ones.
-
-Save and exit: Ctrl + O → Enter → Ctrl + X.
-Then retart the API
-docker compose restart api
-
-
-
-Created manually on the server. Never committed to git.
-API-only. No `NEXT_PUBLIC_*` vars needed here — web is on Vercel.
-
-```bash
-# ── App ────────────
-NODE_ENV=production
-PORT=4000
-CORS_ORIGIN=https://mockline.xyz
-
-# ── Database ────────────
-POSTGRES_USER=mockline
-POSTGRES_PASSWORD=
-POSTGRES_DB=mockline_prod
-# 'db' = Docker service name — correct for container-to-container
-DATABASE_URL=postgresql://mockline:@db:5432/mockline_prod
-
-# ── Redis ────────────
-# 'cache' = Docker service name
-REDIS_URL=redis://cache:6379
-
-# ── BetterAuth ────────────
-BETTER_AUTH_SECRET= # openssl rand -hex 32
-BETTER_AUTH_URL=https://api.mockline.xyz
-
-# ── GitHub OAuth ────────────
-# Create NEW OAuth app: github.com/settings/developers/new
-# Homepage URL:  https://mockline.xyz
-# Use your existing staging OAuth app from GitHub
-# Callback URL must match: https://api.mockline.xyz/api/auth/callback/github
-GITHUB_CLIENT_ID=your_staging_client_id
-GITHUB_CLIENT_SECRET=your_staging_client_secret
-
-# ── Google OAuth ──────
-GOOGLE_CLIENT_ID=your_staging_google_client_id
-GOOGLE_CLIENT_SECRET=your_staging_google_client_secret
-
-GOOGLE_CLIENT_ID
-GOOGLE_CLIENT_SECRET
-
-# ── Internal ────────────
-INTERNAL_API_SECRET= # openssl rand -hex 32
-
-# ── Frontend ────────────
-NEXT_PUBLIC_API_URL=https://api.mockline.xyz
-NEXT_PUBLIC_APP_URL=https://mockline.xyz
-NEXT_PUBLIC_MOCK_BASE_URL=https://mock.mockline.xyz
-NEXT_PUBLIC_AUTH_URL=https://api.mockline.xyz
-
-# ── Docker ────────────
-DOCKER_HOST=unix:///var/run/docker.sock
-MOCK_BASE_DOMAIN=mockline.xyz
-CONTOUR_VERSION=1.2.0
-
-# ── Traefik ────────────
-CF_DNS_API_TOKEN= # from Cloudflare API token step
-
-# ── Lemon Squeezy ──────────
-LEMONSQUEEZY_API_KEY=
-LEMONSQUEEZY_STORE_ID=
-LEMONSQUEEZY_WEBHOOK_SECRET=
-LEMONSQUEEZY_PRO_MONTHLY_VARIANT_ID=
-LEMONSQUEEZY_PRO_YEARLY_VARIANT_ID=
-LEMONSQUEEZY_TEAM_MONTHLY_VARIANT_ID=
-LEMONSQUEEZY_TEAM_YEARLY_VARIANT_ID=
-
-# resend
-RESEND_API_KEY=""
-RESEND_FROM_EMAIL=""
-```
-
-**Note on `DATABASE_URL` hostname:**
-In Docker Compose, services talk to each other by service name.
-`db` resolves to the Postgres container inside the Docker network.
-`localhost:5432` only works outside Docker (local dev).
-
----
 
 ## 12. Database + Redis — Self-Hosted in Docker
 
@@ -843,6 +864,31 @@ Add to root `package.json`:
 # Start everything
 docker compose up -d --build
 
+Run this command in your server terminal right now to see your hard drive space:
+
+```bash
+df -h /
+```
+
+If you ever modify volume on aws, run these two commands to tell Ubuntu to expand into the new space:
+
+```bash
+sudo growpart /dev/root 1
+sudo resize2fs /dev/root
+```
+
+If you update storage on AWS, login as root back to your Mac terminal (inside the server) and run these two commands to tell Ubuntu to expand into the new space:
+sudo growpart /dev/root 1
+sudo resize2fs /dev/root
+
+After doing that, run df -h / again. The Size column should now proudly display ~29G or 30G.
+
+Once you confirm you have the space, clear out the broken Docker files from the first attempt and start the build again!
+
+Clear out the broken Docker files from the first attempt and start the build again!
+docker system prune -a --volumes -f
+docker compose up -d --build
+
 # Check status
 docker compose ps
 docker compose logs -f
@@ -857,28 +903,30 @@ docker compose exec api pnpm dlx @better-auth/cli migrate \
 
 # Verify health
 curl https://api.mockline.xyz/health
+
+docker compose logs --tail=20 api
+
+#Verify SSL & DNS (Critical)
+docker compose logs --tail=20 proxy
+
 ```
 
-Run this command in your server terminal right now to see your hard drive space:
+Add these Environment Variables to CLoudlfare 
+Type    Name    Content              Proxy
+A       api     <ELASTIC_IP>         DNS only
+A       *       <ELASTIC_IP>         DNS only
+A       api-staging       <ELASTIC_IP>         DNS only
 
-```bash
-df -h /
-```
+GitHub Actions Secrets (Section 16)
 
-If you ever modify volume on aws, run these two commands to tell Ubuntu to expand into the new space:
+Go to your repo → Settings → Secrets and variables → Actions
+API_HOST           <your Elastic IP>
+API_USER           deploy
+API_SSH_KEY        <contents of ~/.ssh/mockline-staging.pem>
 
-```bash
-sudo growpart /dev/root 1
-sudo resize2fs /dev/root
-```
+NB: On your Mac terminal, run this command to copy the entire contents of the .pem file to your clipboard:
+cat ~/.ssh/mockline-staging.pem | pbcopy
 
-After doing that, run df -h / again. The Size column should now proudly display ~29G or 30G.
-
-Once you confirm you have the space, clear out the broken Docker files from the first attempt and start the build again!
-
-Clear out the broken Docker files from the first attempt and start the build again!
-docker system prune -a --volumes -f
-docker compose up -d --build
 ---
 
 ## 13. Prisma Migrations + BetterAuth Tables
