@@ -8,7 +8,7 @@ import { notFound } from 'next/navigation'
 export default async function DesignSpecPage({ params }: { params: Promise<{ id: string }> }) {
     const session = await getSession()
     if (!session) redirect('/login')
-    if (session.user.tier === 'FREE') redirect('/specs?upgrade=designer')
+    if (session.user?.tier === 'FREE') redirect('/specs?upgrade=designer')
 
     const { id } = await params
     const reqHeaders = await headers()
