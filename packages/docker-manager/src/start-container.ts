@@ -11,7 +11,8 @@ export async function startMockContainer(
 ): Promise<{ containerId: string; port: number }> {
     const { imageId, containerId, resourceLimits = DEFAULT_RESOURCE_LIMITS } = params
     const memoryBytes = (resourceLimits.memoryMb ?? DEFAULT_RESOURCE_LIMITS.memoryMb) * 1024 * 1024
-    const cpuQuota = Math.floor((resourceLimits.cpuPercent ?? DEFAULT_RESOURCE_LIMITS.cpuPercent) * 1000)
+    const cpuPercent = resourceLimits.cpuPercent ?? DEFAULT_RESOURCE_LIMITS.cpuPercent
+    const nanoCpus = Math.floor(cpuPercent * 10_000_000) // 1 CPU = 1,000,000,000 NanoCpus. 10% = 100,000,000
 
     const port = await findAvailablePort()
 
@@ -25,7 +26,7 @@ export async function startMockContainer(
             },
             Memory: memoryBytes,
             MemorySwap: memoryBytes, // Same as memory = disable swap for this container
-            NanoCpus: cpuQuota * 1_000_000,
+            NanoCpus: nanoCpus,
             PidsLimit: 50,
             RestartPolicy: { Name: 'unless-stopped' },
             SecurityOpt: ['no-new-privileges'],
@@ -89,7 +90,8 @@ export async function startMockContainerWithOptions(
     const port = await findAvailablePort()
     const { resourceLimits = DEFAULT_RESOURCE_LIMITS, imageId, containerId } = baseParams
     const memoryBytes = (resourceLimits.memoryMb ?? DEFAULT_RESOURCE_LIMITS.memoryMb) * 1024 * 1024
-    const cpuQuota = Math.floor((resourceLimits.cpuPercent ?? DEFAULT_RESOURCE_LIMITS.cpuPercent) * 1000)
+    const cpuPercent = resourceLimits.cpuPercent ?? DEFAULT_RESOURCE_LIMITS.cpuPercent
+    const nanoCpus = Math.floor(cpuPercent * 10_000_000)
 
     const container = await docker.createContainer({
         name: containerId,
@@ -102,7 +104,7 @@ export async function startMockContainerWithOptions(
             },
             Memory: memoryBytes,
             MemorySwap: memoryBytes, // Same as memory = disable swap for this container
-            NanoCpus: cpuQuota * 1_000_000,
+            NanoCpus: nanoCpus,
             PidsLimit: 50,
             RestartPolicy: { Name: 'unless-stopped' },
             SecurityOpt: ['no-new-privileges'],
