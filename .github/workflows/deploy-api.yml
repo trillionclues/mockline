@@ -46,6 +46,7 @@ jobs:
         with:
           host: ${{ secrets.API_HOST }}
           username: ${{ secrets.API_USER }}
+          key: ${{ secrets.API_SSH_KEY }}
           script: |
             set -e
             cd /opt/mockline
