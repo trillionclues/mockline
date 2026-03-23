@@ -160,18 +160,18 @@ export const AUTO_STOP_MINUTES = {
 
 export const RATE_LIMITS_BY_TIER = {
     FREE: {
-        GENERAL:       { window: 60,   max: 60  },
-        PROVISION:     { window: 3600, max: 5   },
-        CONTRACT_TEST: { window: 3600, max: 5   },
+        GENERAL: { window: 60, max: 60 },
+        PROVISION: { window: 3600, max: 5 },
+        CONTRACT_TEST: { window: 3600, max: 5 },
     },
     PRO: {
-        GENERAL:       { window: 60,   max: 300 },
-        PROVISION:     { window: 3600, max: 20  },
-        CONTRACT_TEST: { window: 3600, max: 50  },
+        GENERAL: { window: 60, max: 300 },
+        PROVISION: { window: 3600, max: 20 },
+        CONTRACT_TEST: { window: 3600, max: 50 },
     },
     TEAM: {
-        GENERAL:       { window: 60,   max: 600 },
-        PROVISION:     { window: 3600, max: 50  },
+        GENERAL: { window: 60, max: 600 },
+        PROVISION: { window: 3600, max: 50 },
         CONTRACT_TEST: { window: 3600, max: 200 },
     },
 } as const satisfies Record<Tier, Record<string, { window: number; max: number }>>
