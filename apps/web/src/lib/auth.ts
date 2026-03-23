@@ -17,7 +17,16 @@ export const getSession = async () => {
                 headers: fetchHeaders
             }
         })
-        return data
+        
+        // Assert the returned user type includes our custom schema fields
+        return data as (typeof data & { 
+            user: { 
+                tier: 'FREE' | 'PRO' | 'TEAM'; 
+                subscriptionStatus?: string | null; 
+                subscriptionRenewsAt?: string | Date | null; 
+                subscriptionEndsAt?: string | Date | null; 
+            } 
+        }) | null
     } catch (e) {
         console.error('Failed to fetch session from API proxy:', e)
         return null
