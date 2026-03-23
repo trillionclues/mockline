@@ -29,7 +29,7 @@ export async function buildMockImage(params: BuildMockImageParams): Promise<{ im
             'USER node',
             `COPY --chown=node:node ${specFilename} ./${specFilename}`,
             'EXPOSE 3001',
-            'HEALTHCHECK --interval=5s --timeout=3s --retries=5 CMD wget -qO- http://localhost:3001/_contour/health || exit 1',
+            'HEALTHCHECK --interval=5s --timeout=3s --retries=5 CMD wget -qO- http://127.0.0.1:3001/_contour/health || exit 1',
             `CMD ["contour", "start", "${specFilename}", "--port", "3001"]`,
 
             // 'FROM node:22-alpine AS installer',
