@@ -534,6 +534,7 @@ API-only. No `NEXT_PUBLIC_*` vars needed here — web is on Vercel.
 NODE_ENV=production
 PORT=4000
 CORS_ORIGIN=https://mockline.xyz
+COOKIE_DOMAIN=.mockline.xyz
 
 # ── Database ────────────
 POSTGRES_USER=mockline
