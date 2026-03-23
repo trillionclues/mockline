@@ -64,9 +64,10 @@ export async function provisionMockServer(params: {
             contourVersion: process.env.CONTOUR_VERSION ?? '1.2.0',
         })
 
+        const containerName = `mock-${mockServer.id}`
         const { containerId, port } = await startMockContainer({
             imageId,
-            containerId: `mock-${mockServer.id}`,
+            containerId: containerName,
             resourceLimits: DEFAULT_RESOURCE_LIMITS,
         })
 
@@ -74,7 +75,7 @@ export async function provisionMockServer(params: {
         const publicUrl =
             mockBaseDomain === 'localhost'
                 ? `http://localhost:${port}`
-                : `https://${containerId}.${mockBaseDomain}`
+                : `https://${containerName}.${mockBaseDomain}`
 
         await db.mockServer.update({
             where: { id: mockServer.id },
