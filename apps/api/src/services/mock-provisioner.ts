@@ -66,7 +66,7 @@ export async function provisionMockServer(params: {
 
         const { containerId, port } = await startMockContainer({
             imageId,
-            containerId: `mockline-mock-${mockServer.id}`,
+            containerId: `mock-${mockServer.id}`,
             resourceLimits: DEFAULT_RESOURCE_LIMITS,
         })
 
@@ -74,7 +74,7 @@ export async function provisionMockServer(params: {
         const publicUrl =
             mockBaseDomain === 'localhost'
                 ? `http://localhost:${port}`
-                : `https://mock-${mockServer.id}.${mockBaseDomain}`
+                : `https://${containerId}.${mockBaseDomain}`
 
         await db.mockServer.update({
             where: { id: mockServer.id },

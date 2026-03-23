@@ -35,10 +35,9 @@ export async function getContainerStatus(containerId: string): Promise<Container
     }
 }
 
-// Lists all active (running) Mockline containers.
 export async function listActiveContainers(): Promise<ContainerInfo[]> {
     const containers = await docker.listContainers({
-        filters: { name: ['mockline-mock-'] },
+        filters: { label: ['mockline.managed=true'] },
     })
 
     return containers.map((c) => ({
