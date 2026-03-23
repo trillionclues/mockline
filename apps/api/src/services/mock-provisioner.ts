@@ -64,7 +64,10 @@ export async function provisionMockServer(params: {
             contourVersion: process.env.CONTOUR_VERSION ?? '1.2.0',
         })
 
-        const containerName = `mock-${mockServer.id}`
+        // generate mock server slug for url
+        const cleanName = specVersion.spec.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'mock'
+        const shortHash = crypto.randomBytes(2).toString('hex')
+        const containerName = `${cleanName}-${shortHash}`
         const { containerId, port } = await startMockContainer({
             imageId,
             containerId: containerName,
