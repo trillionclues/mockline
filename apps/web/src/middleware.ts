@@ -31,18 +31,20 @@ export default async function middleware(request: NextRequest) {
     if (isPublic) {
         // If user is on /login and is already authenticated, redirect to /overview
         if (pathname.startsWith('/login')) {
-            const sessionCookie = request.cookies.get('better-auth.session_token')
+            // BetterAuth uses __Secure- prefix in production (HTTPS), plain name on localhost (HTTP)
+            const sessionCookie =
+                request.cookies.get('__Secure-better-auth.session_token') ??
+                request.cookies.get('better-auth.session_token')
             if (sessionCookie) {
-                // typically should verify it, but for middleware speed, cookie presence + 
-                // a quick fetch check or just optimistically redirecting is cool.
-                // If it's invalid, the dashboard layout will catch it.
                 return NextResponse.redirect(new URL('/overview', request.url))
             }
         }
         return NextResponse.next()
     }
 
-    const sessionCookie = request.cookies.get('better-auth.session_token')
+    const sessionCookie =
+        request.cookies.get('__Secure-better-auth.session_token') ??
+        request.cookies.get('better-auth.session_token')
     if (!sessionCookie) {
         // No session, redirect to login
         const url = new URL('/login', request.url)
