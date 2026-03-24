@@ -112,7 +112,7 @@ export function SchemaFieldBuilder({ fields, onChange, depth = 0 }: Props) {
                                 </select>
                             )}
 
-                            <label style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: 'var(--color-text-muted)', cursor: 'pointer', flexShrink: 0 }}>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: 'var(--color-text)', cursor: 'pointer', flexShrink: 0 }}>
                                 <input
                                     type="checkbox"
                                     checked={field.required}
@@ -135,7 +135,7 @@ export function SchemaFieldBuilder({ fields, onChange, depth = 0 }: Props) {
                                 value={field.example ?? ''}
                                 onChange={e => updateField(field.id, { example: e.target.value || undefined })}
                                 placeholder="example value (optional)"
-                                style={{ fontSize: '11px', height: '26px', color: 'var(--color-text-muted)' }}
+                                style={{ fontSize: '11px', height: '26px', color: 'var(--color-text)' }}
                             />
                         </div>
                         {isExpanded && field.type === 'object' && (
@@ -150,7 +150,7 @@ export function SchemaFieldBuilder({ fields, onChange, depth = 0 }: Props) {
 
                         {isExpanded && field.type === 'array' && field.items && (
                             <div style={{ marginTop: '8px', marginLeft: '26px' }}>
-                                <div style={{ fontSize: '11px', color: 'var(--color-text-muted)', marginBottom: '4px' }}>
+                                <div style={{ fontSize: '11px', color: 'var(--color-text)', marginBottom: '4px' }}>
                                     Array item type:
                                 </div>
                                 <select
@@ -159,7 +159,7 @@ export function SchemaFieldBuilder({ fields, onChange, depth = 0 }: Props) {
                                         items: { ...field.items!, type: e.target.value as BuilderSchemaField['type'], fields: e.target.value === 'object' ? (field.items!.fields ?? []) : [] }
                                     })}
                                     className="form-select"
-                                    style={{ width: '120px', height: '28px', fontSize: '12px' }}
+                                    style={{ width: '120px', height: '36px', fontSize: '12px' }}
                                 >
                                     {TYPES.map(t => <option key={t} value={t}>{t}</option>)}
                                 </select>

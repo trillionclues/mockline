@@ -10,6 +10,25 @@ export const TAG_STYLES: Record<ChangelogTag, { background: string; color: strin
 
 export const ENTRIES: ChangelogEntry[] = [
     {
+        version: 'v0.7.0',
+        date: 'March 24, 2026',
+        title: 'API Explorer Overhaul & Spec Designer Drafts',
+        tags: ['feature', 'improvement'],
+        body: 'The API Explorer now routes requests through a server-side proxy, eliminating CORS issues and enabling full custom header support. Response display is now Postman-style with syntax highlighting. The Spec Designer gains $ref resolution and localStorage draft saving.',
+        bullets: [
+            'Server-side proxy for Explorer requests — custom headers like X-Auth-Token work without CORS issues',
+            'Syntax-highlighted JSON responses with line numbers, color-coded keys/strings/numbers/booleans',
+            'Copy-to-clipboard, response size indicator, and collapsible response headers',
+            'Spec-aware parameter inputs — path, query, and header params rendered from the OpenAPI definition',
+            'Request body and query params only shown when the spec defines them (no more generic textarea on POST/PUT)',
+            'Expected response codes displayed as color-coded badges from the spec',
+            'Validation warnings for missing required parameters before sending',
+            'Full $ref resolution in spec parser — complex schemas with DTO references now display correctly',
+            'Spec Designer auto-saves drafts to localStorage — resume where you left off',
+            'Draft restored banner with discard option on re-entry',
+        ],
+    },
+    {
         version: 'v0.6.0',
         date: 'March 22, 2026',
         title: 'Visual OpenAPI Spec Designer',
