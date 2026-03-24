@@ -73,3 +73,21 @@ export const billingApi = {
     cancel: (opts?: RequestInit) => request<{ cancelled: boolean }>('/billing/cancel', { ...opts, method: 'POST' }),
 }
 
+// ── Explorer ──
+export type ExplorerProxyResponse = {
+    status?: number
+    statusText?: string
+    headers?: Record<string, string>
+    body?: unknown
+    error?: string
+    duration: number
+}
+
+export const explorerApi = {
+    proxy: (payload: { url: string; method: string; headers?: Record<string, string>; body?: string }) =>
+        request<ExplorerProxyResponse>('/explorer/proxy', {
+            method: 'POST',
+            body: JSON.stringify(payload),
+        }),
+}
+
