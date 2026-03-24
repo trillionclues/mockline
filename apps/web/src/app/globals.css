@@ -949,7 +949,7 @@ h4 {
 }
 
 .explorer-endpoint-list {
-    width: 280px;
+    width: 500px;
     flex-shrink: 0;
     background: var(--color-surface);
     border: 1px solid var(--color-border);

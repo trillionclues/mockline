@@ -102,14 +102,14 @@ export const PricingCard = ({
                 <div style={{
                     fontWeight: 500,
                     fontSize: '13px',
-                    color: plan.highlighted ? 'var(--color-logo-line)' : 'var(--color-text)',
+                    color: plan.highlighted ? 'var(--color-logo-line)' : 'var(--color-text-strong)',
                     marginBottom: '6px',
                 }}>
                     {plan.name}
                 </div>
                 <div style={{
                     fontSize: '12px',
-                    color: 'var(--color-text-muted)',
+                    color: 'var(--color-text)',
                     lineHeight: 1.5,
                 }}>
                     {plan.description}
@@ -143,14 +143,14 @@ export const PricingCard = ({
             </div>
             <div style={{
                 fontSize: '12px',
-                color: 'var(--color-text-muted)',
+                color: 'var(--color-text)',
                 marginBottom: '28px',
                 minHeight: '16px',
             }}>
                 {period}
                 {yearly && plan.monthlyPrice > 0 && (
                     <span style={{ color: '#22c55e', marginLeft: '6px' }}>
-                        Save ${(plan.monthlyPrice - plan.yearlyPrice) * 12}/yr
+                        Save ${((plan.monthlyPrice - plan.yearlyPrice) * 12).toFixed(2)}/yr
                     </span>
                 )}
             </div>

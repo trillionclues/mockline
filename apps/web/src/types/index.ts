@@ -37,6 +37,22 @@ export type Endpoint = {
     path: string
     summary?: string
     operationId?: string
+    tags?: string[]
+    parameters?: {
+        name: string
+        in: 'query' | 'path' | 'header' | 'cookie'
+        required: boolean
+        schema?: Record<string, unknown>
+    }[]
+    requestBody?: {
+        required: boolean
+        contentType: string
+        schema?: Record<string, unknown>
+    }
+    responses?: Record<string, {
+        description: string
+        schema?: Record<string, unknown>
+    }>
 }
 
 export type CreateSpecInput = {

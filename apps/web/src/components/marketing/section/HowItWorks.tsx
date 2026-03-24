@@ -33,6 +33,7 @@ function CodeBlock({ lines }: {
                 padding: '20px 24px',
                 fontSize: '13px',
                 lineHeight: 1.9,
+
             }}>
                 {lines.map((line, i) => (
                     <div key={i} style={{
@@ -101,7 +102,7 @@ function Step({ step, index }: { step: typeof STEPS[0]; index: number }) {
                     style={{
                         fontWeight: 700,
                         fontSize: '22px',
-                        color: 'var(--color-text)',
+                        color: 'var(--color-text-strong)',
                         marginTop: '-12px',
                         letterSpacing: '-0.02em',
                     }}
@@ -116,7 +117,7 @@ function Step({ step, index }: { step: typeof STEPS[0]; index: number }) {
                     custom={0.16}
                     style={{
                         fontSize: '15px',
-                        color: 'var(--color-text-muted)',
+                        color: 'var(--color-text-subtitle)',
                         lineHeight: 1.7,
                         marginTop: '12px',
                         maxWidth: '340px',
@@ -162,7 +163,7 @@ export function HowItWorks() {
                     <h2 style={{
                         fontWeight: 700,
                         fontSize: 'clamp(24px, 3vw, 36px)',
-                        color: 'var(--color-text)',
+                        color: 'var(--color-text-strong)',
                         letterSpacing: '-0.02em',
                         marginBottom: '10px',
                     }}>
@@ -170,7 +171,7 @@ export function HowItWorks() {
                     </h2>
                     <p style={{
                         fontSize: '16px',
-                        color: 'var(--color-text-muted)',
+                        color: 'var(--color-text-subtitle)',
                         maxWidth: '440px',
                         margin: '0 auto',
                         lineHeight: 1.6,

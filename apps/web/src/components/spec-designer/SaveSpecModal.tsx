@@ -5,6 +5,7 @@ import { specsApi } from '@/lib/api-client'
 import { queryKeys } from '@/lib/query-keys'
 import { useRouter } from 'next/navigation'
 import type { SpecDetail } from '@/lib/api-client'
+import { clearDraft } from './SpecDesignerView'
 
 type Props = {
     open: boolean
@@ -28,6 +29,7 @@ export function SaveSpecModal({ open, onClose, mode, existingSpec, content, form
             format: format.toLowerCase() as 'yaml' | 'json',
         }),
         onSuccess: (spec) => {
+            clearDraft()
             queryClient.invalidateQueries({ queryKey: queryKeys.specs.all() })
             onClose()
             if (deployAfter) {
@@ -44,6 +46,7 @@ export function SaveSpecModal({ open, onClose, mode, existingSpec, content, form
             format: format.toLowerCase() as 'yaml' | 'json',
         }),
         onSuccess: (version) => {
+            clearDraft(existingSpec!.id)
             queryClient.invalidateQueries({ queryKey: queryKeys.specs.versions(existingSpec!.id) })
             onClose()
             if (deployAfter) {

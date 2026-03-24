@@ -28,7 +28,7 @@ export function Pricing() {
 
                     <p style={{
                         fontSize: '16px',
-                        color: 'var(--color-text-muted)',
+                        color: 'var(--color-text-subtitle)',
                         marginBottom: '28px',
                     }}>
                         Start free. Scale when you need to.
@@ -54,7 +54,7 @@ export function Pricing() {
                                 cursor: 'pointer',
                                 transition: 'background 150ms ease, color 150ms ease',
                                 background: !yearly ? 'var(--color-border)' : 'transparent',
-                                color: !yearly ? 'var(--color-text)' : 'var(--color-text-muted)',
+                                color: !yearly ? 'var(--color-text)' : 'var(--color-text-subtitle)',
                             }}
                         >
                             Monthly

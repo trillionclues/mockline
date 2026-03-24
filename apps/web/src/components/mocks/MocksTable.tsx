@@ -80,8 +80,8 @@ export function MocksTable({ mocks }: { mocks: MockServer[] }) {
                                     <div style={{ fontWeight: 500, color: 'var(--color-text-strong)' }}>
                                         {mock.spec.name}
                                     </div>
-                                    <div style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>
-                                        v{mock?.specVersion?.version}
+                                    <div style={{ fontSize: '11px', color: 'var(--color-text)' }}>
+                                        {mock?.specVersion?.version ? `v${mock?.specVersion?.version}` : ''}
                                     </div>
                                 </td>
                                 <td style={tdStyle}>
@@ -90,7 +90,7 @@ export function MocksTable({ mocks }: { mocks: MockServer[] }) {
                                 <td style={tdStyle}>
                                     {mock.publicUrl ? (
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                            <span style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>
+                                            <span style={{ fontSize: '12px', color: 'var(--color-text)' }}>
                                                 {mock.publicUrl}
                                             </span>
                                             <CopyButton value={mock.publicUrl} />
@@ -102,7 +102,7 @@ export function MocksTable({ mocks }: { mocks: MockServer[] }) {
                                     )}
                                 </td>
                                 <td style={tdStyle}>
-                                    <span style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>
+                                    <span style={{ fontSize: '12px', color: 'var(--color-text)' }}>
                                         {timeAgo(mock?.createdAt)}
                                     </span>
                                 </td>

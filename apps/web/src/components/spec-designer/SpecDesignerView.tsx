@@ -1,5 +1,5 @@
 'use client'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, useCallback } from 'react'
 import type { BuilderState, BuilderEndpoint } from '@/lib/spec-builder/types'
 import { generateOpenAPI } from '@/lib/spec-builder/generate-openapi'
 import { serializeSpec } from '@/lib/spec-builder/serialize-spec'
@@ -23,8 +23,41 @@ const EMPTY_STATE: BuilderState = {
     endpoints: [],
 }
 
+const DRAFT_KEY = 'mockline:spec-designer:draft'
+
+function loadDraft(specId?: string): BuilderState | null {
+    if (typeof window === 'undefined') return null
+    try {
+        const raw = localStorage.getItem(specId ? `${DRAFT_KEY}:${specId}` : DRAFT_KEY)
+        return raw ? JSON.parse(raw) : null
+    } catch {
+        return null
+    }
+}
+
+function saveDraft(state: BuilderState, specId?: string) {
+    if (typeof window === 'undefined') return
+    try {
+        const key = specId ? `${DRAFT_KEY}:${specId}` : DRAFT_KEY
+        localStorage.setItem(key, JSON.stringify(state))
+    } catch {
+        // quota exceeded — silently ignore
+    }
+}
+
+export function clearDraft(specId?: string) {
+    if (typeof window === 'undefined') return
+    localStorage.removeItem(specId ? `${DRAFT_KEY}:${specId}` : DRAFT_KEY)
+}
+
 export function SpecDesignerView({ mode, existingSpec, existingContent, existingFormat }: Props) {
+    const specId = existingSpec?.id
+
     const [state, setState] = useState<BuilderState>(() => {
+        // Priority: draft > existing spec > empty
+        const draft = loadDraft(specId)
+        if (draft && draft.endpoints.length > 0) return draft
+
         if (existingContent && existingFormat) {
             try {
                 return parseSpecToBuilder(existingContent, existingFormat)
@@ -35,10 +68,35 @@ export function SpecDesignerView({ mode, existingSpec, existingContent, existing
         return EMPTY_STATE
     })
 
+    const [draftRestored, setDraftRestored] = useState(() => {
+        const draft = loadDraft(specId)
+        return !!(draft && draft.endpoints.length > 0)
+    })
+
     const [selectedEndpointId, setSelectedEndpointId] = useState<string | null>(null)
     const [previewFormat, setPreviewFormat] = useState<'YAML' | 'JSON'>('YAML')
     const [saveOpen, setSaveOpen] = useState(false)
     const [previewOpen, setPreviewOpen] = useState(false)
+
+    // Auto-save draft on every state change (debounced by React batching)
+    useEffect(() => {
+        saveDraft(state, specId)
+    }, [state, specId])
+
+    const discardDraft = useCallback(() => {
+        clearDraft(specId)
+        setDraftRestored(false)
+        if (existingContent && existingFormat) {
+            try {
+                setState(parseSpecToBuilder(existingContent, existingFormat))
+            } catch {
+                setState(EMPTY_STATE)
+            }
+        } else {
+            setState(EMPTY_STATE)
+        }
+    }, [specId, existingContent, existingFormat])
+
 
     const selectedEndpoint = state.endpoints.find(e => e.id === selectedEndpointId) ?? null
 
@@ -89,6 +147,27 @@ export function SpecDesignerView({ mode, existingSpec, existingContent, existing
 
     return (
         <div className="spec-designer-root">
+            {draftRestored && (
+                <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '8px 16px',
+                    background: 'rgba(99, 102, 241, 0.1)',
+                    borderBottom: '1px solid var(--color-border)',
+                    fontSize: '12px',
+                    color: 'var(--color-text)',
+                }}>
+                    <span>Draft restored from your last session</span>
+                    <button
+                        onClick={discardDraft}
+                        className="btn-secondary"
+                        style={{ height: '26px', fontSize: '11px' }}
+                    >
+                        Discard draft
+                    </button>
+                </div>
+            )}
             <div className="spec-designer-topbar">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-text-strong)' }}>
@@ -100,9 +179,9 @@ export function SpecDesignerView({ mode, existingSpec, existingContent, existing
                         </span>
                     )}
                 </div>
-                <div style={{ display: 'flex', gap: '8px' }}>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                     <button className="btn-secondary spec-designer-preview-toggle"
-                        style={{ height: '32px', fontSize: '12px' }}
+                        style={{ height: '32px', fontSize: '12px', textAlign: 'center' }}
                         onClick={() => setPreviewOpen(v => !v)}>
                         {previewOpen ? 'Hide Preview' : 'Preview'}
                     </button>

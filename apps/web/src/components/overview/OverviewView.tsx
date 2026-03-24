@@ -62,7 +62,7 @@ export function OverviewView({ specs, mocks }: Props) {
                             <Link key={mock.id} href={`/mocks/${mock.id}`} className="overview-mock-row">
                                 <div style={{ flex: 1, minWidth: 0 }}>
                                     <span className="overview-mock-name">{mock.spec.name}</span>
-                                    <span className="overview-mock-spec">v{mock?.specVersion?.version}</span>
+                                    <span className="overview-mock-spec">{mock?.specVersion?.version ? `v${mock?.specVersion?.version}` : ''}</span>
                                 </div>
                                 <StatusBadge status={mock.status} />
                                 {mock.publicUrl && (

@@ -13,6 +13,7 @@ import { startAutoStopScheduler } from './services/auto-stop'
 import { ensureContourBaseImage } from '@mockline/docker-manager/src/base-image'
 import { billingRouter } from './routes/billing'
 import { webhookLemonSqueezyRouter } from './routes/webhook-lemonsqueezy'
+import { explorerRouter } from './routes/explorer'
 import { initLemonSqueezy } from './lib/lemonsqueezy'
 
 const app = new Hono()
@@ -46,10 +47,12 @@ app.route('/webhooks/lemonsqueezy', webhookLemonSqueezyRouter)
 app.use('/specs/*', requireAuth, rateLimit('GENERAL'))
 app.use('/mocks/*', requireAuth, rateLimit('GENERAL'))
 app.use('/contracts/*', requireAuth, rateLimit('GENERAL'))
+app.use('/explorer/*', requireAuth, rateLimit('GENERAL'))
 
 app.route('/specs', specsRouter)
 app.route('/mocks', mocksRouter)
 app.route('/contracts', contractsRouter)
+app.route('/explorer', explorerRouter)
 
 // User account routes
 app.use('/user/*', requireAuth)
