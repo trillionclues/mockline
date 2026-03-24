@@ -2,10 +2,19 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import { useTheme } from 'next-themes'
+import { useEffect, useState } from 'react'
 
 const ease = [0.21, 0.47, 0.32, 0.98] as const;
 
 export const HeroSection = () => {
+    const { resolvedTheme } = useTheme()
+    const [mounted, setMounted] = useState(false)
+
+    useEffect(() => {
+        setMounted(true)
+    }, [])
+
     return (
         <div style={{ background: 'var(--color-bg)' }}>
             <section style={{
@@ -206,18 +215,37 @@ export const HeroSection = () => {
                                 <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#22c55e' }} />
                             </div>
                             <div style={{
-                                height: '520px',
+                                width: '100%',
+                                aspectRatio: '16/9',
                                 background: 'var(--color-surface-2)',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
+                                position: 'relative',
+                                // padding: '0 2px',
                             }}>
-                                <span style={{
-                                    fontSize: '13px',
-                                    color: 'var(--color-text-subtle)',
-                                }}>
-                                    Dashboard preview
-                                </span>
+                                {mounted ? (
+                                    <video
+                                        src={resolvedTheme === 'dark' ? '/hero-dark.mp4' : '/hero-light.mp4'}
+                                        autoPlay
+                                        loop
+                                        muted
+                                        playsInline
+                                        style={{
+                                            width: '100%',
+                                            height: '100%',
+                                            objectFit: 'contain',
+                                            display: 'block',
+                                            borderRadius: '6px',
+                                            boxShadow: '0 8px 30px rgba(0,0,0,0.1)'
+                                        }}
+                                    />
+                                ) : (
+                                    /* Tonal skeleton loader while parsing the active system theme to prevent Hydration mismatches */
+                                    <div style={{ width: '100%', height: '100%', background: 'var(--color-surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <span style={{ fontSize: '13px', color: 'var(--color-text-subtle)' }}>Loading Preview...</span>
+                                    </div>
+                                )}
                             </div>
                             {/* <div style={{
                                 position: 'relative',

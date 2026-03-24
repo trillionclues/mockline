@@ -150,7 +150,7 @@ export const PricingCard = ({
                 {period}
                 {yearly && plan.monthlyPrice > 0 && (
                     <span style={{ color: '#22c55e', marginLeft: '6px' }}>
-                        Save ${(plan.monthlyPrice - plan.yearlyPrice) * 12}/yr
+                        Save ${((plan.monthlyPrice - plan.yearlyPrice) * 12).toFixed(2)}/yr
                     </span>
                 )}
             </div>

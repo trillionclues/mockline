@@ -64,8 +64,8 @@ export const PLANS = [
     },
     {
         name: 'Pro',
-        monthlyPrice: 9,
-        yearlyPrice: 7,
+        monthlyPrice: 5.99,
+        yearlyPrice: 4.75,
         period: '/ month',
         description: 'For developers who ship daily.',
         highlighted: true,
@@ -84,8 +84,8 @@ export const PLANS = [
     },
     {
         name: 'Team',
-        monthlyPrice: 29,
-        yearlyPrice: 23,
+        monthlyPrice: 19.99,
+        yearlyPrice: 15.99,
         period: '/ month',
         description: 'For teams that move together.',
         highlighted: false,
