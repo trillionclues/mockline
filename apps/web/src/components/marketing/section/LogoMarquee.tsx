@@ -16,7 +16,7 @@ export const LogoMarquee = () => {
         }}>
             <p style={{
                 fontSize: '11px',
-                color: 'var(--color-text-muted)',
+                color: 'var(--color-text)',
                 textAlign: 'center',
                 letterSpacing: '0.08em',
                 textTransform: 'uppercase',
@@ -71,7 +71,7 @@ export const LogoMarquee = () => {
                             <span style={{
                                 fontWeight: 600,
                                 fontSize: '18px',
-                                color: 'var(--color-text-subtle)',
+                                color: 'var(--color-text-muted)',
                                 padding: '0 36px',
                                 transition: 'color 200ms ease',
                                 whiteSpace: 'nowrap',

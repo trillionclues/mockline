@@ -32,7 +32,7 @@ export function FeaturesGrid() {
                     <h2 style={{
                         fontWeight: 700,
                         fontSize: 'clamp(24px, 3vw, 36px)',
-                        color: 'var(--color-text)',
+                        color: 'var(--color-text-strong)',
                         letterSpacing: '-0.02em',
                         marginBottom: '10px',
                     }}>
@@ -40,7 +40,7 @@ export function FeaturesGrid() {
                     </h2>
                     <p style={{
                         fontSize: '16px',
-                        color: 'var(--color-nav-text)',
+                        color: 'var(--color-text-subtitle)',
                         maxWidth: '420px',
                         margin: '0 auto',
                         lineHeight: 1.6,

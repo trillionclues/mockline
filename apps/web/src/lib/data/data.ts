@@ -1,14 +1,12 @@
 export const LOGOS = [
+    'PiggyVest',
+    'Flutterwave',
+    'Paystack',
+    'Moniepoint',
+    'Interswitch',
+    'Helium Health',
     'Stripe',
-    'Vercel',
-    'Railway',
-    'Supabase',
-    'PlanetScale',
-    'Render',
-    'Fly.io',
-    'Neon',
-    'Upstash',
-    'Turso',
+    'Adyen',
 ]
 
 export const COLUMNS = [

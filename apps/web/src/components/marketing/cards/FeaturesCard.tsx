@@ -62,7 +62,7 @@ export const FeatureCard = ({ feature, index }: { feature: typeof FEATURES[0]; i
             <h3 style={{
                 fontWeight: 600,
                 fontSize: '15px',
-                color: 'var(--color-text)',
+                color: 'var(--color-text-strong)',
                 marginBottom: '8px',
                 letterSpacing: '-0.01em',
             }}>
@@ -70,7 +70,7 @@ export const FeatureCard = ({ feature, index }: { feature: typeof FEATURES[0]; i
             </h3>
             <p style={{
                 fontSize: '13px',
-                color: 'var(--color-text-muted)',
+                color: 'var(--color-text-subtitle)',
                 lineHeight: 1.65,
             }}>
                 {feature.body}

@@ -68,7 +68,7 @@ export const HeroSection = () => {
                             display: 'inline-block',
                             animation: 'pulse 2s ease-in-out infinite',
                         }} />
-                        Built for frontend teams
+                        Built for engineering teams
                     </motion.div>
 
                     <h1 style={{
@@ -102,15 +102,14 @@ export const HeroSection = () => {
                         transition={{ duration: 0.5, delay: 0.3, ease }}
                         style={{
                             fontSize: '17px',
-                            color: 'var(--color-text-muted)',
+                            color: 'var(--color-text)',
                             maxWidth: '520px',
                             margin: '0 auto 36px',
                             lineHeight: 1.7,
                         }}
                     >
                         Upload any OpenAPI spec and get an isolated mock server
-                        with a public URL — shareable with your team,
-                        ready for contract tests.
+                        with a public URL—shareable with your team.
                     </motion.p>
 
                     <motion.div
@@ -177,7 +176,7 @@ export const HeroSection = () => {
 
                         <p style={{
                             fontSize: '12px',
-                            color: 'var(--color-text-subtle)',
+                            color: 'var(--color-text-muted)',
                         }}>
                             No credit card required. Free tier forever.
                         </p>
@@ -241,7 +240,6 @@ export const HeroSection = () => {
                                         }}
                                     />
                                 ) : (
-                                    /* Tonal skeleton loader while parsing the active system theme to prevent Hydration mismatches */
                                     <div style={{ width: '100%', height: '100%', background: 'var(--color-surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                         <span style={{ fontSize: '13px', color: 'var(--color-text-subtle)' }}>Loading Preview...</span>
                                     </div>

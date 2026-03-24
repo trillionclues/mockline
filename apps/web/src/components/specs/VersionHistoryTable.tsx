@@ -58,12 +58,12 @@ export function VersionHistoryTable({ specId, versions }: Props) {
                                     )}
                                 </td>
                                 <td style={tdStyle}>
-                                    <span style={{ color: 'var(--color-text-muted)' }}>
+                                    <span style={{ color: 'var(--color-text)' }}>
                                         <DateDisplay date={v.createdAt} />
                                     </span>
                                 </td>
                                 <td style={tdStyle}>
-                                    <span style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>
+                                    <span style={{ fontSize: '11px', color: 'var(--color-text)' }}>
                                         {v.format}
                                     </span>
                                 </td>
