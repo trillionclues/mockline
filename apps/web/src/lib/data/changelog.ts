@@ -25,7 +25,7 @@ export const ENTRIES: ChangelogEntry[] = [
             'Validation warnings for missing required parameters before sending',
             'Full $ref resolution in spec parser — complex schemas with DTO references now display correctly',
             'Spec Designer auto-saves drafts to localStorage — resume where you left off',
-            'Draft restored banner with discard option on re-entry',
+            'Free tier mock servers are now permanently deleted after 24 hours (specs are kept), preventing disk exhaustion and free-tier abuse.',
         ],
     },
     {

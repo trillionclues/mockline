@@ -11,7 +11,7 @@ export default function AboutPage() {
         <main className="prose-page">
             <h1 className="prose-title">About Mockline</h1>
             <p style={{ fontSize: '18px', lineHeight: 1.6, color: 'var(--color-nav-text)', maxWidth: '560px', marginTop: '12px' }}>
-                &quot;Mockline exists because frontend teams waste hours waiting for backend APIs that aren&apos;t ready yet.&quot;
+                &quot;Mockline exists because engineering teams waste sprint hours waiting for backend APIs that aren&apos;t ready yet.&quot;
             </p>
 
             <hr className="prose-divider" />
@@ -19,10 +19,10 @@ export default function AboutPage() {
             <section className="prose-section">
                 <h2>Why we built this</h2>
                 <p>
-                    Frontend developers block their entire sprint when a backend endpoint isn&apos;t ready. You either build against fake data in your codebase — which drifts from the real spec — or you wait.
+                    Developers and QA engineers block their entire sprint when a backend endpoint isn&apos;t ready. You either build against fake data in your codebase — which drifts from the real spec, or you wait.
                 </p>
                 <p>
-                    Mockline removes that bottleneck. You upload an OpenAPI spec and get a live, isolated Docker container with real HTTP responses in seconds. No faking. No waiting. No drift.
+                    Mockline removes that bottleneck. You build an API spec once, upload it, and get a live, isolated Docker container with real HTTP responses in seconds. No faking. No waiting. No drift.
                 </p>
                 <p>
                     We built Mockline because we felt this pain directly and couldn&apos;t find a tool that solved it simply.
@@ -34,7 +34,7 @@ export default function AboutPage() {
             <section className="prose-section">
                 <h2>What we&apos;re building</h2>
                 <p>
-                    A platform where the spec is the source of truth. Upload it once, spin up as many isolated mock environments as you need, test against them with real contract validation, and diff versions when the API changes.
+                    A platform where the spec is the source of truth. Design or upload an API spec once, spin up as many isolated mock environments as you need, test against them with real contract validation, and diff versions when the API changes.
                 </p>
                 <p>
                     Currently in active development and open source.
@@ -42,6 +42,57 @@ export default function AboutPage() {
             </section>
 
             <hr className="prose-divider" />
+
+            <section className="prose-section">
+                <h2>How Mockline Compares</h2>
+                <p>
+                    While there are many great tools for API mocking, Mockline was specifically built to bridge the gap between local development tools and heavy enterprise API gateways.
+                </p>
+                <div style={{ overflowX: 'auto', marginTop: '24px' }}>
+                    <table className="prose-table" style={{ whiteSpace: 'nowrap' }}>
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Mockline</th>
+                                <th>Postman Mocks</th>
+                                <th>Prism (Stoplight)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Hosting</strong></td>
+                                <td style={{ color: 'var(--color-logo-line)', fontWeight: 500 }}>Cloud (1-click URL)</td>
+                                <td>Cloud</td>
+                                <td style={{ color: 'var(--color-text-subtle)' }}>Local CLI only</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Isolation</strong></td>
+                                <td style={{ color: 'var(--color-logo-line)', fontWeight: 500 }}>Dedicated Container</td>
+                                <td>Shared infrastructure</td>
+                                <td style={{ color: 'var(--color-text-subtle)' }}>N/A</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Source of Truth</strong></td>
+                                <td style={{ color: 'var(--color-logo-line)', fontWeight: 500 }}>OpenAPI v3.x</td>
+                                <td>Postman Collections</td>
+                                <td>OpenAPI v3.x</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Contract Validation</strong></td>
+                                <td style={{ color: 'var(--color-logo-line)', fontWeight: 500 }}>Built-in</td>
+                                <td>Manual scripts</td>
+                                <td>Built-in</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Shareable URLs</strong></td>
+                                <td style={{ color: 'var(--color-logo-line)', fontWeight: 500 }}>Instant</td>
+                                <td>Instant</td>
+                                <td style={{ color: 'var(--color-text-subtle)' }}>Requires tunneling</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
 
             <div className="prose-contact-block" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 <div>

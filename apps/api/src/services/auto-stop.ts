@@ -1,11 +1,11 @@
-import { db } from '@mockline/db'
-import { stopContainer } from '@mockline/docker-manager'
+import { findStaleFreeMocks, findStaleRunningMocks, updateMockStatus } from '@/repositories/mock.repository'
+import { stopContainer, removeContainer } from '@mockline/docker-manager'
 import { AUTO_STOP_MINUTES } from '@mockline/types'
 import type { Tier } from '@mockline/types'
 
-// Auto-stop cron: finds mock servers that haven't been accessed
+
+// Auto-stop cron(5mins): finds mock servers that haven't been accessed
 // within their tier's AUTO_STOP_MINUTES and stops their containers.
-// Run every 5 minutes.
 export async function autoStopInactiveContainers(): Promise<{ stopped: number }> {
     let stopped = 0
     const tiers: Tier[] = ['FREE', 'PRO', 'TEAM']
@@ -14,24 +14,14 @@ export async function autoStopInactiveContainers(): Promise<{ stopped: number }>
         const timeoutMinutes = AUTO_STOP_MINUTES[tier]
         const cutoff = new Date(Date.now() - timeoutMinutes * 60 * 1000)
 
-        const staleServers = await db.mockServer.findMany({
-            where: {
-                status: 'RUNNING',
-                tier,
-                lastAccessedAt: { lt: cutoff },
-                deletedAt: null,
-            },
-        })
+        const staleServers = await findStaleRunningMocks(tier, cutoff)
 
         for (const server of staleServers) {
             if (!server.dockerContainerId) continue
 
             try {
                 await stopContainer(server.dockerContainerId)
-                await db.mockServer.update({
-                    where: { id: server.id },
-                    data: { status: 'STOPPED' },
-                })
+                await updateMockStatus(server.id, 'STOPPED')
                 stopped++
                 console.log(`Auto-stopped container ${server.dockerContainerId} (tier: ${tier}, idle ${timeoutMinutes}+ min)`)
             } catch (error) {
@@ -43,7 +33,35 @@ export async function autoStopInactiveContainers(): Promise<{ stopped: number }>
     return { stopped }
 }
 
-// Starts the auto-stop interval at server startup.
+// Auto-remove cron: finds Free tier mock servers that are older than 24hrs
+// and deletes both the container and the MockServer DB record and not the spec.
+export async function autoRemoveStaleFreeMocks(): Promise<{ removed: number }> {
+    let removed = 0
+    const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000)
+
+    const staleServers = await findStaleFreeMocks(cutoff)
+
+    for (const server of staleServers) {
+        try {
+            if (server.dockerContainerId) {
+                await removeContainer(server.dockerContainerId)
+            }
+            await updateMockStatus(server.id, 'REMOVED', {
+                deletedAt: new Date(),
+                publicUrl: null,
+                dockerContainerId: null,
+            })
+            removed++
+            console.log(`Auto-removed free mock ${server.id} (older than 24h)`)
+        } catch (error) {
+            console.error(`Failed to auto-remove free mock ${server.id}:`, (error as Error).message)
+        }
+    }
+
+    return { removed }
+}
+
+// Starts the auto-stop and auto-remove interval at server startup.
 export function startAutoStopScheduler(intervalMs = 5 * 60 * 1000): NodeJS.Timeout {
     console.log(`Auto-stop scheduler started (checks every ${intervalMs / 1000}s)`)
 
@@ -53,8 +71,13 @@ export function startAutoStopScheduler(intervalMs = 5 * 60 * 1000): NodeJS.Timeo
             if (stopped > 0) {
                 console.log(`Auto-stop: stopped ${stopped} idle container(s)`)
             }
+
+            const { removed } = await autoRemoveStaleFreeMocks()
+            if (removed > 0) {
+                console.log(`Auto-remove: deleted ${removed} 24h+ free mock(s)`)
+            }
         } catch (error) {
-            console.error('Auto-stop scheduler error:', (error as Error).message)
+            console.error('Auto-scheduler error:', (error as Error).message)
         }
     }, intervalMs)
 }

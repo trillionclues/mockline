@@ -67,7 +67,7 @@ export default function PrivacyPage() {
                     <tbody>
                         <tr>
                             <td>Free</td>
-                            <td>7 days (mock servers auto-stop after 1hr)</td>
+                            <td>24 hours (mocks auto-stop after 1hr). Specs retained indefinitely.</td>
                         </tr>
                         <tr>
                             <td>Pro</td>

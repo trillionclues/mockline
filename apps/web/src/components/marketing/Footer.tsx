@@ -19,7 +19,7 @@ export const Footer = () => {
             padding: '56px 0 32px',
         }}>
             <div style={{
-                maxWidth: '1120px',
+                maxWidth: '1300px',
                 margin: '0 auto',
                 padding: '0 24px',
             }}>

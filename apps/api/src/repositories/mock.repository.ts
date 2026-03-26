@@ -1,4 +1,5 @@
 import { db, MockServerStatus } from '@mockline/db'
+import type { Tier } from '@mockline/types'
 
 // mock server repo for database operations
 
@@ -39,11 +40,37 @@ export async function findMockBasic(mockId: string, userId: string) {
 export async function updateMockStatus(
     mockId: string,
     status: MockServerStatus,
-    extra?: { lastAccessedAt?: Date; deletedAt?: Date },
+    extra?: { 
+        lastAccessedAt?: Date
+        deletedAt?: Date
+        publicUrl?: string | null
+        dockerContainerId?: string | null 
+    },
 ) {
     return db.mockServer.update({
         where: { id: mockId },
         data: { status, ...extra },
+    })
+}
+
+export async function findStaleRunningMocks(tier: Tier, cutoff: Date) {
+    return db.mockServer.findMany({
+        where: {
+            status: 'RUNNING',
+            tier,
+            lastAccessedAt: { lt: cutoff },
+            deletedAt: null,
+        },
+    })
+}
+
+export async function findStaleFreeMocks(cutoff: Date) {
+    return db.mockServer.findMany({
+        where: {
+            tier: 'FREE',
+            createdAt: { lt: cutoff },
+            deletedAt: null,
+        },
     })
 }
 
