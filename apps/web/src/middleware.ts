@@ -36,7 +36,9 @@ export default async function middleware(request: NextRequest) {
                 request.cookies.get('__Secure-better-auth.session_token') ??
                 request.cookies.get('better-auth.session_token')
             if (sessionCookie) {
-                return NextResponse.redirect(new URL('/overview', request.url))
+                const url = new URL('/overview', request.url)
+                url.search = request.nextUrl.search // Preserve search params (e.g., plan=pro)
+                return NextResponse.redirect(url)
             }
         }
         return NextResponse.next()
