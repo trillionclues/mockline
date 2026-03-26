@@ -8,7 +8,7 @@ import {
     markSubscriptionPastDue,
     markPaymentRecovered,
 } from '../repositories/subscription.repository'
-import { sendPaymentFailureEmail } from './email'
+import { sendPaymentFailureEmail, sendSubscriptionCancelledEmail, sendSubscriptionExpiredEmail, sendSubscriptionPaymentSuccessEmail } from '@mockline/emails'
 
 
 // Provider-agnostic subscription webhook handler.
@@ -45,6 +45,7 @@ export async function handleSubscriptionEvent(
         // Since they paid through the end of the billing period,
         // we just mark the status so the frontend can show "Your plan will end on [date]" instead of "Renews on".
         case 'subscription_cancelled': {
+            await sendSubscriptionCancelledEmail(dbUser.email, dbUser.name)
             await markSubscriptionCancelled(userId, event.endsAt)
             break
         }
@@ -54,6 +55,7 @@ export async function handleSubscriptionEvent(
             await expireSubscription(userId, event.endsAt)
             try {
                 const { handleDowngrade } = await import('./downgrade')
+                await sendSubscriptionExpiredEmail(dbUser.email, dbUser.name)
                 await handleDowngrade(userId)
             } catch (err) {
                 console.error('[webhook] Downgrade handler failed:', err)
@@ -63,6 +65,7 @@ export async function handleSubscriptionEvent(
 
         // Renewal succeeded — keep tier active
         case 'subscription_payment_success': {
+            await sendSubscriptionPaymentSuccessEmail(dbUser.email, dbUser.name)
             await markPaymentSuccess(userId, event.renewsAt)
             break
         }

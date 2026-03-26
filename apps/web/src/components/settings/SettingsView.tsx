@@ -82,10 +82,10 @@ export function SettingsView({ user }: { user?: User }) {
                             <div className="settings-name">{user.tier} Plan</div>
                             <div className="settings-email">
                                 {user.subscriptionStatus === 'cancelled'
-                                    ? `Cancels ${user.subscriptionEndsAt ? new Date(user.subscriptionEndsAt).toLocaleDateString() : 'at end of period'}`
+                                    ? `Cancels ${user.subscriptionEndsAt ? new Date(user.subscriptionEndsAt)?.toLocaleDateString() : 'at end of period'}`
                                     : user.subscriptionStatus === 'active' || user.subscriptionStatus === 'past_due'
-                                        ? `Renews ${user.subscriptionRenewsAt ? new Date(user.subscriptionRenewsAt).toLocaleDateString() : 'soon'}`
-                                        : `Ends ${user.subscriptionEndsAt ? new Date(user.subscriptionEndsAt).toLocaleDateString() : 'soon'}`}
+                                        ? `Renews ${user.subscriptionRenewsAt ? new Date(user.subscriptionRenewsAt)?.toLocaleDateString() : 'soon'}`
+                                        : `Ends ${user.subscriptionEndsAt ? new Date(user.subscriptionEndsAt)?.toLocaleDateString() : 'soon'}`}
                             </div>
                         </div>
                         {user.subscriptionStatus === 'active' && (
