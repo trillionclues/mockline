@@ -64,7 +64,7 @@ export default function TermsPage() {
                             <td>Free</td>
                             <td>1</td>
                             <td>1</td>
-                            <td>After 1hr</td>
+                            <td>Stops after 1hr, deleted after 24hr</td>
                         </tr>
                         <tr>
                             <td>Pro</td>

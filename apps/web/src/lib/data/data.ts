@@ -7,6 +7,7 @@ export const LOGOS = [
     'Helium Health',
     'Stripe',
     'Adyen',
+    'Fincode',
 ]
 
 export const COLUMNS = [
@@ -50,7 +51,7 @@ export const PLANS = [
         features: [
             { text: '1 mock server', included: true },
             { text: '1 spec', included: true },
-            { text: 'Auto-stops after 1hr', included: true },
+            { text: 'Mocks auto-delete after 24hr', included: true },
             { text: 'Shareable URL', included: true },
             { text: 'Community support', included: true },
             { text: 'Contract testing', included: false },

@@ -160,9 +160,9 @@ export const AUTO_STOP_MINUTES = {
 
 export const RATE_LIMITS_BY_TIER = {
     FREE: {
-        GENERAL: { window: 60, max: 60 },
-        PROVISION: { window: 3600, max: 5 },
-        CONTRACT_TEST: { window: 3600, max: 5 },
+        GENERAL: { window: 60, max: 60 }, // 60 requests per minute
+        PROVISION: { window: 3600, max: 5 }, // 5 mock servers per hour
+        CONTRACT_TEST: { window: 3600, max: 5 }, // 5 contract tests per hour
     },
     PRO: {
         GENERAL: { window: 60, max: 300 },
