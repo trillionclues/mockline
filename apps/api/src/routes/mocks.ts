@@ -77,6 +77,13 @@ mocksRouter.post('/', rateLimit('PROVISION'), async (c) => {
             specVersionId: parsed.data.specVersionId,
             userId,
             tier: user.tier ?? 'FREE',
+            contourOptions: parsed.data.contourOptions ? {
+                isStateful: parsed.data.contourOptions.stateful,
+                isDeterministic: parsed.data.contourOptions.deterministic,
+                delay: parsed.data.contourOptions.delay,
+                errorRate: parsed.data.contourOptions.errorRate,
+                requireAuth: parsed.data.contourOptions.requireAuth,
+            } : undefined,
         })
         return c.json({ data: result, error: null }, 201)
     } catch (error) {

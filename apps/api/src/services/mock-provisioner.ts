@@ -1,9 +1,9 @@
 import { db } from '@mockline/db'
-import { buildMockImage, startMockContainer } from '@mockline/docker-manager'
+import { buildMockImage, startMockContainerWithOptions } from '@mockline/docker-manager'
 import { validateSpec } from '@mockline/spec-parser'
 import { detectFormat } from '@mockline/spec-parser'
 import { CONTAINER_LIMITS, DEFAULT_RESOURCE_LIMITS } from '@mockline/types'
-import type { Tier } from '@mockline/types'
+import type { ContourOptions, Tier } from '@mockline/types'
 import crypto from 'node:crypto'
 
 /**
@@ -19,8 +19,9 @@ export async function provisionMockServer(params: {
     specVersionId: string
     userId: string
     tier: Tier
+    contourOptions?: ContourOptions
 }): Promise<{ id: string; publicUrl: string; status: string }> {
-    const { specVersionId, userId, tier } = params
+    const { specVersionId, userId, tier, contourOptions } = params
 
     // Check container limit
     const activeCount = await db.mockServer.count({
@@ -50,6 +51,11 @@ export async function provisionMockServer(params: {
             userId,
             status: 'BUILDING',
             tier,
+            isStateful: contourOptions?.isStateful ?? false,
+            isDeterministic: contourOptions?.isDeterministic ?? false,
+            delay: contourOptions?.delay ?? null,
+            errorRate: contourOptions?.errorRate ?? 0,
+            requireAuth: contourOptions?.requireAuth ?? false,
         },
     })
 
@@ -68,10 +74,21 @@ export async function provisionMockServer(params: {
         const cleanName = specVersion.spec.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'mock'
         const shortHash = crypto.randomBytes(2).toString('hex')
         const containerName = `${cleanName}-${shortHash}`
-        const { containerId, port } = await startMockContainer({
+
+        const specFilename = specVersion.format === 'YAML' ? 'spec.yaml' : 'spec.json'
+
+        const { containerId, port } = await startMockContainerWithOptions({
             imageId,
             containerId: containerName,
             resourceLimits: DEFAULT_RESOURCE_LIMITS,
+            specFilename,
+            contourOptions: {
+                stateful: mockServer.isStateful,
+                deterministic: mockServer.isDeterministic,
+                delay: mockServer.delay || undefined,
+                errorRate: mockServer.errorRate,
+                requireAuth: mockServer.requireAuth
+            }
         })
 
         const mockBaseDomain = process.env.MOCK_BASE_DOMAIN ?? 'localhost'

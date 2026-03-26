@@ -39,6 +39,14 @@ export type PaginationMeta = {
     hasMore: boolean
 }
 
+export interface ContourOptions {
+    isStateful?: boolean
+    isDeterministic?: boolean
+    delay?: string
+    errorRate?: number
+    requireAuth?: boolean
+}
+
 // Errors
 export class ApiError extends Error {
     constructor(

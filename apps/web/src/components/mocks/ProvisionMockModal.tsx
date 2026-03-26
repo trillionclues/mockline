@@ -28,6 +28,7 @@ export function ProvisionMockModal({ open, onClose, specs, prefilledSpecId, pref
     const [stateful, setStateful] = useState(false)
     const [delay, setDelay] = useState('')
     const [errorRate, setErrorRate] = useState('')
+    const [requireAuth, setRequireAuth] = useState(false)
 
     useEffect(() => {
         if (prefilledSpecId) setSpecId(prefilledSpecId)
@@ -54,6 +55,7 @@ export function ProvisionMockModal({ open, onClose, specs, prefilledSpecId, pref
                     stateful: stateful || undefined,
                     delay: delay || undefined,
                     errorRate: errorRate ? parseInt(errorRate) : undefined,
+                    requireAuth: requireAuth || undefined,
                 }
             }),
         }),
@@ -123,16 +125,33 @@ export function ProvisionMockModal({ open, onClose, specs, prefilledSpecId, pref
                         </div>
 
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', opacity: isProUser ? 1 : 0.4, pointerEvents: isProUser ? 'auto' : 'none' }}>
-                            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px', color: 'var(--color-text)' }}>
-                                <input
-                                    type="checkbox"
-                                    checked={stateful}
-                                    onChange={e => setStateful(e.target.checked)}
-                                    style={{ accentColor: 'var(--color-primary)' }}
-                                />
-                                Stateful mode — persist changes in memory
-                            </label>
+                            <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                justifyContent: 'space-between',
+                                marginBottom: '12px',
+                            }}>
+                                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px', color: 'var(--color-text)' }}>
+                                    <input
+                                        type="checkbox"
+                                        checked={stateful}
+                                        onChange={e => setStateful(e.target.checked)}
+                                        style={{ accentColor: 'var(--color-primary)' }}
+                                    />
+                                    Stateful mode — persist changes in memory
+                                </label>
+                                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px', color: 'var(--color-text)' }}>
+                                    <input
+                                        type="checkbox"
+                                        checked={requireAuth}
+                                        onChange={e => setRequireAuth(e.target.checked)}
+                                        style={{ accentColor: 'var(--color-primary)' }}
+                                    />
 
+                                    Require Auth
+                                </label>
+                            </div>
                             <div style={{ display: 'flex', gap: '8px' }}>
                                 <div className="form-field" style={{ flex: 1 }}>
                                     <label className="form-label" style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>Response delay (ms range)</label>
@@ -158,6 +177,7 @@ export function ProvisionMockModal({ open, onClose, specs, prefilledSpecId, pref
                                         style={{ height: '32px', fontSize: '12px' }}
                                     />
                                 </div>
+
                             </div>
                         </div>
 

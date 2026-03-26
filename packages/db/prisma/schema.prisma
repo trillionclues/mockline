@@ -116,6 +116,13 @@ model MockServer {
   port              Int?
   tier              Tier
 
+  // Contour CLI options
+  isStateful      Boolean @default(false)
+  isDeterministic Boolean @default(false)
+  delay           String?
+  errorRate       Int     @default(0)
+  requireAuth     Boolean @default(false)
+
   lastAccessedAt DateTime @default(now())
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
