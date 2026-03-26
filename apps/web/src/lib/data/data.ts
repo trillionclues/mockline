@@ -78,7 +78,7 @@ export const PLANS = [
             { text: 'Schema diffing + history', included: true },
             { text: 'Stateful, Delay & Error mocks', included: true },
         ],
-        cta: 'Start Pro trial',
+        cta: 'Upgrade to Pro',
         ctaHref: '/login?intent=register&plan=pro',
     },
     {

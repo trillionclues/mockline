@@ -219,7 +219,8 @@ export function ResponsePanel({ response }: { response: ExplorerResponse }) {
                 color: 'var(--color-text)',
                 background: 'var(--color-bg)',
             }}>
-                {isJson ? highlightJson(formattedBody) : (
+                {/* {isJson ? highlightJson(formattedBody) : ( */}
+                {isJson && (
                     <pre style={{ margin: 0, padding: '0 16px', whiteSpace: 'pre-wrap' }}>{formattedBody}</pre>
                 )}
             </div>
