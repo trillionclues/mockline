@@ -37,7 +37,7 @@ export const SuccessState = ({ email }: { email: string }) => {
                 lineHeight: 1.6,
                 marginBottom: '8px',
             }}>
-                We'll send a confirmation to{' '}
+                We've sent a confirmation to{' '}
                 <span style={{ color: 'var(--color-logo-line)', fontWeight: 500 }}>{email}</span>.
             </p>
 

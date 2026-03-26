@@ -1,0 +1,72 @@
+export function waitlistConfirmationTemplate(name?: string | null): string {
+  const greeting = name ? `Hi ${name},` : 'Hi there,'
+
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>You're on the Mockline waitlist 🎉</title>
+</head>
+<body style="margin:0;padding:0;background:#ffffff;font-family:-apple-system,BlinkMacSystemFont,'Inter',sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;padding:40px 16px;">
+  <tr>
+    <td align="center">
+      <table width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;">
+        <!-- Logo — centered  -->
+        <tr>
+          <td align="center" style="padding-bottom:24px;">
+            <table cellpadding="0" cellspacing="0">
+              <tr>
+               <td style="font-size:16px;font-weight:600;color:#0a0a0b;font-family:-apple-system,BlinkMacSystemFont,'Inter',sans-serif;">Mock</td>
+                <td style="padding:0 2px;"><div style="width:1.5px;height:18px;background:#0a0a0b;border-radius:1px;"></div></td>
+                <td style="font-size:16px;font-weight:600;color:#0a0a0b;font-family:-apple-system,BlinkMacSystemFont,'Inter',sans-serif;">ine</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td style="background:#ffffff;border:1px solid #1a1a2e;border-radius:8px;padding:32px 28px;">
+            <p style="margin:0 0 20px;font-size:14px;color:#0a0a0b;line-height:1.6;">
+              ${greeting}
+            </p>
+            <p style="margin:0 0 24px;font-size:13px;color:#0a0a0b;line-height:1.7;">
+              Mockline makes it easy to eliminate frontend-backend friction by giving you an instant, intelligent mock API directly from your OpenAPI specifications.
+            </p>
+            <p style="margin:0 0 24px;font-size:13px;color:#0a0a0b;line-height:1.7;">
+              Thanks for joining — we'll reach out as soon as early access opens.
+            </p>
+            <table cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
+              <tr>
+                <td style="background:#F2E3BB;border-radius:6px;">
+                  <a href="https://mockline.xyz/changelog"
+                     style="display:inline-block;padding:10px 20px;font-size:13px;font-weight:600;color:#0a0a0b;text-decoration:none;">
+                    View product updates →
+                  </a>
+                </td>
+              </tr>
+            </table>
+            <p style="margin:0 0 24px;font-size:13px;color:#0a0a0b;line-height:1.7;">
+              Questions? Just reply to this email.
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td align="center" style="padding-top:20px;">
+            <p style="margin:0;font-size:11px;color:#3f3f46;line-height:1.8;text-align:center;">
+              You signed up at
+              <a href="https://mockline.xyz" style="color:#52525b;text-decoration:none;">mockline.xyz</a>
+              <br>
+              © ${new Date().getFullYear()} Mockline. All rights reserved.
+            </p>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+</body>
+</html>
+    `.trim()
+}

@@ -59,6 +59,17 @@ export const auth = betterAuth({
             domain: process.env.COOKIE_DOMAIN,  // ".mockline.xyz"
         },
     },
+    databaseHooks: {
+        user: {
+            create: {
+                after: async (user) => {
+                    import('@mockline/emails').then(({ sendWelcomeEmail }) => {
+                        sendWelcomeEmail(user.email, user.name).catch(console.error)
+                    }).catch(console.error)
+                }
+            }
+        }
+    },
     trustedOrigins: [
         process.env.CORS_ORIGIN ?? 'http://localhost:3000',
         process.env.CORS_ORIGIN?.replace('://', '://www.') ?? 'http://www.localhost:3000',

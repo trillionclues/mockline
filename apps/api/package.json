@@ -17,6 +17,7 @@
         "@mockline/db": "workspace:*",
         "@mockline/docker-manager": "workspace:*",
         "@mockline/spec-parser": "workspace:*",
+        "@mockline/emails": "workspace:*",
         "@mockline/types": "workspace:*",
         "@readme/openapi-parser": "^5.5.0",
         "better-auth": "^1.2.0",
