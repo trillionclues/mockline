@@ -17,73 +17,73 @@ function statusBg(code: number) {
 }
 
 // Syntax-highlight JSON keys, strings, numbers, booleans, nulls
-function highlightJson(json: string): React.ReactNode[] {
-    const lines = json.split('\n')
-    return lines.map((line, i) => {
-        const parts: React.ReactNode[] = []
-        let remaining = line
-        let keyIdx = 0
+// function highlightJson(json: string): React.ReactNode[] {
+//     const lines = json.split('\n')
+//     return lines.map((line, i) => {
+//         const parts: React.ReactNode[] = []
+//         let remaining = line
+//         let keyIdx = 0
 
-        // Match patterns: "key": , "string value", numbers, booleans, null
-        const regex = /("(?:[^"\\]|\\.)*")\s*(:)?|(\b\d+\.?\d*\b)|(\btrue\b|\bfalse\b)|(\bnull\b)/g
-        let match: RegExpExecArray | null
-        let lastIndex = 0
+//         // Match patterns: "key": , "string value", numbers, booleans, null
+//         const regex = /("(?:[^"\\]|\\.)*")\s*(:)?|(\b\d+\.?\d*\b)|(\btrue\b|\bfalse\b)|(\bnull\b)/g
+//         let match: RegExpExecArray | null
+//         let lastIndex = 0
 
-        while ((match = regex.exec(remaining)) !== null) {
-            // Add plain text before this match
-            if (match.index > lastIndex) {
-                parts.push(remaining.slice(lastIndex, match.index))
-            }
+//         while ((match = regex.exec(remaining)) !== null) {
+//             // Add plain text before this match
+//             if (match.index > lastIndex) {
+//                 parts.push(remaining.slice(lastIndex, match.index))
+//             }
 
-            if (match[1]) {
-                if (match[2]) {
-                    // It's a key: "key":
-                    parts.push(
-                        <span key={`k-${i}-${keyIdx}`} style={{ color: 'var(--color-primary)' }}>{match[1]}</span>
-                    )
-                    parts.push(match[2])
-                } else {
-                    // It's a string value
-                    parts.push(
-                        <span key={`s-${i}-${keyIdx}`} style={{ color: '#22c55e' }}>{match[1]}</span>
-                    )
-                }
-            } else if (match[3]) {
-                // Number
-                parts.push(
-                    <span key={`n-${i}-${keyIdx}`} style={{ color: '#f59e0b' }}>{match[3]}</span>
-                )
-            } else if (match[4]) {
-                // Boolean
-                parts.push(
-                    <span key={`b-${i}-${keyIdx}`} style={{ color: '#818cf8' }}>{match[4]}</span>
-                )
-            } else if (match[5]) {
-                // null
-                parts.push(
-                    <span key={`nl-${i}-${keyIdx}`} style={{ color: '#94a3b8' }}>{match[5]}</span>
-                )
-            }
+//             if (match[1]) {
+//                 if (match[2]) {
+//                     // It's a key: "key":
+//                     parts.push(
+//                         <span key={`k-${i}-${keyIdx}`} style={{ color: 'var(--color-primary)' }}>{match[1]}</span>
+//                     )
+//                     parts.push(match[2])
+//                 } else {
+//                     // It's a string value
+//                     parts.push(
+//                         <span key={`s-${i}-${keyIdx}`} style={{ color: '#22c55e' }}>{match[1]}</span>
+//                     )
+//                 }
+//             } else if (match[3]) {
+//                 // Number
+//                 parts.push(
+//                     <span key={`n-${i}-${keyIdx}`} style={{ color: '#f59e0b' }}>{match[3]}</span>
+//                 )
+//             } else if (match[4]) {
+//                 // Boolean
+//                 parts.push(
+//                     <span key={`b-${i}-${keyIdx}`} style={{ color: '#818cf8' }}>{match[4]}</span>
+//                 )
+//             } else if (match[5]) {
+//                 // null
+//                 parts.push(
+//                     <span key={`nl-${i}-${keyIdx}`} style={{ color: '#94a3b8' }}>{match[5]}</span>
+//                 )
+//             }
 
-            lastIndex = match.index + match[0].length
-            keyIdx++
-        }
+//             lastIndex = match.index + match[0].length
+//             keyIdx++
+//         }
 
-        // remaining plain text
-        if (lastIndex < remaining.length) {
-            parts.push(remaining.slice(lastIndex))
-        }
+//         // remaining plain text
+//         if (lastIndex < remaining.length) {
+//             parts.push(remaining.slice(lastIndex))
+//         }
 
-        return (
-            <div key={i} style={{ display: 'flex' }}>
-                <span style={{ color: 'var(--color-text-subtle)', userSelect: 'none', width: '36px', textAlign: 'right', paddingRight: '16px', flexShrink: 0, fontSize: '11px', lineHeight: '1.7' }}>
-                    {i + 1}
-                </span>
-                <span style={{ flex: 1, whiteSpace: 'pre' }}>{parts}</span>
-            </div>
-        )
-    })
-}
+//         return (
+//             <div key={i} style={{ display: 'flex' }}>
+//                 <span style={{ color: 'var(--color-text-subtle)', userSelect: 'none', width: '36px', textAlign: 'right', paddingRight: '16px', flexShrink: 0, fontSize: '11px', lineHeight: '1.7' }}>
+//                     {i + 1}
+//                 </span>
+//                 <span style={{ flex: 1, whiteSpace: 'pre' }}>{parts}</span>
+//             </div>
+//         )
+//     })
+// }
 
 export function ResponsePanel({ response }: { response: ExplorerResponse }) {
     const [headersOpen, setHeadersOpen] = useState(false)
