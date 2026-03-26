@@ -71,7 +71,7 @@ serve({ fetch: app.fetch, port }, (info) => {
     startAutoStopScheduler()
 
     // Build base image in background — first provision will be fast
-    const contourVersion = process.env.CONTOUR_VERSION ?? '1.2.0'
+    const contourVersion = process.env.CONTOUR_VERSION ?? '1.2.1'
     ensureContourBaseImage(contourVersion).catch(err =>
         console.error('[base-image] Failed to build base image:', err)
     )

@@ -61,7 +61,7 @@ export async function provisionMockServer(params: {
             specContent: specVersion.content,
             specFormat: specVersion.format,
             imageTag,
-            contourVersion: process.env.CONTOUR_VERSION ?? '1.2.0',
+            contourVersion: process.env.CONTOUR_VERSION ?? '1.2.1',
         })
 
         // generate mock server slug for url

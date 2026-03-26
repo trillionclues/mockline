@@ -240,7 +240,7 @@ WORKDIR /app
 ENV PNPM_HOME=/usr/local/share/pnpm
 ENV PATH=/usr/local/share/pnpm:$PATH
 
-ARG CONTOUR_VERSION=1.2.0
+ARG CONTOUR_VERSION=1.2.1
 RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
 RUN pnpm add -g @trillionclues/contour@${CONTOUR_VERSION}
 RUN chmod -R 755 /usr/local/share/pnpm
@@ -578,7 +578,7 @@ NEXT_PUBLIC_AUTH_URL=https://api.mockline.xyz
 # ── Docker ────────────
 DOCKER_HOST=unix:///var/run/docker.sock
 MOCK_BASE_DOMAIN=mockline.xyz
-CONTOUR_VERSION=1.2.0
+CONTOUR_VERSION=1.2.1
 
 # ── Traefik ────────────
 CF_DNS_API_TOKEN= # from Cloudflare API token step

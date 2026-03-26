@@ -87,12 +87,12 @@ export const ENTRIES: ChangelogEntry[] = [
         date: 'March 19, 2026',
         title: 'Upstream Patch Eliminated',
         tags: ['improvement', 'performance'],
-        body: 'Updated to Contour CLI v1.2.0 which now binds to 0.0.0.0 by default. Removed the sed patch from Docker image builds — provision time reduced slightly and the build process much cleaner.',
+        body: 'Updated to Contour CLI v1.2.1 which now binds to 0.0.0.0 by default. Removed the sed patch from Docker image builds — provision time reduced slightly and the build process much cleaner.',
         bullets: [
             'Contour CLI now supports --host flag and HOST env variable',
             'Default host changed to 0.0.0.0 — correct for Docker environments',
             'Removed runtime source patching from mock server image builds',
-            'CONTOUR_VERSION bumped to 1.2.0',
+            'CONTOUR_VERSION bumped to 1.2.1',
         ],
     },
     {

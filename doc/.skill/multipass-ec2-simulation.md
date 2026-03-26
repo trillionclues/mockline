@@ -280,7 +280,7 @@ NEXT_PUBLIC_AUTH_URL=https://api.mockline.local
 # ── Docker ───────────────────────────────────────────────
 DOCKER_HOST=unix:///var/run/docker.sock
 MOCK_BASE_DOMAIN=mockline.local
-CONTOUR_VERSION=1.2.0
+CONTOUR_VERSION=1.2.1
 
 # ── Traefik — NO Cloudflare token needed locally ─────────
 # CF_DNS_API_TOKEN=   ← leave blank or omit entirely
