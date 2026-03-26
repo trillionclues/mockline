@@ -10,6 +10,20 @@ export const TAG_STYLES: Record<ChangelogTag, { background: string; color: strin
 
 export const ENTRIES: ChangelogEntry[] = [
     {
+        version: 'v0.7.1',
+        date: 'March 26, 2026',
+        title: 'Mock Server Configuration Options',
+        body: 'Added configuration options for mock servers, allowing users to enable stateful, deterministic, delay, error rate, and authentication options.',
+        bullets: [
+            'Stateful mock servers persist data across requests',
+            'Deterministic mock servers return consistent responses for the same request',
+            'Delay option allows users to simulate network latency',
+            'Error rate option allows users to simulate network errors',
+            'Authentication option allows users to secure their mock servers',
+        ],
+        tags: ['feature'],
+    },
+    {
         version: 'v0.7.0',
         date: 'March 24, 2026',
         title: 'API Explorer Overhaul & Spec Designer Drafts',
@@ -87,12 +101,12 @@ export const ENTRIES: ChangelogEntry[] = [
         date: 'March 19, 2026',
         title: 'Upstream Patch Eliminated',
         tags: ['improvement', 'performance'],
-        body: 'Updated to Contour CLI v1.2.0 which now binds to 0.0.0.0 by default. Removed the sed patch from Docker image builds — provision time reduced slightly and the build process much cleaner.',
+        body: 'Updated to Contour CLI v1.2.1 which now binds to 0.0.0.0 by default. Removed the sed patch from Docker image builds — provision time reduced slightly and the build process much cleaner.',
         bullets: [
             'Contour CLI now supports --host flag and HOST env variable',
             'Default host changed to 0.0.0.0 — correct for Docker environments',
             'Removed runtime source patching from mock server image builds',
-            'CONTOUR_VERSION bumped to 1.2.0',
+            'CONTOUR_VERSION bumped to 1.2.1',
         ],
     },
     {
