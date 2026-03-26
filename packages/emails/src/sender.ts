@@ -6,11 +6,24 @@ import { subscriptionSuccessTemplate } from './templates/subscription-success'
 import { subscriptionCancelledTemplate } from './templates/subscription-cancelled'
 import { subscriptionExpiredTemplate } from './templates/subscription-expired'
 
-// Note: Ensure RESEND_API_KEY and RESEND_FROM_EMAIL are set in the environment
-const resend = new Resend(process.env.RESEND_API_KEY)
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL ?? 'support@mockline.xyz'
+let resendClient: Resend | null = null
+let fromEmail: string | null = null
+
+// Lazy-loads the Resend client and env vars.
+// Maintains singleton lazy initialization of the SDK.
+function getMailer() {
+    if (!resendClient) {
+        resendClient = new Resend(process.env.RESEND_API_KEY)
+    }
+    if (!fromEmail) {
+        fromEmail = process.env.RESEND_FROM_EMAIL ?? 'support@mockline.xyz'
+    }
+    return { resend: resendClient, FROM_EMAIL: fromEmail }
+}
 
 export async function sendPaymentFailureEmail(userEmail: string, userName?: string | null) {
+    const { resend, FROM_EMAIL } = getMailer()
+
     try {
         await resend.emails.send({
             from: `Mockline <${FROM_EMAIL}>`,
@@ -33,6 +46,8 @@ export async function sendPaymentFailureEmail(userEmail: string, userName?: stri
 }
 
 export async function sendWaitlistEmail(userEmail: string, userName?: string | null) {
+    const { resend, FROM_EMAIL } = getMailer()
+
     try {
         await resend.emails.send({
             from: `Mockline <${FROM_EMAIL}>`,
@@ -49,13 +64,14 @@ export async function sendWaitlistEmail(userEmail: string, userName?: string | n
             html: `<p><strong>${userName ?? 'Someone'}</strong> (${userEmail}) just joined the waitlist.</p>`,
         })
 
-        // console.log('[email] Waitlist email sent to', userEmail)
     } catch (err) {
         console.error('[email] Failed to send waitlist confirmation email:', err)
     }
 }
 
 export async function sendWelcomeEmail(userEmail: string, userName?: string | null) {
+    const { resend, FROM_EMAIL } = getMailer()
+
     try {
         await resend.emails.send({
             from: `Mockline <${FROM_EMAIL}>`,
@@ -78,6 +94,8 @@ export async function sendWelcomeEmail(userEmail: string, userName?: string | nu
 }
 
 export async function sendSubscriptionPaymentSuccessEmail(userEmail: string, userName?: string | null) {
+    const { resend, FROM_EMAIL } = getMailer()
+
     try {
         await resend.emails.send({
             from: `Mockline <${FROM_EMAIL}>`,
@@ -91,6 +109,8 @@ export async function sendSubscriptionPaymentSuccessEmail(userEmail: string, use
 }
 
 export async function sendSubscriptionCancelledEmail(userEmail: string, userName?: string | null) {
+    const { resend, FROM_EMAIL } = getMailer()
+
     try {
         await resend.emails.send({
             from: `Mockline <${FROM_EMAIL}>`,
@@ -104,6 +124,8 @@ export async function sendSubscriptionCancelledEmail(userEmail: string, userName
 }
 
 export async function sendSubscriptionExpiredEmail(userEmail: string, userName?: string | null) {
+    const { resend, FROM_EMAIL } = getMailer()
+
     try {
         await resend.emails.send({
             from: `Mockline <${FROM_EMAIL}>`,
