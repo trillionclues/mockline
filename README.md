@@ -263,6 +263,13 @@ NB:
 | `--require-auth` | Require Bearer token | Rejects requests without `Authorization` header |
 | `--deterministic` | Reproducible fake data | Same request → same response (for E2E tests) |
 
+If you add a new column 
+- Update the schema with the changes 
+- Run the migration
+cd packages/db
+npx prisma migrate dev --name add_new_column_name
+- Commit the migration
+
 ## License
 
 [MIT](./LICENSE) © [trillionclues](https://github.com/trillionclues)

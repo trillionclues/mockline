@@ -352,10 +352,14 @@ This becomes `CF_DNS_API_TOKEN` in your `.env`.
 5. **Key pair**: Create new → ED25519 → download `.pem` → save to `~/.ssh/mockline-staging.pem`
 
 NB: if file is in download folder (move or copy it)
-mv ~/Downloads/new-key.pem ~/.ssh/mockline-staging.pem
+mv ~/Downloads/mockline-key.pem ~/.ssh/mockline-staging.pem
 or
-cp ~/Downloads/new-key.pem ~/.ssh/mockline-staging.pem
+cp ~/Downloads/mockline-key.pem ~/.ssh/mockline-staging.pem
+<!-- 
+ls -la ~/.ssh. ==== see the contents of your .ssh directory
+chmod 400 ~/.ssh/mockline-staging.pem
 
+ -->
 Key pair (login):
 Click Create new key pair.
 Name it mockline-staging.
@@ -478,7 +482,7 @@ sudo lynis audit system
 ssh -i ~/.ssh/mockline-staging.pem deploy@<ELASTIC_IP>
 ```
 
----
+---NEXT---
 
 ## 9. Docker + Docker Compose on Server
 
@@ -562,9 +566,6 @@ GITHUB_CLIENT_SECRET=your_staging_client_secret
 # ── Google OAuth ──────
 GOOGLE_CLIENT_ID=your_staging_google_client_id
 GOOGLE_CLIENT_SECRET=your_staging_google_client_secret
-
-GOOGLE_CLIENT_ID=your_staging_client_id
-GOOGLE_CLIENT_SECRET=your_staging_client_secret
 
 # ── Internal ────────────
 INTERNAL_API_SECRET= # openssl rand -hex 32
