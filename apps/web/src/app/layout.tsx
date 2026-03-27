@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 import { Bricolage_Grotesque, Inter } from 'next/font/google'
 import { Providers } from '@/components/providers'
+import { Analytics } from '@vercel/analytics/next';
 
 const bricolage = Bricolage_Grotesque({
     subsets: ['latin'],
@@ -114,6 +115,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <Providers>
                     {children}
                 </Providers>
+                <Analytics />
             </body>
         </html>
     )
