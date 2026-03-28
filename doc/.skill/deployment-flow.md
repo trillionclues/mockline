@@ -1547,3 +1547,29 @@ are completely unchanged. The migration is a data move + three secrets + DNS upd
 ---
 
 *Last updated: March 2026 — Vercel frontend + AWS EC2 API, provider-agnostic CI/CD, self-hosted Postgres + Redis.*
+
+
+
+
+
+<!-- ---------------- note for spaceship vps ------------>
+Spaceship uses port 22022, not 22.
+Spaceship requires a passphrase (at least 8 chars, upper/lowercase, number, special char). 
+
+Run to generate one
+ssh-keygen -t ecdsa -b 521 -f ~/.ssh/id_ecdsa
+<!-- Store it somewhere safe (your password manager) because it can't be recovered. -->
+
+Then run:
+cat ~/.ssh/id_ecdsa.pub
+<!-- copy and paste into Spaceship's SSH key field -->
+
+ls ~/.ssh/id_ecdsa*
+# id_ecdsa        ← private, stays on your machine only
+# id_ecdsa.pub    ← this is what you paste into Spaceship
+
+ssh in
+ssh -p 22022 root@209.74.86.10
+
+<!-- after setting up deploy user -->
+ssh -p 22022 deploy@209.74.86.10
