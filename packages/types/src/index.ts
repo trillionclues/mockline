@@ -139,7 +139,6 @@ export type SpecValidationError = {
     path: string
     message: string
 }
-
 // Constants
 export const MAX_SPEC_FILE_SIZE = 1024 * 1024 // 1MB
 
