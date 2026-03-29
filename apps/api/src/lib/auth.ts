@@ -1,6 +1,7 @@
 import { betterAuth } from 'better-auth'
 import { prismaAdapter } from 'better-auth/adapters/prisma'
 import { db } from '@mockline/db'
+import { normalizeEmail } from './normalize-email'
 
 export const auth = betterAuth({
     baseURL: process.env.BETTER_AUTH_URL ?? 'http://localhost:4000',
@@ -62,6 +63,23 @@ export const auth = betterAuth({
     databaseHooks: {
         user: {
             create: {
+                before: async (user) => {
+                    // Block signup if a user with the same canonical email exists.
+                    const canonical = normalizeEmail(user.email)
+                    const allUsers = await db.user.findMany({
+                        where: { email: { not: user.email } },
+                        select: { email: true },
+                    })
+
+                    const hasDuplicate = allUsers.some(
+                        (u) => normalizeEmail(u.email) === canonical,
+                    )
+
+                    if (hasDuplicate) {
+                        console.warn(`[auth] Blocked alias signup: ${user.email} → canonical: ${canonical}`)
+                        return false
+                    }
+                },
                 after: async (user) => {
                     import('@mockline/emails').then(({ sendWelcomeEmail }) => {
                         sendWelcomeEmail(user.email, user.name).catch(console.error)

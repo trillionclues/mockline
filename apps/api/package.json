@@ -9,7 +9,9 @@
         "start": "node dist/index.mjs",
         "typecheck": "tsc --noEmit",
         "test": "vitest run",
-        "lint": "eslint ."
+        "lint": "eslint .",
+        "blast:launch": "tsx --env-file=.env scripts/send-launch-blast.ts",
+        "blast:launch:dry": "tsx --env-file=.env scripts/send-launch-blast.ts --dry-run"
     },
     "dependencies": {
         "@hono/node-server": "^1.13.0",

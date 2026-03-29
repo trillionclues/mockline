@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-// import { db } from '@mockline/db'
+import { db } from '@mockline/db'
 import { Resend } from 'resend'
 import { z } from 'zod'
 import { sendWaitlistEmail } from '@mockline/emails'
@@ -26,25 +26,25 @@ export async function POST(request: NextRequest) {
     const { email, name } = parsed.data
 
     // Check if already registered
-    // const existing = await db.waitlistEntry.findUnique({
-    //   where: { email },
-    // })
+    const existing = await db.waitlistEntry.findUnique({
+      where: { email },
+    })
 
-    // if (existing) {
-    //   return NextResponse.json(
-    //     { error: "You're already on the waitlist." },
-    //     { status: 409 }
-    //   )
-    // }
+    if (existing) {
+      return NextResponse.json(
+        { error: "You're already on the waitlist." },
+        { status: 409 }
+      )
+    }
 
     // Store in database
-    // await db.waitlistEntry.create({
-    //   data: {
-    //     email,
-    //     name: name ?? null,
-    //     source: 'waitlist-page',
-    //   },
-    // })
+    await db.waitlistEntry.create({
+      data: {
+        email,
+        name: name ?? null,
+        source: 'waitlist-page',
+      },
+    })
 
     // save to resend audience for now
     // Save to Resend contacts

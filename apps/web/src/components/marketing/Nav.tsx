@@ -4,9 +4,12 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { MocklineWordmark } from '../brand'
 import { ThemeToggle } from '../theme-toggle'
+import { useSession } from '@/lib/auth-client'
 
 export const Nav = () => {
     const [scrolled, setScrolled] = useState(false)
+    const { data: session } = useSession()
+    const isLoggedIn = !!session?.user
 
     useEffect(() => {
         const handler = () => setScrolled(window.scrollY > 8)
@@ -65,40 +68,63 @@ export const Nav = () => {
                     gap: '12px',
                 }}>
                     <ThemeToggle />
-                    {/* <Link
-                        href="/login"
-                        className="nav-signin-link nav-signin"
-                        style={{
-                            fontSize: '14px',
-                            color: 'var(--color-nav-text)',
-                            textDecoration: 'none',
-                            transition: 'color 120ms ease',
-                        }}
-                    >
-                        Sign in
-                    </Link> */}
-                    <Link
-                        // href="/login?intent=register"
-                        href="/waitlist"
-                        className="nav-cta"
-                        style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            height: '38px',
-                            padding: '0 18px',
-                            background: 'var(--color-primary)',
-                            color: 'var(--color-cta-text)',
-                            borderRadius: '6px',
-                            fontWeight: 600,
-                            fontSize: '13px',
-                            textDecoration: 'none',
-                            transition: 'opacity 120ms ease',
-                        }}
-                    >
-                        {/* Get started */}
-                        Join waitlist
-                    </Link>
+                    {isLoggedIn ? (
+                        <Link
+                            href="/overview"
+                            className="nav-cta"
+                            style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                height: '38px',
+                                padding: '0 18px',
+                                background: 'var(--color-primary)',
+                                color: 'var(--color-cta-text)',
+                                borderRadius: '6px',
+                                fontWeight: 600,
+                                fontSize: '13px',
+                                textDecoration: 'none',
+                                transition: 'opacity 120ms ease',
+                            }}
+                        >
+                            Go to Dashboard
+                        </Link>
+                    ) : (
+                        <>
+                            {/* <Link
+                                href="/login"
+                                className="nav-signin-link nav-signin"
+                                style={{
+                                    fontSize: '14px',
+                                    color: 'var(--color-nav-text)',
+                                    textDecoration: 'none',
+                                    transition: 'color 120ms ease',
+                                }}
+                            >
+                                Sign in
+                            </Link> */}
+                            <Link
+                                href="/login"
+                                className="nav-cta"
+                                style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    height: '38px',
+                                    padding: '0 18px',
+                                    background: 'var(--color-primary)',
+                                    color: 'var(--color-cta-text)',
+                                    borderRadius: '6px',
+                                    fontWeight: 600,
+                                    fontSize: '13px',
+                                    textDecoration: 'none',
+                                    transition: 'opacity 120ms ease',
+                                }}
+                            >
+                                Get started
+                            </Link>
+                        </>
+                    )}
                 </div>
             </div>
         </nav>
