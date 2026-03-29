@@ -11,7 +11,7 @@ Free to start → mockline.xyz
 ## LinkedIn — Personal
 I just launched Mockline.
 
-The idea came from a problem I kept running into — frontend and QA teams blocked because the backend API wasn't ready. Every team often faces this bottleneck.
+The idea came from a problem I kept running into — frontend and QA teams blocked because the backend API wasn't ready. It's a bottleneck almost every software team faces.
 
 So I built a tool for it. You upload your OpenAPI spec and get a fully isolated mock API server running in seconds. No extra configurations, no Docker setup, no extra logic.
 
@@ -30,7 +30,7 @@ If you work in engineering, QA, or product — I'd genuinely appreciate you tryi
 
 ## Product Hunt
 Name of launch: Mockline
-Product Tagline: Spin Up Live Mock API From Openapi Specs
+Product Tagline: Spin Up Live Mock APIs From OpenAPI Specs
 
 Links to launch:
 https://mockline.xyz
@@ -53,7 +53,7 @@ I primarily worked as a FE dev so every sprint I'd start building against an API
 The frustrating part — the spec usually exists, you just can't run it. I believe QAs hit the same challenge with writing integration tests against an endpoint that isn't live. And the longer this goes, the more testing gets compressed into the last 48 hours of a sprint.
 
 What Mockline does:
-Upload(build im-app) an OpenAPI 3.0 spec (YAML/JSON or remote URL). Mockline builds a Docker image with the Contour CLI for data generation baked in, spins up a container, and assigns a public URL — live mock server with real HTTP responses in 3-7 seconds.
+Upload (or build in-app) an OpenAPI 3.0 spec (YAML/JSON or remote URL). Mockline builds a Docker image with the Contour CLI for data generation baked in, spins up a container, and assigns a public URL — live mock server with real HTTP responses in 3-7 seconds.
 
 Also each mock is isolated per spec version. You can run contract tests to validate the mock matches the spec, and diff two versions to catch breaking changes before production.
 
@@ -61,7 +61,8 @@ What's shipped right now:
 > Spec upload and versioning
 > Mock server provisioning public URLs
 > Start/stop/delete controls
-> Contract testing and schema diffing > In-dashboard API client to hit endpoints in real time
+> Contract testing and schema diffing
+> In-dashboard API client to hit endpoints in real time
 > In-app spec build
 
 Honestly, I'd genuinely love feedback on

@@ -18,6 +18,7 @@ const inter = Inter({
 })
 
 const SITE_URL = 'https://mockline.xyz'
+const OG_IMAGE = `${SITE_URL}/og-image.png`
 
 export const metadata: Metadata = {
     title: {
@@ -55,6 +56,14 @@ export const metadata: Metadata = {
         siteName: 'Mockline',
         type: 'website',
         locale: 'en_US',
+        images: [
+            {
+                url: OG_IMAGE,
+                width: 1200,
+                height: 630,
+                alt: 'Mockline — Deploy Mock API Servers from OpenAPI Specs',
+            },
+        ],
     },
     twitter: {
         card: 'summary_large_image',
@@ -63,6 +72,7 @@ export const metadata: Metadata = {
             'Open-source PaaS for Docker-powered mock API servers. Upload a spec, get a URL.',
         creator: '@getmockline',
         site: '@getmockline',
+        images: [OG_IMAGE],
     },
     robots: {
         index: true,
