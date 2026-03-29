@@ -21,6 +21,11 @@ export function PricingModal({ open, onClose }: Props) {
             return
         }
 
+        if (planName === 'Team' || planName === 'TEAM') {
+            window.location.href = 'mailto:admin@mockline.xyz'
+            return
+        }
+
         try {
             const data = await billingApi.checkout(planName.toLowerCase(), yearly)
             if (data?.checkoutUrl) {

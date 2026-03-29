@@ -128,7 +128,7 @@ export const HeroSection = () => {
                             flexWrap: 'wrap',
                         }}>
                             <Link
-                                href={isLoggedIn ? '/overview' : '/waitlist'}
+                                href={isLoggedIn ? '/overview' : '/login'}
                                 className="nav-cta"
                                 style={{
                                     display: 'inline-flex',
