@@ -4,12 +4,15 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'
+import { useSession } from '@/lib/auth-client'
 
 const ease = [0.21, 0.47, 0.32, 0.98] as const;
 
 export const HeroSection = () => {
     const { resolvedTheme } = useTheme()
     const [mounted, setMounted] = useState(false)
+    const { data: session } = useSession()
+    const isLoggedIn = !!session?.user
 
     useEffect(() => {
         setMounted(true)
@@ -125,8 +128,7 @@ export const HeroSection = () => {
                             flexWrap: 'wrap',
                         }}>
                             <Link
-                                // href="/login?intent=register"
-                                href="/waitlist"
+                                href={isLoggedIn ? '/overview' : '/waitlist'}
                                 className="nav-cta"
                                 style={{
                                     display: 'inline-flex',
@@ -143,8 +145,7 @@ export const HeroSection = () => {
                                     transition: 'opacity 120ms ease',
                                 }}
                             >
-                                {/* Get started free */}
-                                Join waitlist
+                                {isLoggedIn ? 'Go to Dashboard' : 'Get started'}
                             </Link>
                             <Link
                                 href="https://github.com/trillionclues/mockline"
@@ -178,7 +179,9 @@ export const HeroSection = () => {
                             fontSize: '12px',
                             color: 'var(--color-text-muted)',
                         }}>
-                            No credit card required. Free tier forever.
+                            {isLoggedIn
+                                ? `Welcome back, ${session.user.name?.split(' ')[0] ?? 'there'}!`
+                                : 'No credit card required. Free tier forever.'}
                         </p>
                     </motion.div>
 

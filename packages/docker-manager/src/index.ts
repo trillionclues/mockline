@@ -1,5 +1,5 @@
 export { buildMockImage } from './build-image'
 export { startMockContainer, startMockContainerWithOptions } from './start-container'
-export { stopContainer, removeContainer } from './lifecycle'
+export { stopContainer, removeContainer, removeImage, pruneDockerImages } from './lifecycle'
 export { getContainerStatus, listActiveContainers } from './status'
 export { docker } from './client'

@@ -1,5 +1,5 @@
 import { findStaleFreeMocks, findStaleRunningMocks, updateMockStatus } from '@/repositories/mock.repository'
-import { stopContainer, removeContainer } from '@mockline/docker-manager'
+import { stopContainer, removeContainer, removeImage, pruneDockerImages } from '@mockline/docker-manager'
 import { AUTO_STOP_MINUTES } from '@mockline/types'
 import type { Tier } from '@mockline/types'
 
@@ -46,6 +46,10 @@ export async function autoRemoveStaleFreeMocks(): Promise<{ removed: number }> {
             if (server.dockerContainerId) {
                 await removeContainer(server.dockerContainerId)
             }
+
+            if (server.dockerImageId) {
+                await removeImage(server.dockerImageId)
+            }
             await updateMockStatus(server.id, 'REMOVED', {
                 deletedAt: new Date(),
                 publicUrl: null,
@@ -64,6 +68,10 @@ export async function autoRemoveStaleFreeMocks(): Promise<{ removed: number }> {
 // Starts the auto-stop and auto-remove interval at server startup.
 export function startAutoStopScheduler(intervalMs = 5 * 60 * 1000): NodeJS.Timeout {
     console.log(`Auto-stop scheduler started (checks every ${intervalMs / 1000}s)`)
+
+    // prune dangling images
+    pruneDockerImages();
+    setInterval(pruneDockerImages, 60 * 60 * 1000);
 
     return setInterval(async () => {
         try {

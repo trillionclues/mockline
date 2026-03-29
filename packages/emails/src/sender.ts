@@ -5,13 +5,14 @@ import { welcomeTemplate } from './templates/welcome'
 import { subscriptionSuccessTemplate } from './templates/subscription-success'
 import { subscriptionCancelledTemplate } from './templates/subscription-cancelled'
 import { subscriptionExpiredTemplate } from './templates/subscription-expired'
+import { launchTemplate } from './templates/send-launch-email'
 
 let resendClient: Resend | null = null
 let fromEmail: string | null = null
 
 // Lazy-loads the Resend client and env vars.
 // Maintains singleton lazy initialization of the SDK.
-function getMailer() {
+export function getMailer() {
     if (!resendClient) {
         resendClient = new Resend(process.env.RESEND_API_KEY)
     }
@@ -135,5 +136,20 @@ export async function sendSubscriptionExpiredEmail(userEmail: string, userName?:
         })
     } catch (err) {
         console.error('[email] Failed to send subscription expired email:', err)
+    }
+}
+
+export async function sendLaunchEmail(userEmail: string, userName?: string | null) {
+    const { resend, FROM_EMAIL } = getMailer()
+
+    try {
+        await resend.emails.send({
+            from: `Mockline <${FROM_EMAIL}>`,
+            to: userEmail,
+            subject: 'Mockline is live 🚀',
+            html: launchTemplate(userName),
+        })
+    } catch (err) {
+        console.error('[email] Failed to send launch email:', err)
     }
 }
