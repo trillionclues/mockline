@@ -47,6 +47,7 @@ jobs:
           host: ${{ secrets.API_HOST }}
           username: ${{ secrets.API_USER }}
           key: ${{ secrets.API_SSH_KEY }}
+          passphrase: ${{ secrets.API_SSH_PASSPHRASE }}
           port: 22022
           script: |
             set -e
