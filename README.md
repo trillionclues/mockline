@@ -1,6 +1,6 @@
 
 <p align="center">
-  <img src="mockline.svg" alt="mockline" height="50" />
+  <img src="mockline.png" alt="mockline" height="50" />
 </p>
 
 <p align="center">
@@ -32,8 +32,8 @@ graph LR
 - **Mock servers** — One-click provisioning, live status, shareable URLs
 - **Contract testing** — Test real APIs against their OpenAPI contracts, pass/fail per endpoint
 - **Schema diffing** — Compare spec versions, detect breaking changes
-- **API Explorer** — Send requests to mock servers, inspect responses *(coming soon)*
-- **Stateful mode** — Persist POST/PUT/DELETE data across container restarts via Docker volumes *(coming soon)*
+- **API Explorer** — Send requests to mock servers, inspect responses
+- **Stateful mode** — Persist POST/PUT/DELETE data across container restarts via Docker volumes
 - **Auto-stop** — Idle containers stopped automatically to save resources
 
 ## Quick Start
@@ -247,7 +247,7 @@ Spec uploaded
 | Capabilities | ALL dropped |
 | Privileges | `no-new-privileges` |
 
-## Contour CLI Options *(Upcoming: Phase 4)*
+## Contour CLI Options
 
 When provisioning a mock server, users will be able to configure Contour's runtime options. These options are stored as JSON in the `MockServer.config` field and passed to the container as environment variables.
 
@@ -262,13 +262,6 @@ NB:
 | `--error-rate <pct>` | Simulate random failures | `--error-rate 10` (10% of requests fail) |
 | `--require-auth` | Require Bearer token | Rejects requests without `Authorization` header |
 | `--deterministic` | Reproducible fake data | Same request → same response (for E2E tests) |
-
-If you add a new column 
-- Update the schema with the changes 
-- Run the migration
-cd packages/db
-npx prisma migrate dev --name add_new_column_name
-- Commit the migration
 
 ## License
 
