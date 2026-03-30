@@ -202,7 +202,7 @@ export function UploadSpecModal({ open, onClose }: Props) {
                             <label style={labelStyle}>Spec URL</label>
                             <input
                                 type="url"
-                                placeholder="https://petstore.swagger.io/v2/swagger.json"
+                                placeholder="Example: https://petstore.swagger.io/v2/swagger.json"
                                 value={specUrl}
                                 onChange={(e) => setSpecUrl(e.target.value)}
                                 style={inputStyle}
@@ -212,7 +212,7 @@ export function UploadSpecModal({ open, onClose }: Props) {
                                 color: 'var(--color-text-subtle)',
                                 marginTop: '6px',
                             }}>
-                                URL to a .yaml or .json OpenAPI spec. Format is auto-detected.
+                                Note: URL to a .yaml or .json OpenAPI spec. Format is auto-detected.
                             </p>
                         </div>
                     )}
