@@ -6,6 +6,17 @@ import { CONTAINER_LIMITS, DEFAULT_RESOURCE_LIMITS } from '@mockline/types'
 import type { ContourOptions, Tier } from '@mockline/types'
 import crypto from 'node:crypto'
 
+function sanitizeErrorMessage(msg: string): string {
+    // Strip absolute file paths & anything that looks like HTML
+    let cleaned = msg.replace(/\/[\w./-]+\//g, '').replace(/[A-Z]:\\[\w.\\-]+\\/gi, '')
+
+    cleaned = cleaned.replace(/<[^>]+>/g, '').trim()
+    if (cleaned.length > 200) {
+        cleaned = cleaned.slice(0, 200) + '…'
+    }
+    return cleaned || 'The provided content is not a valid OpenAPI specification'
+}
+
 /**
  * Provisions a new mock server:
  * 1. Validates the spec version exists
@@ -130,7 +141,10 @@ export async function createSpec(params: {
     // Validate before saving
     const validation = await validateSpec(content, format === 'YAML' ? 'yaml' : 'json')
     if (!validation.valid) {
-        throw new Error(`Invalid spec: ${validation.errors.map((e) => e.message).join(', ')}`)
+        const sanitized = validation.errors
+            .map((e) => sanitizeErrorMessage(e.message))
+            .join(', ')
+        throw new Error(`Invalid spec: ${sanitized}`)
     }
 
     const hash = crypto.createHash('sha256').update(content).digest('hex')
@@ -173,7 +187,10 @@ export async function addSpecVersion(params: {
     const format = detectFormat(content)
     const validation = await validateSpec(content, format === 'YAML' ? 'yaml' : 'json')
     if (!validation.valid) {
-        throw new Error(`Invalid spec: ${validation.errors.map((e) => e.message).join(', ')}`)
+        const sanitized = validation.errors
+            .map((e) => sanitizeErrorMessage(e.message))
+            .join(', ')
+        throw new Error(`Invalid spec: ${sanitized}`)
     }
 
     const hash = crypto.createHash('sha256').update(content).digest('hex')

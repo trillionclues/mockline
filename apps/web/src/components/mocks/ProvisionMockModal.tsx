@@ -91,7 +91,7 @@ export function ProvisionMockModal({ open, onClose, specs, prefilledSpecId, pref
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     <div className="form-field">
                         <label className="form-label">Specification</label>
-                        <select value={specId} onChange={e => setSpecId(e.target.value)} className="form-select">
+                        <select value={specId} onChange={e => setSpecId(e.target.value)} disabled={mutation.isPending} className="form-select" style={{ opacity: mutation.isPending ? 0.6 : 1 }}>
                             <option value="">Select a spec...</option>
                             {specs.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
                         </select>
@@ -102,8 +102,9 @@ export function ProvisionMockModal({ open, onClose, specs, prefilledSpecId, pref
                         <select
                             value={specVersionId}
                             onChange={e => setSpecVersionId(e.target.value)}
-                            disabled={!specId || !versions}
+                            disabled={!specId || !versions || mutation.isPending}
                             className="form-select"
+                            style={{ opacity: mutation.isPending ? 0.6 : 1 }}
                         >
                             <option value="">{!specId ? 'Select a spec first' : 'Select a version...'}</option>
                             {versions?.map(v => <option key={v.id} value={v.id}>v{v.version}</option>)}
@@ -137,6 +138,7 @@ export function ProvisionMockModal({ open, onClose, specs, prefilledSpecId, pref
                                         type="checkbox"
                                         checked={stateful}
                                         onChange={e => setStateful(e.target.checked)}
+                                        disabled={mutation.isPending}
                                         style={{ accentColor: 'var(--color-primary)' }}
                                     />
                                     Stateful mode — persist changes in memory
@@ -146,6 +148,7 @@ export function ProvisionMockModal({ open, onClose, specs, prefilledSpecId, pref
                                         type="checkbox"
                                         checked={requireAuth}
                                         onChange={e => setRequireAuth(e.target.checked)}
+                                        disabled={mutation.isPending}
                                         style={{ accentColor: 'var(--color-primary)' }}
                                     />
 
@@ -161,7 +164,8 @@ export function ProvisionMockModal({ open, onClose, specs, prefilledSpecId, pref
                                         placeholder="e.g. 200-500"
                                         value={delay}
                                         onChange={e => setDelay(e.target.value)}
-                                        style={{ height: '32px', fontSize: '12px' }}
+                                        disabled={mutation.isPending}
+                                        style={{ height: '32px', fontSize: '12px', opacity: mutation.isPending ? 0.6 : 1 }}
                                     />
                                 </div>
                                 <div className="form-field" style={{ flex: 1 }}>
@@ -174,7 +178,8 @@ export function ProvisionMockModal({ open, onClose, specs, prefilledSpecId, pref
                                         max="100"
                                         value={errorRate}
                                         onChange={e => setErrorRate(e.target.value)}
-                                        style={{ height: '32px', fontSize: '12px' }}
+                                        disabled={mutation.isPending}
+                                        style={{ height: '32px', fontSize: '12px', opacity: mutation.isPending ? 0.6 : 1 }}
                                     />
                                 </div>
 

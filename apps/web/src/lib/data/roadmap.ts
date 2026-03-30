@@ -14,6 +14,8 @@ export const SHIPPED: RoadmapItem[] = [
     { title: 'In-app OpenAPI Spec Designer', desc: 'Visual spec builder with draft auto-save and $ref resolution' },
     { title: 'EC2 Deployment', desc: 'Production infrastructure on AWS with CI/CD pipeline' },
     { title: 'Wildcard SSL', desc: 'Traefik + Let\'s Encrypt for *.mockline.xyz subdomains' },
+    { title: 'Large Spec Support', desc: '10 MB upload limit for enterprise-scale specs with 1000+ routes' },
+    { title: 'Centralized Email Templates', desc: 'Shared @mockline/emails package for consistent transactional emails' },
 ]
 
 export const IN_PROGRESS: RoadmapItem[] = [

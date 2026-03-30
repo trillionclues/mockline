@@ -21,14 +21,14 @@ export const specsRouter = new Hono<AppEnv>()
 
 const CreateSpecSchema = z.object({
     name: z.string().min(1).max(100),
-    content: z.string().max(1024 * 1024).optional(), // 1MB limit
+    content: z.string().max(10 * 1024 * 1024).optional(), // 10MB limit
     url: z.string().url().optional(),
 }).refine(data => data.content || data.url, {
     message: 'Either content or url must be provided',
 })
 
 const AddVersionSchema = z.object({
-    content: z.string().min(1).max(1024 * 1024),
+    content: z.string().min(1).max(10 * 1024 * 1024), // 10MB limit
 })
 
 // list user's specs

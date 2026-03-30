@@ -117,11 +117,14 @@ export function UploadSpecModal({ open, onClose }: Props) {
                             placeholder="e.g. Stripe API"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
-                            style={inputStyle}
+                            disabled={mutation.isPending}
+                            style={{
+                                ...inputStyle,
+                                opacity: mutation.isPending ? 0.6 : 1,
+                            }}
                         />
                     </div>
 
-                    {/* Source toggle */}
                     <div>
                         <label style={labelStyle}>Source</label>
                         <div style={{ display: 'flex', gap: '8px' }}>
@@ -132,6 +135,7 @@ export function UploadSpecModal({ open, onClose }: Props) {
                                     value="paste"
                                     checked={source === 'paste'}
                                     onChange={() => { setSource('paste'); setError(null) }}
+                                    disabled={mutation.isPending}
                                     style={{ display: 'none' }}
                                 />
                                 Paste Content
@@ -143,6 +147,7 @@ export function UploadSpecModal({ open, onClose }: Props) {
                                     value="url"
                                     checked={source === 'url'}
                                     onChange={() => { setSource('url'); setError(null) }}
+                                    disabled={mutation.isPending}
                                     style={{ display: 'none' }}
                                 />
                                 Import URL
@@ -162,6 +167,7 @@ export function UploadSpecModal({ open, onClose }: Props) {
                                             value="yaml"
                                             checked={format === 'yaml'}
                                             onChange={() => setFormat('yaml')}
+                                            disabled={mutation.isPending}
                                             style={{ display: 'none' }}
                                         />
                                         YAML
@@ -173,6 +179,7 @@ export function UploadSpecModal({ open, onClose }: Props) {
                                             value="json"
                                             checked={format === 'json'}
                                             onChange={() => setFormat('json')}
+                                            disabled={mutation.isPending}
                                             style={{ display: 'none' }}
                                         />
                                         JSON
@@ -187,10 +194,12 @@ export function UploadSpecModal({ open, onClose }: Props) {
                                     rows={8}
                                     value={content}
                                     onChange={(e) => setContent(e.target.value)}
+                                    disabled={mutation.isPending}
                                     style={{
                                         ...inputStyle,
                                         resize: 'vertical',
                                         minHeight: '120px',
+                                        opacity: mutation.isPending ? 0.6 : 1,
                                     }}
                                 />
                             </div>
@@ -205,7 +214,11 @@ export function UploadSpecModal({ open, onClose }: Props) {
                                 placeholder="Example: https://petstore.swagger.io/v2/swagger.json"
                                 value={specUrl}
                                 onChange={(e) => setSpecUrl(e.target.value)}
-                                style={inputStyle}
+                                disabled={mutation.isPending}
+                                style={{
+                                    ...inputStyle,
+                                    opacity: mutation.isPending ? 0.6 : 1,
+                                }}
                             />
                             <p style={{
                                 fontSize: '12px',
@@ -225,7 +238,15 @@ export function UploadSpecModal({ open, onClose }: Props) {
                     marginTop: '32px',
                 }}>
                     <button
-                        onClick={onClose}
+                        onClick={() => {
+                            setName('')
+                            setContent('')
+                            setSpecUrl('')
+                            setFormat('yaml')
+                            setSource('paste')
+                            setError(null)
+                            onClose()
+                        }}
                         disabled={mutation.isPending}
                         style={{
                             height: '36px',

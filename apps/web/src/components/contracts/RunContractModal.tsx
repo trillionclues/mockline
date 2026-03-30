@@ -60,7 +60,9 @@ export function RunContractModal({ open, onClose, specs, mocks }: Props) {
                         <select
                             value={specId}
                             onChange={e => { setSpecId(e.target.value); setMockId('') }}
+                            disabled={mutation.isPending}
                             className="form-select"
+                            style={{ opacity: mutation.isPending ? 0.6 : 1 }}
                         >
                             <option value="">Select a spec...</option>
                             {specs.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
@@ -72,8 +74,9 @@ export function RunContractModal({ open, onClose, specs, mocks }: Props) {
                         <select
                             value={mockId}
                             onChange={e => setMockId(e.target.value)}
-                            disabled={!specId || eligibleMocks.length === 0}
+                            disabled={!specId || eligibleMocks.length === 0 || mutation.isPending}
                             className="form-select"
+                            style={{ opacity: mutation.isPending ? 0.6 : 1 }}
                         >
                             <option value="">
                                 {!specId
@@ -95,7 +98,7 @@ export function RunContractModal({ open, onClose, specs, mocks }: Props) {
                 </div>
 
                 <div className="modal-actions">
-                    <button onClick={onClose} disabled={mutation.isPending} className="btn-secondary">Cancel</button>
+                    <button onClick={() => { setSpecId(''); setMockId(''); setError(null); onClose() }} disabled={mutation.isPending} className="btn-secondary">Cancel</button>
                     <button onClick={() => mutation.mutate()} disabled={!canSubmit} className="btn-primary" style={{
                         background: 'var(--color-logo-line)',
                         color: 'var(--color-bg)',
