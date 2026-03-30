@@ -38,6 +38,7 @@ jobs:
     name: Deploy to EC2
     runs-on: ubuntu-latest
     needs: quality
+    if: false
     environment:
       name: staging
     steps:
