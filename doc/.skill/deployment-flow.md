@@ -1573,3 +1573,9 @@ ssh -p 22022 root@209.74.86.10
 
 <!-- after setting up deploy user -->
 ssh -p 22022 deploy@209.74.86.10
+
+<!-- to query the db -->
+docker exec -it mockline-db psql -U your_db_user -d your_db_name
+
+SELECT id, email, name, "createdAt" FROM users ORDER BY "createdAt" DESC LIMIT 20;
+SELECT COUNT(*) FROM users;

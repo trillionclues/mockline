@@ -30,7 +30,7 @@ If you work in engineering, QA, or product — I'd genuinely appreciate you tryi
 
 ## Product Hunt
 Name of launch: Mockline
-Product Tagline: Spin Up Live Mock APIs From OpenAPI Specs
+Product Tagline: Turn API Specs into Live Mock Servers in 4 Seconds
 
 Links to launch:
 https://mockline.xyz
@@ -40,40 +40,41 @@ Is this an open source project? Yes
 
 Description
 What’s new or different about your launch compared to existing products? Which features make it stand out? 
-Mockline is an open-source PaaS that provisions isolated, Docker-powered mock API servers from OpenAPI specifications. Upload a spec, get a live URL in seconds.
+Instant mock APIs from OpenAPI specs. Frontend and QA teams ship faster with isolated containers and live URLs—no backend blockers
 
 Launch tags: api, openapi, devtools, startup
 
 Write the first comment: 
-Hi PH, I built Mockline, a tool that provisions isolated, Docker-powered mock API servers from OpenAPI specifications.
+Hi PH, I built Mockline, a tool that turns your OpenAPI 3.0 spec into an isolated, containerized mock server with a live public URL in ~4 seconds.
 
-The problem:
-I primarily worked as a FE dev so every sprint I'd start building against an API that didn't exist yet. The options were bad: I either remain blocked until the backend shipped, build against hardcoded JSON that drifts the moment something changes, or maintain a local mock nobody else was using.
+The problem: Frontend devs blocked waiting for backend APIs that exist on paper (the OpenAPI spec) but nowhere else.
 
-The frustrating part — the spec usually exists, you just can't run it. I believe QAs hit the same challenge with writing integration tests against an endpoint that isn't live. And the longer this goes, the more testing gets compressed into the last 48 hours of a sprint.
+Unlike Postman or SwaggerHub where you manually build mocks endpoint-by-endpoint, Mockline generates the entire server from your spec automatically. Each mock runs in its own Docker container (real isolation, no shared state), gets a unique HTTPS URL, and stays synced with your spec versions.
 
-What Mockline does:
-Upload (or build in-app) an OpenAPI 3.0 spec (YAML/JSON or remote URL). Mockline builds a Docker image with the Contour CLI for data generation baked in, spins up a container, and assigns a public URL — live mock server with real HTTP responses in 3-7 seconds.
+Shipped today:
+• Instant provisioning (4s cold start) from YAML/JSON or remote URLs  
+• True container isolation per spec version  
+• Built-in contract testing (validate real APIs against specs)  
+• Schema diffing to catch breaking changes  
+• In-dashboard API client for immediate testing  
+• Open source: github.com/trillionclues/mockline  
 
-Also each mock is isolated per spec version. You can run contract tests to validate the mock matches the spec, and diff two versions to catch breaking changes before production.
+Mockline is perfect for engineering teams doing parallel development, QA writing integration tests against endpoints that don't exist yet, or PMs demoing features before backend is ready.
 
-What's shipped right now:
-> Spec upload and versioning
-> Mock server provisioning public URLs
-> Start/stop/delete controls
-> Contract testing and schema diffing
-> In-dashboard API client to hit endpoints in real time
-> In-app spec build
+Genuinely curious, would you use this in your CI pipeline for integration tests, or is a 4s cold start too slow for that use case? Genuinely curious about your testing workflows.
 
-Honestly, I'd genuinely love feedback on
-1. Is "upload spec, get live mock" the right abstraction, or do teams want Postman-style manual response definition?
-2. Would you use this for integration testing in CI, or is a 3-7s cold start too slow for that?
-3. Anyone building against gRPC or GraphQL specs? That's on the roadmap but I want to know if it's actually a blocker too.
+Try it free → mockline.xyz
 
-Would genuinely appreciate any feedback — especially from QA engineers or anyone who's tried to solve this a different way.
 
-https://mockline.xyz
+Hi PH! 👋
 
-Add products that helped make yours awesome
+I kept getting blocked every sprint. Backend team would say "API is ready" but what they meant was the spec is ready. I was either building against hardcoded JSON that broke constantly, or waiting 2 weeks.
 
-Contour CLI — for mock server generation
+So I built the tool I wish existed: paste an OpenAPI spec or build one in-app, get a real HTTPS endpoint in 4 seconds. Not a "mock" that returns static files—a real container running a generated server that validates requests against your schema.
+
+The thing I'm most proud of: Each mock is truly isolated (own Docker container), so you can test edge cases without worrying about state leaking between tests.
+
+My question: For QAs doing automated testing—would you use this in CI if it took 4-5s to spin up per test suite? Or is that too slow? Trying to decide if I should optimize for cold starts or warm pools.
+
+Open source repo: github.com/trillionclues/mockline
+Try it: mockline.xyz
