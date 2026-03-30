@@ -9,7 +9,7 @@ export default function PrivacyPage() {
     return (
         <main className="prose-page">
             <h1 className="prose-title">Privacy Policy</h1>
-            <p className="prose-subtitle">Last updated: March 15, 2026</p>
+            <p className="prose-subtitle">Last updated: March 30, 2026</p>
 
             <hr className="prose-divider" />
 
@@ -24,8 +24,8 @@ export default function PrivacyPage() {
                 <h2>2. Information We Collect</h2>
                 <p><strong>Account Information</strong></p>
                 <ul>
-                    <li>Name and email address (via GitHub OAuth)</li>
-                    <li>GitHub profile information (avatar, username)</li>
+                    <li>Name and email address (via GitHub & Google OAuth)</li>
+                    <li>GitHub & Google profile information (avatar, username)</li>
                     <li>Account tier and subscription status</li>
                 </ul>
                 <p><strong>Usage Data</strong></p>
@@ -41,7 +41,7 @@ export default function PrivacyPage() {
                 <h2>3. How We Use Your Information</h2>
                 <ul>
                     <li>Provision and manage your mock API containers</li>
-                    <li>Authenticate your identity via GitHub OAuth</li>
+                    <li>Authenticate your identity via GitHub & Google OAuth</li>
                     <li>Process account tier and subscription state</li>
                     <li>Communicate about your account and service updates</li>
                     <li>Improve the Service based on aggregate usage patterns</li>

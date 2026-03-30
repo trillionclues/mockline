@@ -5,21 +5,23 @@ Upload an OpenAPI spec. Get an isolated mock API server. Instantly.
 
 Built for dev teams tired of waiting on backend dependencies.
 
-Free to start → mockline.xyz
+Free to start → https://mockline.xyz
 
 
 ## LinkedIn — Personal
 I just launched Mockline.
 
-The idea came from a problem I kept running into — frontend and QA teams blocked because the backend API wasn't ready. It's a bottleneck almost every software team faces.
+The idea came from a problem I kept running into with frontend and QA teams getting blocked each sprint because the backend API wasn't ready. It's a bottleneck almost every software team faces.
 
-So I built a tool for it. You upload your OpenAPI spec and get a fully isolated mock API server running in seconds. No extra configurations, no Docker setup, no extra logic.
+So I built an open-source tool for it. You upload or design your OpenAPI spec in-app and get a fully isolated mock API server running in seconds. No extra configurations, no Docker setup, no extra logic.
 
 Here's what it does:
 • Parses any OpenAPI 3.x spec (YAML or JSON)  
 • Spins up a real container with mock responses  
 • Gives you a live URL to test against & share with your team immediately  
 • Contract testing to verify your real API matches the spec  
+• Schema diffing to catch breaking changes  
+• In-dashboard API client for immediate testing
 
 It's live today and free to start: https://mockline.xyz
 

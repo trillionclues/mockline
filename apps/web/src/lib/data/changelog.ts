@@ -10,6 +10,33 @@ export const TAG_STYLES: Record<ChangelogTag, { background: string; color: strin
 
 export const ENTRIES: ChangelogEntry[] = [
     {
+        version: 'v0.7.2',
+        date: 'March 30, 2026',
+        title: 'Large Spec Support & Modal UX Hardening',
+        body: 'Increased the maximum spec upload size from 1 MB to 10 MB, supporting enterprise-scale specifications with 1000+ API routes. All modal forms now disable inputs during async operations and correctly reset state when dismissed.',
+        bullets: [
+            'Spec upload limit raised from 1 MB to 10 MB — supports specs with 1000+ routes',
+            'All form inputs are now disabled while a request is in flight, preventing mid-flight edits',
+            'Modal state fully resets when cancelled — no more stale data on re-open',
+            'Improved error messages for oversized spec uploads',
+        ],
+        tags: ['fix', 'improvement'],
+    },
+    {
+        version: 'v0.7.1-patch',
+        date: 'March 28, 2026',
+        title: 'Launch Polish & Infrastructure',
+        body: 'Batch of infrastructure and UX improvements preparing for public launch: centralized email templates, social sharing metadata, and pricing flow refinements.',
+        bullets: [
+            'Email templates centralized into shared @mockline/emails package across API and web services',
+            'OpenGraph image added for richer social sharing previews on Twitter/LinkedIn',
+            'Loading spinners on pricing CTA buttons during checkout redirect',
+            'Waitlist persistence to database with email normalization',
+            'Traefik wildcard SSL configured for *.mockline.xyz subdomains',
+        ],
+        tags: ['improvement', 'feature'],
+    },
+    {
         version: 'v0.7.1',
         date: 'March 26, 2026',
         title: 'Mock Server Configuration Options',
@@ -151,8 +178,8 @@ export const ENTRIES: ChangelogEntry[] = [
     {
         version: 'v0.1.0',
         date: 'March 10, 2026',
-        title: 'Initial Release',
-        body: 'Mockline is now live. Upload an OpenAPI spec, provision a Docker-powered mock server, and get a live URL in seconds.',
+        title: 'Initial Pre-Release',
+        body: 'Mockline is in pre-release. Upload an OpenAPI spec, provision a Docker-powered mock server, and get a live URL in seconds.',
         bullets: [
             'Upload YAML or JSON OpenAPI 3.0 specifications',
             'Provision isolated Docker containers per spec version',

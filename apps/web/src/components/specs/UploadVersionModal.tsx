@@ -49,7 +49,7 @@ export function UploadVersionModal({ open, onClose, specId }: Props) {
                                 borderRadius: '6px', fontSize: '13px', fontWeight: 500,
                                 cursor: 'pointer', color: format === f ? 'var(--color-text-strong)' : 'var(--color-text)',
                             }}>
-                                <input type="radio" name="format" value={f} checked={format === f} onChange={() => setFormat(f)} style={{ display: 'none' }} />
+                                <input type="radio" name="format" value={f} checked={format === f} onChange={() => setFormat(f)} disabled={mutation.isPending} style={{ display: 'none' }} />
                                 {f.toUpperCase()}
                             </label>
                         ))}
@@ -64,12 +64,13 @@ export function UploadVersionModal({ open, onClose, specId }: Props) {
                         value={content}
                         onChange={e => setContent(e.target.value)}
                         placeholder="Paste your OpenAPI spec here..."
-                        style={{ resize: 'vertical', minHeight: '160px' }}
+                        disabled={mutation.isPending}
+                        style={{ resize: 'vertical', minHeight: '160px', opacity: mutation.isPending ? 0.6 : 1 }}
                     />
                 </div>
 
                 <div className="modal-actions">
-                    <button onClick={onClose} disabled={mutation.isPending} className="btn-secondary">Cancel</button>
+                    <button onClick={() => { setContent(''); setFormat('yaml'); setError(null); onClose() }} disabled={mutation.isPending} className="btn-secondary">Cancel</button>
                     <button
                         onClick={() => mutation.mutate()}
                         disabled={mutation.isPending || !content.trim()}
