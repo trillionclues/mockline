@@ -3,8 +3,8 @@ export const SECTIONS = [
         title: 'Getting Started',
         items: [
             { label: 'What is Mockline?', desc: 'An overview of the platform and what it does.' },
-            { label: 'Quick Start', desc: 'Upload your first spec and provision a mock server in under a minute.' },
-            { label: 'Authentication', desc: 'Sign in with GitHub OAuth to access your dashboard.' },
+            { label: 'Quick Start', desc: 'Upload or design your first spec and provision a mock server in under a minute.' },
+            { label: 'Authentication', desc: 'Sign in with GitHub or Google OAuth to access your dashboard.' },
         ],
     },
     {

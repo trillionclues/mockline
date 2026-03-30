@@ -128,8 +128,8 @@ export function ProvisionMockModal({ open, onClose, specs, prefilledSpecId, pref
                             <div style={{
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '8px',
-                                justifyContent: 'space-around',
+                                gap: '12px',
+                                justifyContent: 'flex-start',
                                 marginBottom: '12px',
                             }}>
                                 <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px', color: 'var(--color-text)' }}>

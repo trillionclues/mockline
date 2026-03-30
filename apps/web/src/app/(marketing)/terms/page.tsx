@@ -9,7 +9,7 @@ export default function TermsPage() {
     return (
         <main className="prose-page">
             <h1 className="prose-title">Terms of Service</h1>
-            <p className="prose-subtitle">Last updated: March 15, 2026</p>
+            <p className="prose-subtitle">Last updated: March 30, 2026</p>
 
             <hr className="prose-divider" />
 

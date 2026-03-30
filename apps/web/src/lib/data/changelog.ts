@@ -151,8 +151,8 @@ export const ENTRIES: ChangelogEntry[] = [
     {
         version: 'v0.1.0',
         date: 'March 10, 2026',
-        title: 'Initial Release',
-        body: 'Mockline is now live. Upload an OpenAPI spec, provision a Docker-powered mock server, and get a live URL in seconds.',
+        title: 'Initial Pre-Release',
+        body: 'Mockline is in pre-release. Upload an OpenAPI spec, provision a Docker-powered mock server, and get a live URL in seconds.',
         bullets: [
             'Upload YAML or JSON OpenAPI 3.0 specifications',
             'Provision isolated Docker containers per spec version',
