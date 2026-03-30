@@ -1139,7 +1139,7 @@ pnpm audit --audit-level=high
 | **Volume-only backup, not container backup** | Containers are reproducible from the Docker image (which is built from the spec). Volumes hold the only irreproducible data (user POST/PUT state, request logs). Backing up a 400MB container when 99% is deterministic is wasteful vs. backing up a <10MB volume. |
 | **Stateful mode is opt-in** | Most mock use cases (frontend dev, CI/CD, demos) are ephemeral. Stateful mode adds volume management overhead. Users who need it opt in explicitly. |
 
-If you add a new column 
+### If you add a new column 
 - Update the schema with the changes 
 - Run the migration
 cd packages/db

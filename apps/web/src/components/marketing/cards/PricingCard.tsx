@@ -1,6 +1,10 @@
+'use client'
+
+import { useState } from 'react'
 import { PLANS } from '@/lib/data/data'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
+import { Spinner } from '@/components/shared/Spinner'
 
 function CheckIcon() {
     return (
@@ -29,8 +33,10 @@ export const PricingCard = ({
     plan: typeof PLANS[0]
     index: number
     yearly: boolean
-    onCtaClick?: (planName: string) => void
+    onCtaClick?: (planName: string) => Promise<void> | void
 }) => {
+    const [isLoading, setIsLoading] = useState(false)
+    
     const price = yearly ? plan.yearlyPrice : plan.monthlyPrice
     const period = plan.monthlyPrice === 0 ? 'forever' : yearly ? '/ month, billed yearly' : '/ month'
 
@@ -194,16 +200,20 @@ export const PricingCard = ({
 
             {onCtaClick ? (
                 <button
-                    onClick={() => onCtaClick(plan.name)}
-                    disabled={plan.monthlyPrice === 0}
+                    onClick={async () => {
+                        setIsLoading(true)
+                        await onCtaClick(plan.name)
+                        setIsLoading(false)
+                    }}
+                    disabled={plan.monthlyPrice === 0 || isLoading}
                     style={{
                         ...ctaStyle,
-                        opacity: plan.monthlyPrice === 0 ? 0.5 : 1,
-                        cursor: plan.monthlyPrice === 0 ? 'default' : 'pointer',
+                        opacity: (plan.monthlyPrice === 0 || isLoading) ? 0.7 : 1,
+                        cursor: (plan.monthlyPrice === 0 || isLoading) ? 'not-allowed' : 'pointer',
                     }}
                     className={plan.highlighted ? 'pricing-cta-primary' : 'pricing-cta-secondary'}
                 >
-                    {ctaLabel}
+                    {isLoading ? <Spinner size={14} color={plan.highlighted ? 'var(--color-bg)' : 'var(--color-logo-line)'} /> : ctaLabel}
                 </button>
             ) : (
                 <Link
