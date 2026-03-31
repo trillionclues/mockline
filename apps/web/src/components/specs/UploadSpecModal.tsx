@@ -89,7 +89,8 @@ export function UploadSpecModal({ open, onClose }: Props) {
                     color: 'var(--color-text-muted)',
                     marginBottom: '24px',
                 }}>
-                    Paste your OpenAPI spec or import from a remote URL.
+                    Paste your OpenAPI spec or import from a remote URL.<br />
+                    Try it: https://petstore.swagger.io/v2/swagger.json
                 </p>
 
                 {error && (
