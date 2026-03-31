@@ -1133,6 +1133,15 @@ h4 {
     }
 }
 
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
 @media (max-width: 768px) {
     .nav-center-links {
         display: none !important;

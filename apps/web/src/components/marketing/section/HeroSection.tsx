@@ -3,10 +3,71 @@
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { useTheme } from 'next-themes'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import { useSession } from '@/lib/auth-client'
 
 const ease = [0.21, 0.47, 0.32, 0.98] as const;
+
+function HeroVideo({ theme }: { theme: string | undefined }) {
+    const videoRef = useRef<HTMLVideoElement>(null)
+    const [isReady, setIsReady] = useState(false)
+    const src = theme === 'dark' ? '/hero-dark.mp4' : '/hero-light.mp4'
+    const poster = '/images/dash-prev2.png'
+
+    const handleCanPlay = useCallback(() => {
+        setIsReady(true)
+    }, [])
+
+    useEffect(() => {
+        setIsReady(false)
+    }, [src])
+
+    return (
+        <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+            <div
+                style={{
+                    position: 'absolute',
+                    inset: 0,
+                    background: 'var(--color-surface-2)',
+                    opacity: isReady ? 0 : 1,
+                    transition: 'opacity 0.4s ease',
+                    pointerEvents: 'none',
+                    zIndex: 1,
+                    overflow: 'hidden',
+                }}
+            >
+                <div
+                    style={{
+                        position: 'absolute',
+                        inset: 0,
+                        background: 'linear-gradient(90deg, transparent 0%, var(--color-border) 50%, transparent 100%)',
+                        backgroundSize: '200% 100%',
+                        animation: 'shimmer 1.5s ease-in-out infinite',
+                    }}
+                />
+            </div>
+            <video
+                ref={videoRef}
+                src={src}
+                poster={poster}
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="metadata"
+                onCanPlay={handleCanPlay}
+                style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'contain',
+                    display: 'block',
+                    opacity: isReady ? 1 : 0,
+                    transition: 'opacity 0.4s ease',
+                }}
+            />
+        </div>
+    )
+}
 
 export const HeroSection = () => {
     const { resolvedTheme } = useTheme()
@@ -227,25 +288,9 @@ export const HeroSection = () => {
                                 // padding: '0 2px',
                             }}>
                                 {mounted ? (
-                                    <video
-                                        src={resolvedTheme === 'dark' ? '/hero-dark.mp4' : '/hero-light.mp4'}
-                                        autoPlay
-                                        loop
-                                        muted
-                                        playsInline
-                                        style={{
-                                            width: '100%',
-                                            height: '100%',
-                                            objectFit: 'contain',
-                                            display: 'block',
-                                            borderRadius: '6px',
-                                            boxShadow: '0 8px 30px rgba(0,0,0,0.1)'
-                                        }}
-                                    />
+                                    <HeroVideo theme={resolvedTheme} />
                                 ) : (
-                                    <div style={{ width: '100%', height: '100%', background: 'var(--color-surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                        <span style={{ fontSize: '13px', color: 'var(--color-text-subtle)' }}>Loading Preview...</span>
-                                    </div>
+                                    <div style={{ width: '100%', height: '100%', background: 'var(--color-surface-2)' }} />
                                 )}
                             </div>
                             {/* <div style={{
