@@ -16,7 +16,7 @@ jobs:
     name: Deploy to Vercel
     runs-on: ubuntu-latest
     environment:
-      name: staging
+      name: production
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4

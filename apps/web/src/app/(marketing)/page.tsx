@@ -3,6 +3,7 @@ import { HeroSection } from '@/components/marketing/section/HeroSection'
 import { HowItWorks } from '@/components/marketing/section/HowItWorks'
 import { LogoMarquee } from '@/components/marketing/section/LogoMarquee'
 import { Pricing } from '@/components/marketing/section/Pricing'
+import { Faq } from '@/components/marketing/section/Faq'
 
 export default function LandingPage() {
     return (
@@ -12,6 +13,7 @@ export default function LandingPage() {
             <HowItWorks />
             <FeaturesGrid />
             <Pricing />
+            <Faq />
         </div>
     )
 }

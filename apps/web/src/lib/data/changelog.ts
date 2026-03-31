@@ -10,6 +10,20 @@ export const TAG_STYLES: Record<ChangelogTag, { background: string; color: strin
 
 export const ENTRIES: ChangelogEntry[] = [
     {
+        version: 'v0.7.3',
+        date: 'March 31, 2026',
+        title: 'Public Launch & Community Growth',
+        body: 'Mockline is now publicly available with a free tier and subscription plans. The platform supports up to mock server provisioning per user with a 24-hour retention policy for free tier servers. PRO and TEAM plans offer persistent servers with custom domains and dedicated resources.',
+        bullets: [
+            'Public launch with free tier and subscription plans',
+            'Up to 1 mock servers per user',
+            '24-hour retention policy for free tier servers',
+            'PRO and TEAM plans offer persistent servers with custom domains and dedicated resources',
+            'Added FAQ section about pricing and server retention',
+        ],
+        tags: ['feature'],
+    },
+    {
         version: 'v0.7.2',
         date: 'March 30, 2026',
         title: 'Large Spec Support & Modal UX Hardening',

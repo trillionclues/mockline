@@ -151,3 +151,31 @@ export const STEPS = [
         ],
     },
 ]
+
+
+export const FAQS = [
+    {
+        q: "How do I import my API definition?",
+        a: "You can paste your OpenAPI 3.x specification (YAML or JSON) directly into Mockline, import from a remote public URL (e.g., `https://petstore.swagger.io/v2/swagger.json`), or build your OpenAPI spec entirely in-app using the visual Spec Designer to provision a mock directly from it."
+    },
+    {
+        q: "How does mock server provisioning work?",
+        a: "When you deploy a mock, Mockline takes your spec and spins up a dedicated, highly-isolated Docker container behind a custom subdomain. It takes roughly 4 to 5 seconds to get a live, public HTTPS URL. Your mock stays running and responds using data extracted from your spec."
+    },
+    {
+        q: "How do contract tests work?",
+        a: "Contract testing helps ensure your real backend actually matches your documentation. You point Mockline to your real API's base URL, and it will execute endpoint tests to verify that request parameters and response schemas exactly correspond to the rules defined in your OpenAPI spec."
+    },
+    {
+        q: "Does it include an API client?",
+        a: "Yes! The dashboard features an integrated API Explorer. It automatically parses out all path parameters, queries, headers, and request bodies defined in your spec. You can fire HTTP requests right from the browser (proxied server-side to avoid CORS issues) and view syntax-highlighted JSON responses."
+    },
+    {
+        q: "What are the limitations of the free tier?",
+        a: "The free tier allows you to manage 1 OpenAPI specification and run 1 active mock server at a time, which will automatically spin down after an hour of inactivity. For unlimited specs, contract testing, schema diffing, and advanced configuration options (stateful caching, custom network delays, error rate injection), you can upgrade to the PRO tier."
+    },
+    {
+        q: "Are mock responses stateful?",
+        a: "By default, mock responses are generated dynamically based on the schemas and examples in your spec. On the PRO tier, you can enable Stateful Mode, meaning if you POST a record, a subsequent GET to that collection will actually reflect the new data in memory."
+    }
+]
