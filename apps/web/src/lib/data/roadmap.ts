@@ -14,7 +14,7 @@ export const SHIPPED: RoadmapItem[] = [
     { title: 'In-app OpenAPI Spec Designer', desc: 'Visual spec builder with draft auto-save and $ref resolution' },
     { title: 'EC2 Deployment', desc: 'Production infrastructure on AWS with CI/CD pipeline' },
     { title: 'Wildcard SSL', desc: 'Traefik + Let\'s Encrypt for *.mockline.xyz subdomains' },
-    { title: 'Large Spec Support', desc: '10 MB upload limit for enterprise-scale specs with 1000+ routes' },
+    { title: 'Large Spec Support', desc: '10 MB upload limit for enterprise-scale specs' },
     { title: 'Centralized Email Templates', desc: 'Shared @mockline/emails package for consistent transactional emails' },
 ]
 
@@ -24,6 +24,9 @@ export const IN_PROGRESS: RoadmapItem[] = [
 ]
 
 export const PLANNED: RoadmapItem[] = [
+    { title: 'Sandbox Share Pages', desc: 'Branded landing pages for prospects to view API details and curl examples' },
+    { title: 'Sandbox Expirations', desc: 'Set 14 to 90-day deliberate expirations on prospect sandboxes' },
+    { title: 'Sandbox Analytics', desc: 'Log request hits and send weekly activity digests to Sales Engineers' },
     { title: 'Webhook Simulation', desc: 'Trigger mock webhook payloads on demand' },
     { title: 'Mock Seeding', desc: 'Pre-populate stateful mocks with fixture data' },
     { title: 'CLI', desc: 'mockline provision <spec.yaml> from terminal' },
@@ -39,5 +42,4 @@ export const CONSIDERING = [
     'OpenAPI 3.1 support',
     'Postman collection import',
     'Hosted spec registry',
-    'Mock server analytics',
 ]

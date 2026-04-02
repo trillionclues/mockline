@@ -11,27 +11,30 @@ type Props = {
     mocks: MockServer[]
 }
 
-export function RunContractModal({ open, onClose, specs, mocks }: Props) {
+export function RunContractModal({ open, onClose, specs }: Props) {
     const [specId, setSpecId] = useState('')
-    const [mockId, setMockId] = useState('')
+    // const [mockId, setMockId] = useState('')
+    const [targetUrl, setTargetUrl] = useState('')
     const [error, setError] = useState<string | null>(null)
     const queryClient = useQueryClient()
 
     // Only running mocks for the selected spec
-    const eligibleMocks = mocks.filter(
-        m => m.specId === specId && m.status === 'RUNNING'
-    )
-    const selectedMock = eligibleMocks.find(m => m.id === mockId)
+    // const eligibleMocks = mocks.filter(
+    //     m => m.specId === specId && m.status === 'RUNNING'
+    // )
+    // const selectedMock = eligibleMocks.find(m => m.id === mockId)
 
     const mutation = useMutation({
         mutationFn: () => contractsApi.run({
             specId,
-            baseUrl: selectedMock!.publicUrl!,
+            // baseUrl: selectedMock!.publicUrl!,
+            baseUrl: targetUrl.trim(),
         }),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: queryKeys.contracts.all() })
             setSpecId('')
-            setMockId('')
+            // setMockId('')
+            setTargetUrl('')
             setError(null)
             onClose()
         },
@@ -40,7 +43,13 @@ export function RunContractModal({ open, onClose, specs, mocks }: Props) {
 
     if (!open) return null
 
-    const canSubmit = !!specId && !!mockId && !!selectedMock?.publicUrl && !mutation.isPending
+    const isValidUrl = (() => {
+        try { new URL(targetUrl.trim()); return true }
+        catch { return false }
+    })()
+
+    const canSubmit = !!specId && isValidUrl && !mutation.isPending
+    // const canSubmit = !!specId && !!mockId && !!selectedMock?.publicUrl && !mutation.isPending
 
     return (
         <div className="modal-overlay">
@@ -59,7 +68,8 @@ export function RunContractModal({ open, onClose, specs, mocks }: Props) {
                         <label className="form-label">Specification</label>
                         <select
                             value={specId}
-                            onChange={e => { setSpecId(e.target.value); setMockId('') }}
+                            // onChange={e => { setSpecId(e.target.value); setMockId('') }}
+                            onChange={e => setSpecId(e.target.value)}
                             disabled={mutation.isPending}
                             className="form-select"
                             style={{ opacity: mutation.isPending ? 0.6 : 1 }}
@@ -70,8 +80,20 @@ export function RunContractModal({ open, onClose, specs, mocks }: Props) {
                     </div>
 
                     <div className="form-field">
-                        <label className="form-label">Mock Server</label>
-                        <select
+                        <label className="form-label">Target URL</label>
+                        <input
+                            type="url"
+                            value={targetUrl}
+                            onChange={e => setTargetUrl(e.target.value)}
+                            disabled={mutation.isPending}
+                            placeholder="https://api.staging.yourcompany.com"
+                            className="form-input"
+                            style={{ opacity: mutation.isPending ? 0.6 : 1 }}
+                        />
+                        <p className="form-hint">
+                            Your real backend — staging, production, or any live environment.
+                        </p>
+                        {/* <select
                             value={mockId}
                             onChange={e => setMockId(e.target.value)}
                             disabled={!specId || eligibleMocks.length === 0 || mutation.isPending}
@@ -90,15 +112,18 @@ export function RunContractModal({ open, onClose, specs, mocks }: Props) {
                                     {m?.spec?.name} v{m?.specVersion?.version} — {m.publicUrl}
                                 </option>
                             ))}
-                        </select>
-                        {specId && eligibleMocks.length === 0 && (
+                        </select> */}
+                        {/* {specId && eligibleMocks.length === 0 && (
                             <p className="form-hint">Start a mock server for this spec first.</p>
-                        )}
+                        )} */}
                     </div>
                 </div>
 
                 <div className="modal-actions">
-                    <button onClick={() => { setSpecId(''); setMockId(''); setError(null); onClose() }} disabled={mutation.isPending} className="btn-secondary">Cancel</button>
+                    <button
+                        // onClick={() => { setSpecId(''); setMockId(''); setError(null); onClose() }} disabled={mutation.isPending} 
+                        onClick={() => { setSpecId(''); setTargetUrl(''); setError(null); onClose() }}
+                        className="btn-secondary">Cancel</button>
                     <button onClick={() => mutation.mutate()} disabled={!canSubmit} className="btn-primary" style={{
                         background: 'var(--color-logo-line)',
                         color: 'var(--color-bg)',

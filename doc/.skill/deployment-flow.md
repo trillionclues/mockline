@@ -1281,8 +1281,8 @@ Go to GitHub → Actions → the run → Review deployments → Approve.
 ### Tagging a production release
 
 ```bash
-git tag v0.1.0 -m "Release v0.1.0"
-git push origin v0.1.0
+git tag v0.1.1 -m "feat: add example OpenAPI URL to UploadSpecModal description"
+git push origin v0.1.1
 # GitHub Actions → approve the production gate
 ```
 
