@@ -127,6 +127,7 @@ export type ContractResult = {
 export type RunContractInput = {
     specId: string
     baseUrl: string
+    environment?: 'staging' | 'production' | 'other'
 }
 
 export type ChangelogTag = 'feature' | 'fix' | 'performance' | 'breaking' | 'improvement'
