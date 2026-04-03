@@ -1,13 +1,20 @@
 # Mockline v2 — Partner Sandbox Roadmap
+The Problem
+Enterprise API sales teams currently use: Postman collections (no live URL), shared staging envs (breaks, data pollution), or dedicated UAT per prospect (weeks + infra cost).
 
 ## The Strategic Shift
 
-Reposition Mockline from **dev tool** (cost center, cuttable) to **sales enablement** (revenue enabler, sticky).
+Repositioning from dev tool (cost center) → sales enablement (revenue enabler). The buyer persona is shifting from Engineering Manager → Sales Engineer / Partnerships Lead.
+
+### Differentiators vs Postman Mock Servers
+1. Isolated containers per prospect (Postman uses shared infra)
+2. Custom domains (`partner.yourcompany.com`) — trust signal
+3. Usage analytics showing prospect engagement depth
 
 The buyer changes from:
 - Engineering Manager / Developer → **Sales Engineer / Partnerships Lead**
 
-These people have their own budget, their own tools (Gong, Outreach, Consensus), and a problem nobody solves well.
+Core value prop to test: "Turn your OpenAPI spec into a prospect sandbox in 60 seconds. Track which prospects are actually integrating."
 
 ---
 
@@ -118,9 +125,9 @@ Sales velocity has budget authority at any company size.
 
 | Feature | FREE | PRO | TEAM |
 |---|---|---|---|
-| Expiry dates | — | ✓ (up to 14 days) | ✓ (up to 90 days) |
+| Expiry dates | — | ✓ up to 14 days | ✓ up to 90 days |
 | Share page | — | ✓ | ✓ |
-| Usage analytics | — | Basic (total hits) | Full (per endpoint, weekly digest) |
+| Usage analytics | — | Basic (total hits) | Full (per endpoint + weekly digest) |
 | Custom domains | — | — | ✓ |
 | Sandbox seats | 0 | 3 | Unlimited |
 
@@ -162,14 +169,190 @@ Scenario: Stripe gives a sandbox to Uber. Uber shouldn't see Stripe's internal a
 
 ---
 
-## Implementation Order
+### Implementation Order
+ 
+1. `expiresAt` field on `MockServer` + scheduler — lowest effort, highest signal
+2. Usage logging middleware on mock containers — prerequisite for analytics
+3. Sandbox share page — trust signal, improves demo quality
+4. Weekly analytics digest email — the hook that keeps SEs engaged
+5. Custom domains — gate behind customer discovery validation first
+6. Partner Portal UI — only after 1–2 paying customers confirm use case
 
-1. Custom domains ← gate behind customer discovery validation first
-2. `expiresAt` field on MockServer + scheduler support ← lowest effort, highest signal
-3. Usage logging middleware on mock containers ← needed before analytics
-4. Sandbox share page ← trust signal, also improves demo quality
-5. Weekly analytics digest email ← the hook that keeps SEs engaged
-6. Partner Portal UI ← last, only after 1-2 paying customers confirm the use case
 
+### Schema Changes Needed
+ 
+**`expiresAt` on MockServer:**
+```prisma
+model MockServer {
+  // ...existing fields
+  expiresAt DateTime? // deliberate expiry — distinct from idleTimeout auto-stop
+}
+```
+Extend the existing auto-stop scheduler to also check `expiresAt` and stop+remove when elapsed. UI: date picker or presets (7 / 14 / 30 days) at provision time. Dashboard countdown: "Expires in 9 days."
+ 
+### Critical Gaps
+ 
+**Data poisoning** — likely already solved since each sandbox is its own Docker container with per-container in-memory state for `--stateful`. Verify that the `--stateful` flag does NOT use a shared Redis keyspace across containers. If confirmed isolated → cross this off.
 
 We are looking to build Mockline into "the only API sandbox that proves prospect engagement through usage analytics."
+
+
+
+
+---
+ 
+## 5. Server-side Drafts — Implementation Guide
+ 
+Persists spec designer drafts to DB for cross-device access. Replaces the existing localStorage-only auto-save.
+ 
+### 5.1 Prisma Schema
+ 
+```prisma
+model SpecDraft {
+  id        String   @id @default(cuid())
+  userId    String
+  specId    String?  // null = new unsaved draft; set once linked to a Spec
+  title     String?
+  content   String   // JSON.stringify'd OpenAPI spec object
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+ 
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  spec Spec? @relation(fields: [specId], references: [id], onDelete: SetNull)
+ 
+  @@unique([userId, specId]) // one draft per spec per user — enables clean upsert
+  @@index([userId])
+}
+```
+ 
+**Edge case:** Prisma treats `null` as non-matching in unique constraints. Multiple `null`-specId drafts can coexist — so for new specs (no specId yet), always persist the returned `draftId` in localStorage to hit the same row on subsequent saves.
+ 
+### 5.2 Hono Routes (`/api/drafts`)
+ 
+```typescript
+// GET /api/drafts — list drafts (title + updatedAt only, no content)
+drafts.get('/', async (c) => {
+  const user = c.get('user')
+  const drafts = await db.specDraft.findMany({
+    where: { userId: user.id },
+    select: { id: true, title: true, specId: true, updatedAt: true },
+    orderBy: { updatedAt: 'desc' },
+  })
+  return c.json(drafts)
+})
+ 
+// GET /api/drafts/:id
+drafts.get('/:id', async (c) => {
+  const user = c.get('user')
+  const draft = await db.specDraft.findFirst({
+    where: { id: c.req.param('id'), userId: user.id },
+  })
+  if (!draft) return c.json({ error: 'Not found' }, 404)
+  return c.json(draft)
+})
+ 
+// PUT /api/drafts/upsert — main auto-save endpoint
+drafts.put('/upsert', zValidator('json', upsertDraftSchema), async (c) => {
+  const user = c.get('user')
+  const { specId, title, content } = c.req.valid('json')
+ 
+  const draft = await db.specDraft.upsert({
+    where: { userId_specId: { userId: user.id, specId: specId ?? '' } },
+    update: { title, content, updatedAt: new Date() },
+    create: { userId: user.id, specId, title, content },
+  })
+  return c.json(draft)
+})
+ 
+// DELETE /api/drafts/:id — call after successful publish to avoid orphaned rows
+drafts.delete('/:id', async (c) => {
+  const user = c.get('user')
+  await db.specDraft.deleteMany({
+    where: { id: c.req.param('id'), userId: user.id },
+  })
+  return c.json({ ok: true })
+})
+```
+ 
+### 5.3 Frontend Hook (`hooks/use-draft-sync.ts`)
+ 
+```typescript
+const DEBOUNCE_MS = 1500
+ 
+export function useDraftSync(specId: string | null) {
+  const [draftId, setDraftId] = useState<string | null>(
+    () => localStorage.getItem(`draft_id_${specId ?? 'new'}`)
+  )
+  const [syncState, setSyncState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
+ 
+  const save = useDebouncedCallback(async (title: string, content: object) => {
+    setSyncState('saving')
+    try {
+      const res = await fetch('/api/drafts/upsert', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ specId, title, content: JSON.stringify(content) }),
+      })
+      const draft = await res.json()
+      if (!draftId) {
+        setDraftId(draft.id)
+        localStorage.setItem(`draft_id_${specId ?? 'new'}`, draft.id)
+      }
+      setSyncState('saved')
+    } catch {
+      setSyncState('error')
+    }
+  }, DEBOUNCE_MS)
+ 
+  const loadDraft = useCallback(async () => {
+    if (!draftId) return null
+    const res = await fetch(`/api/drafts/${draftId}`)
+    if (!res.ok) return null
+    return res.json()
+  }, [draftId])
+ 
+  // Call after successful publish — clears DB row + localStorage key
+  const clearDraft = useCallback(async () => {
+    if (!draftId) return
+    await fetch(`/api/drafts/${draftId}`, { method: 'DELETE' })
+    localStorage.removeItem(`draft_id_${specId ?? 'new'}`)
+    setDraftId(null)
+  }, [draftId, specId])
+ 
+  return { save, syncState, loadDraft, clearDraft }
+}
+```
+ 
+### 5.4 Spec Designer Integration
+ 
+```typescript
+const { save, syncState, loadDraft, clearDraft } = useDraftSync(specId)
+ 
+// Hydrate from DB on mount
+useEffect(() => {
+  loadDraft().then((draft) => {
+    if (draft) {
+      setTitle(draft.title ?? '')
+      setSpec(JSON.parse(draft.content))
+    }
+  })
+}, [])
+ 
+// Debounced auto-save on any change
+useEffect(() => {
+  save(title, spec)
+}, [title, spec])
+ 
+// Status indicator in toolbar
+<span className="text-xs text-muted-foreground">
+  {syncState === 'saving' && 'Saving...'}
+  {syncState === 'saved' && 'Draft saved'}
+  {syncState === 'error' && 'Save failed'}
+</span>
+ 
+// On publish success:
+await publishSpec(...)
+await clearDraft()
+```
+ 
+---

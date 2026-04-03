@@ -163,16 +163,23 @@ mockline/
 
 ### Tech Stack
 
-| Layer | Technology |
+| Layer | Tech |
 |-------|-----------|
-| Frontend | Next.js 15, React Query, Tailwind CSS v4 |
-| API | Hono, Zod validation |
-| Database | PostgreSQL via Prisma |
-| Cache | Redis (Upstash in prod) |
-| Auth | BetterAuth (GitHub OAuth) |
+| Monorepo | pnpm workspaces + Turborepo |
+| Frontend | Next.js App Router on Vercel, React Query, Tailwind CSS v4 |
+| Backend(API) | Hono + Node.js, Zod validation |
+| Database ORM | Prisma + PostgreSQL |
+| Cache | Redis |
+| Reverse proxy | Traefik (wildcard SSL via Cloudflare DNS challenge) |
+| Auth | BetterAuth (GitHub + Google OAuth) |
+| Payments | Lemon Squeezy |
+| Emails | Resend + shared @mockline/emails package |
+| CLI package | @trillionclues/contour pinned at v1.3.0 |
+| VPS | Spaceship Standard 1 (Ubuntu 24.04 LTS) |
+| Domain | mockline.xyz on Namecheap, Cloudflare DNS |
+| DB access | DBeaver via SSH tunnel on port 22022 |
 | Docker | Dockerode SDK |
 | Mock Engine | @trillionclues/contour |
-| Monorepo | pnpm workspaces + Turborepo |
 
 ## API Reference
 
