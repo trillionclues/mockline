@@ -10,6 +10,20 @@ export const TAG_STYLES: Record<ChangelogTag, { background: string; color: strin
 
 export const ENTRIES: ChangelogEntry[] = [
     {
+        version: 'v0.7.4',
+        date: 'April 3, 2026',
+        title: 'Strict Request Validation',
+        body: 'Mock servers can now enforce strict validation against your OpenAPI schema. Enable strict mode when provisioning to have Contour reject requests with missing required parameters, invalid body fields, or wrong types — returning detailed 400 errors. Choose Hard mode to block invalid requests outright, or Soft mode to log warnings while still returning responses.',
+        bullets: [
+            'New "Strict Validation" toggle in mock provisioning (PRO/TEAM)',
+            'Hard mode rejects invalid requests with structured 400 Bad Request responses',
+            'Soft mode logs validation warnings but continues to serve mock responses',
+            'Validates request bodies, query parameters, headers, and path parameters',
+            'Upgraded Contour engine to v1.3.0 with cached schema compilation for performance',
+        ],
+        tags: ['feature'],
+    },
+    {
         version: 'v0.7.3',
         date: 'March 31, 2026',
         title: 'Public Launch & Community Growth',

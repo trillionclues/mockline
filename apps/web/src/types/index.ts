@@ -100,6 +100,15 @@ export type ProvisionMockInput = {
     specVersionId: string
     stateful?: boolean
     config?: Record<string, unknown>
+    contourOptions?: {
+        stateful?: boolean
+        deterministic?: boolean
+        delay?: string
+        errorRate?: number
+        requireAuth?: boolean
+        strictValidation?: boolean
+        strictLevel?: 'hard' | 'soft'
+    }
 }
 
 export type ContractTestRun = {

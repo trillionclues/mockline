@@ -223,6 +223,26 @@ export function ResponsePanel({ response }: { response: ExplorerResponse }) {
             }}>
                 {/* {isJson ? highlightJson(formattedBody) : ( */}
                 {isJson && (
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        {formattedBody.split('\n').map((line, i) => (
+                            <div key={i} style={{ display: 'flex', minHeight: '20px' }}>
+                                <span style={{
+                                    color: 'var(--color-text-subtle)',
+                                    userSelect: 'none',
+                                    width: '40px',
+                                    textAlign: 'right',
+                                    paddingRight: '16px',
+                                    flexShrink: 0,
+                                    fontSize: '11px',
+                                    lineHeight: '1.7',
+                                    opacity: 0.5,
+                                }}>{i + 1}</span>
+                                <span style={{ flex: 1, whiteSpace: 'pre', lineHeight: '1.7' }}>{line}</span>
+                            </div>
+                        ))}
+                    </div>
+                )}
+                {!isJson && formattedBody && (
                     <pre style={{ margin: 0, padding: '0 16px', whiteSpace: 'pre-wrap' }}>{formattedBody}</pre>
                 )}
             </div>

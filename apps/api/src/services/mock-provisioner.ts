@@ -67,6 +67,8 @@ export async function provisionMockServer(params: {
             delay: contourOptions?.delay ?? null,
             errorRate: contourOptions?.errorRate ?? 0,
             requireAuth: contourOptions?.requireAuth ?? false,
+            strictValidation: contourOptions?.strictValidation ?? false,
+            strictLevel: contourOptions?.strictLevel ?? null,
         },
     })
 
@@ -78,7 +80,7 @@ export async function provisionMockServer(params: {
             specContent: specVersion.content,
             specFormat: specVersion.format,
             imageTag,
-            contourVersion: process.env.CONTOUR_VERSION ?? '1.2.1',
+            contourVersion: process.env.CONTOUR_VERSION ?? '1.3.0',
         })
 
         // generate mock server slug for url
@@ -98,7 +100,9 @@ export async function provisionMockServer(params: {
                 deterministic: mockServer.isDeterministic,
                 delay: mockServer.delay || undefined,
                 errorRate: mockServer.errorRate,
-                requireAuth: mockServer.requireAuth
+                requireAuth: mockServer.requireAuth,
+                strictValidation: mockServer.strictValidation,
+                strictLevel: mockServer.strictLevel || undefined,
             }
         })
 

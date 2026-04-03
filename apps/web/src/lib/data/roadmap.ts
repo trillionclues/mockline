@@ -19,6 +19,7 @@ export const SHIPPED: RoadmapItem[] = [
 ]
 
 export const IN_PROGRESS: RoadmapItem[] = [
+    { title: 'Strict Request Validation', desc: 'Validate request bodies and parameters against the OpenAPI schema with hard/soft modes' },
     { title: 'Request Logging', desc: 'Live request history per mock server' },
     { title: 'Team Workspaces', desc: 'Shared specs and mocks across a team' },
 ]
