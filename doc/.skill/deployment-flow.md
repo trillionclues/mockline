@@ -1439,8 +1439,10 @@ git push origin main
 
 ### Release to production
 ```bash
-git tag v0.2.0 -m "Release v0.2.0"
-git push origin v0.2.0
+git add .
+git commit -m 'feat: add strict request validation support and upgrade Contour to 1.3.0'
+git tag v0.2.0 -m 'feat: add strict request validation support and upgrade Contour to 1.3.0'
+git push && git push --tags
 # GitHub Actions → approve production gate
 ```
 

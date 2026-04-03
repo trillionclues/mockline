@@ -16,12 +16,14 @@ export const SHIPPED: RoadmapItem[] = [
     { title: 'Wildcard SSL', desc: 'Traefik + Let\'s Encrypt for *.mockline.xyz subdomains' },
     { title: 'Large Spec Support', desc: '10 MB upload limit for enterprise-scale specs' },
     { title: 'Centralized Email Templates', desc: 'Shared @mockline/emails package for consistent transactional emails' },
+    { title: 'Strict Request Validation', desc: 'Validate request bodies and parameters against the OpenAPI schema with hard/soft modes' },
 ]
 
 export const IN_PROGRESS: RoadmapItem[] = [
-    { title: 'Strict Request Validation', desc: 'Validate request bodies and parameters against the OpenAPI schema with hard/soft modes' },
+
     { title: 'Request Logging', desc: 'Live request history per mock server' },
     { title: 'Team Workspaces', desc: 'Shared specs and mocks across a team' },
+    { title: 'Server-side Drafts', desc: 'Persist spec designer drafts to the database for cross-device access' },
 ]
 
 export const PLANNED: RoadmapItem[] = [
@@ -34,7 +36,7 @@ export const PLANNED: RoadmapItem[] = [
     { title: 'SDK', desc: 'JavaScript/TypeScript client for programmatic provisioning' },
     { title: 'Custom Domains', desc: 'Bring your own subdomain for mock URLs' },
     { title: 'SSO / SAML', desc: 'Enterprise auth for Team plan' },
-    { title: 'Server-side Drafts', desc: 'Persist spec designer drafts to the database for cross-device access' },
+
 ]
 
 export const CONSIDERING = [
