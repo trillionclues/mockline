@@ -3,7 +3,7 @@ WORKDIR /app
 ENV PNPM_HOME=/usr/local/share/pnpm
 ENV PATH=/usr/local/share/pnpm:$PATH
 
-ARG CONTOUR_VERSION=1.2.1
+ARG CONTOUR_VERSION=1.3.0
 RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
 RUN pnpm add -g @trillionclues/contour@${CONTOUR_VERSION}
 RUN chmod -R 755 /usr/local/share/pnpm
@@ -17,7 +17,7 @@ ENV PATH=/usr/local/share/pnpm:$PATH
 COPY --from=installer /usr/local/share/pnpm /usr/local/share/pnpm
 RUN chmod -R 755 /usr/local/share/pnpm
 
-# Patch no longer needed — contour 1.2.1 binds to 0.0.0.0 by default
+# Patch no longer needed — contour 1.3.0 binds to 0.0.0.0 by default
 # RUN find /usr/local/share/pnpm ...
 
 # Patch contour to bind to 0.0.0.0 (all interfaces) instead of 127.0.0.1

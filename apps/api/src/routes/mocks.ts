@@ -24,6 +24,8 @@ const ProvisionSchema = z.object({
             delay: z.string().optional(),
             errorRate: z.number().min(0).max(100).optional(),
             requireAuth: z.boolean().optional(),
+            strictValidation: z.boolean().optional(),
+            strictLevel: z.enum(['hard', 'soft']).optional(),
         })
         .optional(),
 })
@@ -55,7 +57,8 @@ mocksRouter.post('/', rateLimit('PROVISION'), async (c) => {
         const usesProFeature =
             opts.stateful ||
             opts.delay ||
-            (opts.errorRate !== undefined && opts.errorRate > 0)
+            (opts.errorRate !== undefined && opts.errorRate > 0) ||
+            opts.strictValidation
 
         if (usesProFeature) {
             return c.json(
@@ -83,6 +86,8 @@ mocksRouter.post('/', rateLimit('PROVISION'), async (c) => {
                 delay: parsed.data.contourOptions.delay,
                 errorRate: parsed.data.contourOptions.errorRate,
                 requireAuth: parsed.data.contourOptions.requireAuth,
+                strictValidation: parsed.data.contourOptions.strictValidation,
+                strictLevel: parsed.data.contourOptions.strictLevel,
             } : undefined,
         })
         return c.json({ data: result, error: null }, 201)

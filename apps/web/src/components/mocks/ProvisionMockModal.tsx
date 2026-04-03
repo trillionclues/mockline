@@ -29,6 +29,8 @@ export function ProvisionMockModal({ open, onClose, specs, prefilledSpecId, pref
     const [delay, setDelay] = useState('')
     const [errorRate, setErrorRate] = useState('')
     const [requireAuth, setRequireAuth] = useState(false)
+    const [strictValidation, setStrictValidation] = useState(false)
+    const [strictLevel, setStrictLevel] = useState<'hard' | 'soft'>('hard')
 
     useEffect(() => {
         if (prefilledSpecId) setSpecId(prefilledSpecId)
@@ -56,6 +58,8 @@ export function ProvisionMockModal({ open, onClose, specs, prefilledSpecId, pref
                     delay: delay || undefined,
                     errorRate: errorRate ? parseInt(errorRate) : undefined,
                     requireAuth: requireAuth || undefined,
+                    strictValidation: strictValidation || undefined,
+                    strictLevel: strictValidation ? strictLevel : undefined,
                 }
             }),
         }),
@@ -66,6 +70,9 @@ export function ProvisionMockModal({ open, onClose, specs, prefilledSpecId, pref
             setStateful(false)
             setDelay('')
             setErrorRate('')
+            setRequireAuth(false)
+            setStrictValidation(false)
+            setStrictLevel('hard')
             setError(null)
             onClose()
         },
@@ -128,34 +135,68 @@ export function ProvisionMockModal({ open, onClose, specs, prefilledSpecId, pref
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', opacity: isProUser ? 1 : 0.4, pointerEvents: isProUser ? 'auto' : 'none' }}>
                             <div style={{
                                 display: 'flex',
-                                alignItems: 'center',
+                                alignItems: 'flex-start',
+                                flexDirection: 'column',
                                 gap: '12px',
                                 justifyContent: 'flex-start',
                                 marginBottom: '12px',
                             }}>
-                                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px', color: 'var(--color-text)' }}>
-                                    <input
-                                        type="checkbox"
-                                        checked={stateful}
-                                        onChange={e => setStateful(e.target.checked)}
-                                        disabled={mutation.isPending}
-                                        style={{ accentColor: 'var(--color-primary)' }}
-                                    />
-                                    Stateful mode — persist changes in memory
-                                </label>
-                                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px', color: 'var(--color-text)' }}>
-                                    <input
-                                        type="checkbox"
-                                        checked={requireAuth}
-                                        onChange={e => setRequireAuth(e.target.checked)}
-                                        disabled={mutation.isPending}
-                                        style={{ accentColor: 'var(--color-primary)' }}
-                                    />
+                                <div style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'flex-start',
+                                    gap: '12px',
+                                }}>
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px', color: 'var(--color-text)' }}>
+                                        <input
+                                            type="checkbox"
+                                            checked={stateful}
+                                            onChange={e => setStateful(e.target.checked)}
+                                            disabled={mutation.isPending}
+                                            style={{ accentColor: 'var(--color-primary)' }}
+                                        />
+                                        Stateful mode — Persist changes in memory
+                                    </label>
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px', color: 'var(--color-text)' }}>
+                                        <input
+                                            type="checkbox"
+                                            checked={requireAuth}
+                                            onChange={e => setRequireAuth(e.target.checked)}
+                                            disabled={mutation.isPending}
+                                            style={{ accentColor: 'var(--color-primary)' }}
+                                        />
 
-                                    Require Auth
+                                        Require Auth
+                                    </label>
+                                </div>
+                                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px', color: 'var(--color-text)' }}>
+                                    <input
+                                        type="checkbox"
+                                        checked={strictValidation}
+                                        onChange={e => setStrictValidation(e.target.checked)}
+                                        disabled={mutation.isPending}
+                                        style={{ accentColor: 'var(--color-primary)' }}
+                                    />
+                                    Strict Validation — Reject invalid requests
                                 </label>
                             </div>
+                            {strictValidation && (
+                                <div className="form-field" style={{ marginTop: '4px', marginBottom: '12px' }}>
+                                    <label className="form-label" style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>Validation level</label>
+                                    <select
+                                        className="form-select"
+                                        value={strictLevel}
+                                        onChange={e => setStrictLevel(e.target.value as 'hard' | 'soft')}
+                                        disabled={mutation.isPending}
+                                        style={{ height: '32px', fontSize: '12px', opacity: mutation.isPending ? 0.6 : 1 }}
+                                    >
+                                        <option value="hard">Hard — Reject with 400</option>
+                                        <option value="soft">Soft — Warn and continue</option>
+                                    </select>
+                                </div>
+                            )}
                             <div style={{ display: 'flex', gap: '8px' }}>
+
                                 <div className="form-field" style={{ flex: 1 }}>
                                     <label className="form-label" style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>Response delay (ms range)</label>
                                     <input
@@ -184,6 +225,7 @@ export function ProvisionMockModal({ open, onClose, specs, prefilledSpecId, pref
                                 </div>
 
                             </div>
+
                         </div>
 
                         {!isProUser && (
@@ -216,6 +258,9 @@ export function ProvisionMockModal({ open, onClose, specs, prefilledSpecId, pref
                         setStateful(false);
                         setDelay('');
                         setErrorRate('');
+                        setRequireAuth(false);
+                        setStrictValidation(false);
+                        setStrictLevel('hard');
                         setError(null);
                     }} disabled={mutation.isPending} className="btn-secondary">Cancel</button>
                     <button onClick={() => mutation.mutate()} disabled={!canSubmit} className="btn-primary" style={{ background: 'var(--color-logo-line)', color: 'var(--color-bg)' }}>

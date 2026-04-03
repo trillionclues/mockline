@@ -122,6 +122,8 @@ model MockServer {
   delay           String?
   errorRate       Int     @default(0)
   requireAuth     Boolean @default(false)
+  strictValidation Boolean @default(false)
+  strictLevel      String?
 
   lastAccessedAt DateTime @default(now())
   createdAt      DateTime @default(now())

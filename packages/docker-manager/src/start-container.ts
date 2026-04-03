@@ -71,6 +71,8 @@ export async function startMockContainerWithOptions(
             delay?: string
             errorRate?: number
             requireAuth?: boolean
+            strictValidation?: boolean
+            strictLevel?: string
         }
         specFilename?: string
     },
@@ -85,6 +87,10 @@ export async function startMockContainerWithOptions(
     if (contourOptions?.delay) cmd.push('--delay', contourOptions.delay)
     if (contourOptions?.errorRate !== undefined) cmd.push('--error-rate', String(contourOptions.errorRate))
     if (contourOptions?.requireAuth) cmd.push('--require-auth')
+    if (contourOptions?.strictValidation) {
+        cmd.push('--strict-validation')
+        if (contourOptions.strictLevel) cmd.push('--strict-level', contourOptions.strictLevel)
+    }
 
     // For custom CMD, need to modify the container creation
     const port = await findAvailablePort()

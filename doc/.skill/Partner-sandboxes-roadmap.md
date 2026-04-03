@@ -33,6 +33,15 @@ Current "solutions" teams use:
 If answer is "Postman collections and hope" → clear problem, no entrenched solution.
 If answer is "dedicated UAT per prospect managed by infra team" → you're fighting budget and process.
 
+### Competitive Blindspot:
+Postman already has "Mock Servers" with team sharing. What they don't have is:
+
+> Isolated containers per prospect (they use shared infra)
+> Custom domains (huge trust gap)
+> Usage analytics showing prospect engagement depth
+
+Lean into those three differentiators in your messaging.
+
 ---
 
 ## MVP Scope (80% already built)
@@ -76,6 +85,11 @@ When a prospect hits `abc123.mockline.xyz`, instead of raw API responses, show:
 
 **Complexity:** Medium. Traefik already handles wildcard certs via Cloudflare DNS challenge. Per-domain cert provisioning is an extension of that — each custom domain needs its own ACME entry. Not a rebuild but needs careful cert lifecycle management.
 
+Customer adds CNAME to their DNS
+You generate cert via Let's Encrypt DNS challenge
+You store that cert securely (HashiCorp Vault or similar)
+You rotate certs every 90 days
+
 **Gate behind:** Team tier or a new Enterprise tier. Enterprise would work well for this, we could replace it with TEAM tier
 
 ---
@@ -117,9 +131,10 @@ Sales velocity has budget authority at any company size.
 Talk to 3 Sales Engineers at mid-size SaaS companies (API-first companies: fintech, payments, communications).
 
 Ask:
-1. "How do you give prospects a live API to test before the deal closes?"
-2. "How often does your staging environment cause issues during a prospect's integration?"
+1. "What's your current budget for sales engineering tools?"
+2. "How much did you spend on demo environment AWS costs last quarter?"
 3. "What would it mean for your pipeline if you could provision an isolated sandbox per prospect in under a minute?"
+4. "Would you allow a vendor to sit between your prospects and your API?" (Security/compliance concern)"
 
 Do not ask "would you use this" — ask about cost of current pain.
 
@@ -136,6 +151,16 @@ If 3 external companies build integrations against `partner-api.mockline.xyz`, y
 Justifies high price: "Enable your sales team to demo to prospects without backend dependencies" = $500/mo vs $49/mo for internal devs.
 
 ---
+## Critical Gaps to Address
+1. The "Data Poisoning" Problem
+Prospects testing POST/PUT/DELETE, but don't specify data isolation between prospects. If Salesforce provisions prospect-a.mockline.xyz and prospect-b.mockline.xyz from the same spec, do they share stateful data?
+Fix: Make stateful mode per-sandbox isolated by default. If Prospect A creates a user with POST /users, Prospect B shouldn't see it. This requires your Phase 4 --stateful flag + unique Docker volumes per sandbox(I guess this is in place already).
+
+2. Authentication Gap
+Your doc mentions --require-auth, but partner sandboxes need granular auth, not just "Bearer token required."
+Scenario: Stripe gives a sandbox to Uber. Uber shouldn't see Stripe's internal admin endpoints. You need endpoint-level whitelisting per sandbox: "This sandbox only exposes /payments and /webhooks, not /admin/refunds."
+
+---
 
 ## Implementation Order
 
@@ -145,3 +170,6 @@ Justifies high price: "Enable your sales team to demo to prospects without backe
 4. Sandbox share page ← trust signal, also improves demo quality
 5. Weekly analytics digest email ← the hook that keeps SEs engaged
 6. Partner Portal UI ← last, only after 1-2 paying customers confirm the use case
+
+
+We are looking to build Mockline into "the only API sandbox that proves prospect engagement through usage analytics."

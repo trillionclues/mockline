@@ -262,6 +262,8 @@ NB:
 | `--error-rate <pct>` | Simulate random failures | `--error-rate 10` (10% of requests fail) |
 | `--require-auth` | Require Bearer token | Rejects requests without `Authorization` header |
 | `--deterministic` | Reproducible fake data | Same request → same response (for E2E tests) |
+| `--strict-validation` | Strict request validation | Validates bodies + params against OpenAPI schema |
+| `--strict-level <mode>` | Validation strictness | `hard` (reject with 400) or `soft` (warn + continue) |
 
 ## License
 

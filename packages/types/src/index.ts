@@ -45,6 +45,8 @@ export interface ContourOptions {
     delay?: string
     errorRate?: number
     requireAuth?: boolean
+    strictValidation?: boolean
+    strictLevel?: 'hard' | 'soft'
 }
 
 // Errors

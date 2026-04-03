@@ -332,7 +332,7 @@ DOCKER_HOST="unix:///var/run/docker.sock"   # local
 MOCK_BASE_DOMAIN="localhost"                 # prod: mockline.xyz
 
 # Contour version to bake into containers
-CONTOUR_VERSION="1.2.1"                     # pin to e.g. "0.4.2" in prod
+CONTOUR_VERSION="1.3.0"                     # pin to e.g. "0.4.2" in prod
 
 # Internal
 INTERNAL_API_SECRET="generate-random-secret" # used by web→api server calls
@@ -1142,6 +1142,5 @@ pnpm audit --audit-level=high
 ### If you add a new column 
 - Update the schema with the changes 
 - Run the migration
-cd packages/db
-npx prisma migrate dev --name add_new_column_name
+pnpm db:migrate --name add_new_column_name
 - Commit the migration
