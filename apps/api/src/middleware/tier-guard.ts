@@ -30,3 +30,20 @@ export function requireTier(minimumTier: 'PRO' | 'TEAM') {
         await next()
     }
 }
+
+
+
+// ================ NOTES ================= 
+// Look to replace the implicit permissions with more explicit implmenentation
+
+// const permissions: Record<Tier, string[]> = {
+//   FREE:  ['mocks:create', 'specs:create'],
+//   PRO:   ['mocks:create', 'specs:create', 'mocks:stateful', 'mocks:delay'],
+//   TEAM:  ['mocks:create', 'specs:create', 'mocks:stateful', 'mocks:delay', 'team:invite'],
+// }
+
+
+// Then your routes become declarative and self-documenting:
+
+// mocksRouter.post('/', requirePermission('mocks:create'), async (c) => { ... })
+// mocksRouter.post('/stateful', requirePermission('mocks:stateful'), async (c) => { ... })
