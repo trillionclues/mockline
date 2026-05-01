@@ -1,4 +1,8 @@
 import { ApiError, type ApiResponse } from '@mockline/types'
+import type {
+    Spec, SpecDetail, CreateSpecInput, SpecVersion, UploadVersionInput, SchemaDiff,
+    MockServer, ProvisionMockInput, ContractTestRun, RunContractInput
+} from '@/types'
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000'
 
@@ -28,11 +32,6 @@ export async function request<T>(
 
     return json.data
 }
-
-import type {
-    Spec, SpecDetail, CreateSpecInput, SpecVersion, UploadVersionInput, SchemaDiff,
-    MockServer, ProvisionMockInput, ContractTestRun, RunContractInput
-} from '@/types'
 
 export type {
     Spec, SpecDetail, CreateSpecInput, SpecVersion, UploadVersionInput, SchemaDiff,
