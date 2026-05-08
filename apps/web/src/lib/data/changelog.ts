@@ -10,6 +10,21 @@ export const TAG_STYLES: Record<ChangelogTag, { background: string; color: strin
 
 export const ENTRIES: ChangelogEntry[] = [
     {
+        version: 'v0.8.0',
+        date: 'May 8, 2026',
+        title: 'Partner Sandboxes — Prospect Isolation & Sales Intelligence',
+        body: 'Turn your OpenAPI spec into an isolated prospect sandbox in 60 seconds. Each partner gets their own live mock server with a deliberate expiry, a branded share page, and usage analytics so Sales Engineers know exactly who is integrating before the deal closes.',
+        bullets: [
+            'Support for Sandbox Expirations — set 7/14/30/90-day lifespans on partner sandboxes with dashboard countdown timers (PRO: up to 14 days, TEAM: up to 90 days)',
+            'Added Sandbox Share Pages so prospects landing on a sandbox base URL see API name, description, available endpoints, and example curl commands instead of a raw 404',
+            'Usage Analytics on every request logged, with endpoint, timestamp, and status; aggregate views show total hits, unique endpoints tested, and last activity',
+            'Digest emails for Sales Engineers: "Your Acme Corp sandbox was hit 47 times this week — they tested /transactions and /webhooks"',
+            'New custom sandbox configuration fields on MockServer for deliberate expiry, distinct from idle auto-stop',
+            'Custom Domains (partner.yourcompany.com) and Partner Portal UI in upcoming releases',
+        ],
+        tags: ['feature'],
+    },
+    {
         version: 'v0.7.4',
         date: 'April 3, 2026',
         title: 'Strict Request Validation',
