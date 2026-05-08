@@ -132,6 +132,7 @@ model MockServer {
   label            String?          // human-friendly sandbox name, e.g. "Acme Corp"
   sharePageEnabled Boolean @default(false)
   description      String?          // shown on sandbox share page
+  customDomain     String?  @unique // TEAM only — e.g. "api.acmecorp.com"
 
   requestLogs SandboxRequestLog[]
 
