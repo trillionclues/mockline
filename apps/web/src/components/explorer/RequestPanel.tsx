@@ -6,11 +6,12 @@ import { explorerApi } from '@/lib/api-client'
 
 type Props = {
     endpoint: Endpoint
+    mockId: string
     baseUrl: string
     onResponse: (r: ExplorerResponse) => void
 }
 
-export function RequestPanel({ endpoint, baseUrl, onResponse }: Props) {
+export function RequestPanel({ endpoint, mockId, baseUrl, onResponse }: Props) {
     const [pathParams, setPathParams] = useState<Record<string, string>>({})
     const [queryParams, setQueryParams] = useState<Record<string, string>>({})
     const [headerParams, setHeaderParams] = useState<Record<string, string>>({})
@@ -84,6 +85,7 @@ export function RequestPanel({ endpoint, baseUrl, onResponse }: Props) {
 
             // Proxy through our API to avoid CORS
             const result = await explorerApi.proxy({
+                mockId,
                 url,
                 method: endpoint.method.toUpperCase(),
                 headers,

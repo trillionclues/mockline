@@ -3,7 +3,7 @@ import { useRouter } from 'next/navigation'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { mocksApi, type MockServer } from '@/lib/api-client'
 import { queryKeys } from '@/lib/query-keys'
-import { Play, Square, Trash2 } from 'lucide-react'
+import { Play, Square, Trash2, Clock } from 'lucide-react'
 import { useState } from 'react'
 import { CopyButton } from '../shared/CopyButton'
 import { ConfirmDialog } from '../shared/ConfirmDialog'
@@ -64,6 +64,7 @@ export function MocksTable({ mocks }: { mocks: MockServer[] }) {
                             <th style={thStyle}>Status</th>
                             <th style={thStyle}>URL</th>
                             <th style={thStyle}>Age</th>
+                            <th style={thStyle}>Expires</th>
                             <th style={{ ...thStyle, textAlign: 'right' }}>Actions</th>
                         </tr>
                     </thead>
@@ -81,7 +82,9 @@ export function MocksTable({ mocks }: { mocks: MockServer[] }) {
                                         {mock.spec.name}
                                     </div>
                                     <div style={{ fontSize: '11px', color: 'var(--color-text)' }}>
-                                        {mock?.specVersion?.version ? `v${mock?.specVersion?.version}` : ''}
+                                        {mock.label
+                                            ? <span style={{ color: 'var(--color-text-muted)' }}>{mock.label}</span>
+                                            : mock?.specVersion?.version ? `v${mock?.specVersion?.version}` : ''}
                                     </div>
                                 </td>
                                 <td style={tdStyle}>
@@ -105,6 +108,13 @@ export function MocksTable({ mocks }: { mocks: MockServer[] }) {
                                     <span style={{ fontSize: '12px', color: 'var(--color-text)' }}>
                                         {timeAgo(mock?.createdAt)}
                                     </span>
+                                </td>
+                                <td style={tdStyle}>
+                                    {mock.expiresAt ? (
+                                        <ExpiryBadge expiresAt={mock.expiresAt} />
+                                    ) : (
+                                        <span style={{ fontSize: '11px', color: 'var(--color-text-subtle)' }}>—</span>
+                                    )}
                                 </td>
                                 <td style={{ ...tdStyle, textAlign: 'right' }}>
                                     <div
@@ -157,3 +167,17 @@ function timeAgo(dateStr: string): string {
 
 const thStyle: React.CSSProperties = { fontSize: '12px', fontWeight: 500, color: 'var(--color-text-subtle)', padding: '10px 16px' }
 const tdStyle: React.CSSProperties = { fontSize: '13px', color: 'var(--color-text)', padding: '14px 16px' }
+
+function ExpiryBadge({ expiresAt }: { expiresAt: string }) {
+    const diff = new Date(expiresAt).getTime() - Date.now()
+    if (diff <= 0) {
+        return <span style={{ fontSize: '11px', color: 'var(--color-destructive)', display: 'flex', alignItems: 'center', gap: '4px' }}><Clock size={11} /> Expired</span>
+    }
+    const days = Math.ceil(diff / (1000 * 60 * 60 * 24))
+    const color = days <= 3 ? 'var(--color-destructive)' : days <= 7 ? '#eab308' : 'var(--color-text-muted)'
+    return (
+        <span style={{ fontSize: '11px', color, display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <Clock size={11} /> {days}d left
+        </span>
+    )
+}

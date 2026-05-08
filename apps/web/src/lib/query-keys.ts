@@ -9,6 +9,8 @@ export const queryKeys = {
         all: () => ['mocks'] as const,
         detail: (id: string) => ['mocks', id] as const,
         status: (id: string) => ['mocks', id, 'status'] as const,
+        analytics: (id: string) => ['mocks', id, 'analytics'] as const,
+        logs: (id: string, page?: number, date?: string) => ['mocks', id, 'logs', { page, date }] as const,
     },
     contracts: {
         all: () => ['contracts'] as const,

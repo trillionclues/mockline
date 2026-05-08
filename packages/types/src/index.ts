@@ -167,6 +167,28 @@ export const AUTO_STOP_MINUTES = {
     TEAM: 7 * 24 * 60, // 1 week
 } as const satisfies Record<Tier, number>
 
+// Partner Sandbox — max expiry duration per tier (days)
+// FREE tier gets no sandbox expiry features (PRO+ only)
+export const SANDBOX_EXPIRY_MAX_DAYS = {
+    FREE: 0,
+    PRO: 14,
+    TEAM: 90,
+} as const satisfies Record<Tier, number>
+
+// Partner Sandbox — analytics log retention per tier (days)
+export const LOG_RETENTION_DAYS = {
+    FREE: 0,
+    PRO: 14,
+    TEAM: 30,
+} as const satisfies Record<Tier, number>
+
+export interface SandboxOptions {
+    expiresAt?: string       // ISO date string
+    label?: string           // e.g. "Acme Corp Integration"
+    sharePageEnabled?: boolean
+    description?: string
+}
+
 export const RATE_LIMITS_BY_TIER = {
     FREE: {
         GENERAL: { window: 60, max: 60 }, // 60 requests per minute

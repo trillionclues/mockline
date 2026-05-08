@@ -90,6 +90,11 @@ export type MockServer = {
     config: Record<string, unknown> | null
     spec: { name: string }
     specVersion: { version: number }
+    // Partner sandbox fields
+    expiresAt: string | null
+    label: string | null
+    sharePageEnabled: boolean
+    description: string | null
     createdAt: string
     updatedAt: string
     lastAccessedAt: string
@@ -108,6 +113,13 @@ export type ProvisionMockInput = {
         requireAuth?: boolean
         strictValidation?: boolean
         strictLevel?: 'hard' | 'soft'
+    }
+    // Partner sandbox options (PRO+ only)
+    sandboxOptions?: {
+        expiresAt?: string
+        label?: string           // e.g. "Acme Corp Integration"
+        sharePageEnabled?: boolean
+        description?: string
     }
 }
 
@@ -148,4 +160,40 @@ export type ChangelogEntry = {
     body: string
     bullets: string[]
     tags: ChangelogTag[]
+}
+
+// Partner sandbox analytics
+export type SandboxRequestLog = {
+    id: string
+    mockServerId: string
+    method: string
+    path: string
+    statusCode: number
+    responseTimeMs: number | null
+    userAgent: string | null
+    ipAddress: string | null
+    createdAt: string
+}
+
+export type SandboxAnalytics = {
+    totalHits: number
+    uniqueEndpoints: number
+    lastActive: string | null
+    endpointBreakdown: {
+        method: string
+        path: string
+        hitCount: number
+        lastHit: string
+    }[]
+}
+
+// Server-side spec drafts
+export type SpecDraft = {
+    id: string
+    userId: string
+    specId: string | null
+    title: string | null
+    content: string
+    createdAt: string
+    updatedAt: string
 }

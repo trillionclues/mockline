@@ -86,3 +86,14 @@ export async function findMocksBySpec(specId: string) {
         where: { specId, deletedAt: null },
     })
 }
+
+// Partner Sandboxes: find mocks whose deliberate expiresAt has elapsed
+export async function findExpiredSandboxes() {
+    return db.mockServer.findMany({
+        where: {
+            expiresAt: { lte: new Date() },
+            deletedAt: null,
+            status: { in: ['RUNNING', 'STOPPED'] },
+        },
+    })
+}
