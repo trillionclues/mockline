@@ -1581,3 +1581,9 @@ docker exec -it mockline-db psql -U your_db_user -d your_db_name
 
 SELECT id, email, name, "createdAt" FROM users ORDER BY "createdAt" DESC LIMIT 20;
 SELECT COUNT(*) FROM users;
+
+### If you add a new column 
+- Update the schema with the changes 
+- Run the migration
+pnpm db:migrate --name add_new_column_name
+- Commit the migration

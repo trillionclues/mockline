@@ -19,3 +19,15 @@ providers:
 
 log:
   level: INFO
+
+# Access logs — JSON format, written to a file the API can tail and ingest.
+# In dev this goes to /var/log/traefik/access.log inside the Traefik container,
+# which is bind-mounted to ./logs/traefik/access.log on the host.
+accessLog:
+  filePath: "/var/log/traefik/access.log"
+  format: json
+  bufferingSize: 100
+  fields:
+    defaultMode: keep
+    headers:
+      defaultMode: keep

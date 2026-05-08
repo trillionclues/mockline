@@ -58,7 +58,7 @@ Lean into those three differentiators in your messaging.
 ### What needs to be added
 
 **1. Expiry dates on containers**
-Not auto-stop (idle timeout) — deliberate expiry. "This sandbox is live for 14 days."
+Not just auto-stop (idle timeout) — deliberate expiry. "This sandbox is live for 14 days."
 - Add `expiresAt: DateTime?` to `MockServer` schema
 - Extend auto-stop scheduler to check `expiresAt` and stop+remove when elapsed
 - UI: date picker or preset (7 days / 14 days / 30 days) at provision time
@@ -165,7 +165,7 @@ Fix: Make stateful mode per-sandbox isolated by default. If Prospect A creates a
 
 2. Authentication Gap
 Your doc mentions --require-auth, but partner sandboxes need granular auth, not just "Bearer token required."
-Scenario: Stripe gives a sandbox to Uber. Uber shouldn't see Stripe's internal admin endpoints. You need endpoint-level whitelisting per sandbox: "This sandbox only exposes /payments and /webhooks, not /admin/refunds."
+Scenario: Stripe gives a sandbox to Uber. Uber shouldn't see Stripe's internal admin endpoints. You need endpoint-level whitelisting per sandbox: "This sandbox only exposes /payments and /webhooks, not /admin/refunds." Can pause this requirment for now if not critical
 
 ---
 
@@ -177,6 +177,7 @@ Scenario: Stripe gives a sandbox to Uber. Uber shouldn't see Stripe's internal a
 4. Weekly analytics digest email — the hook that keeps SEs engaged
 5. Custom domains — gate behind customer discovery validation first
 6. Partner Portal UI — only after 1–2 paying customers confirm use case
+7. Server-side Drafts. Persists spec designer drafts to DB for cross-device access
 
 
 ### Schema Changes Needed

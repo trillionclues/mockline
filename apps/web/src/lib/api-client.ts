@@ -1,7 +1,8 @@
 import { ApiError, type ApiResponse } from '@mockline/types'
 import type {
     Spec, SpecDetail, CreateSpecInput, SpecVersion, UploadVersionInput, SchemaDiff,
-    MockServer, ProvisionMockInput, ContractTestRun, RunContractInput
+    MockServer, ProvisionMockInput, ContractTestRun, RunContractInput,
+    SandboxAnalytics, SandboxRequestLog,
 } from '@/types'
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000'
@@ -35,7 +36,8 @@ export async function request<T>(
 
 export type {
     Spec, SpecDetail, CreateSpecInput, SpecVersion, UploadVersionInput, SchemaDiff,
-    MockServer, ProvisionMockInput, ContractTestRun, RunContractInput
+    MockServer, ProvisionMockInput, ContractTestRun, RunContractInput,
+    SandboxAnalytics, SandboxRequestLog,
 }
 
 // ── Specs ──
@@ -57,6 +59,16 @@ export const mocksApi = {
     start: (id: string, opts?: RequestInit) => request<MockServer>(`/mocks/${id}/start`, { ...opts, method: 'POST' }),
     stop: (id: string, opts?: RequestInit) => request<void>(`/mocks/${id}/stop`, { ...opts, method: 'POST' }),
     delete: (id: string, opts?: RequestInit) => request<void>(`/mocks/${id}`, { ...opts, method: 'DELETE' }),
+    // Sandbox analytics
+    analytics: (id: string, since?: string, opts?: RequestInit) =>
+        request<SandboxAnalytics>(`/mocks/${id}/analytics${since ? `?since=${since}` : ''}`, opts),
+    logs: (id: string, params?: { page?: number; date?: string }, opts?: RequestInit) => {
+        const searchParams = new URLSearchParams()
+        if (params?.page) searchParams.set('page', String(params.page))
+        if (params?.date) searchParams.set('date', params.date)
+        const qs = searchParams.toString()
+        return request<SandboxRequestLog[]>(`/mocks/${id}/logs${qs ? `?${qs}` : ''}`, opts)
+    },
 }
 
 // ── Contracts ──
@@ -83,7 +95,7 @@ export type ExplorerProxyResponse = {
 }
 
 export const explorerApi = {
-    proxy: (payload: { url: string; method: string; headers?: Record<string, string>; body?: string }) =>
+    proxy: (payload: { mockId: string; url: string; method: string; headers?: Record<string, string>; body?: string }) =>
         request<ExplorerProxyResponse>('/explorer/proxy', {
             method: 'POST',
             body: JSON.stringify(payload),

@@ -3,7 +3,7 @@ import { buildMockImage, startMockContainerWithOptions } from '@mockline/docker-
 import { validateSpec } from '@mockline/spec-parser'
 import { detectFormat } from '@mockline/spec-parser'
 import { CONTAINER_LIMITS, DEFAULT_RESOURCE_LIMITS } from '@mockline/types'
-import type { ContourOptions, Tier } from '@mockline/types'
+import type { ContourOptions, SandboxOptions, Tier } from '@mockline/types'
 import crypto from 'node:crypto'
 
 function sanitizeErrorMessage(msg: string): string {
@@ -31,8 +31,9 @@ export async function provisionMockServer(params: {
     userId: string
     tier: Tier
     contourOptions?: ContourOptions
+    sandboxOptions?: SandboxOptions
 }): Promise<{ id: string; publicUrl: string; status: string }> {
-    const { specVersionId, userId, tier, contourOptions } = params
+    const { specVersionId, userId, tier, contourOptions, sandboxOptions } = params
 
     // Check container limit
     const activeCount = await db.mockServer.count({
@@ -69,6 +70,11 @@ export async function provisionMockServer(params: {
             requireAuth: contourOptions?.requireAuth ?? false,
             strictValidation: contourOptions?.strictValidation ?? false,
             strictLevel: contourOptions?.strictLevel ?? null,
+            // Partner sandbox fields
+            expiresAt: sandboxOptions?.expiresAt ? new Date(sandboxOptions.expiresAt) : null,
+            label: sandboxOptions?.label ?? null,
+            sharePageEnabled: sandboxOptions?.sharePageEnabled ?? false,
+            description: sandboxOptions?.description ?? null,
         },
     })
 

@@ -1,4 +1,5 @@
 import { Hono } from 'hono'
+import { createRequestLog, getMockMatch } from '../repositories/sandbox-log.repository'
 import type { AppEnv } from '../types/env'
 
 export const explorerRouter = new Hono<AppEnv>()
@@ -12,6 +13,7 @@ export const explorerRouter = new Hono<AppEnv>()
 
 explorerRouter.post('/proxy', async (c) => {
     const body = await c.req.json<{
+        mockId: string
         url: string
         method: string
         headers?: Record<string, string>
@@ -34,6 +36,7 @@ explorerRouter.post('/proxy', async (c) => {
             signal: AbortSignal.timeout(30_000),
         })
 
+        const duration = Date.now() - start
         const contentType = res.headers.get('content-type') ?? ''
         let responseBody: unknown
         if (contentType.includes('application/json')) {
@@ -42,9 +45,16 @@ explorerRouter.post('/proxy', async (c) => {
             responseBody = await res.text()
         }
 
-        // Collect response headers
         const responseHeaders: Record<string, string> = {}
         res.headers.forEach((v, k) => { responseHeaders[k] = v })
+
+        // Log directly using the mockId the frontend already knows —
+        // no URL lookup needed, no ambiguity when multiple mocks share a spec
+        if (body.mockId) {
+            logRequest(body.mockId, body.url, body.method, res.status, duration).catch((err) => {
+                console.error('[explorer] logRequest threw:', err)
+            })
+        }
 
         return c.json({
             data: {
@@ -52,7 +62,7 @@ explorerRouter.post('/proxy', async (c) => {
                 statusText: res.statusText,
                 headers: responseHeaders,
                 body: responseBody,
-                duration: Date.now() - start,
+                duration,
             },
             error: null,
         })
@@ -66,3 +76,26 @@ explorerRouter.post('/proxy', async (c) => {
         })
     }
 })
+
+async function logRequest(
+    mockId: string,
+    url: string,
+    method: string,
+    statusCode: number,
+    responseTimeMs: number,
+) {
+    // Verify the mock exists and belongs to a real server before logging
+    const mock = await getMockMatch(mockId);
+    if (!mock) return
+
+    const parsedUrl = new URL(url)
+    const path = parsedUrl.pathname + parsedUrl.search
+
+    await createRequestLog({
+        mockServerId: mock.id,
+        method: method.toUpperCase(),
+        path,
+        statusCode,
+        responseTimeMs,
+    })
+}

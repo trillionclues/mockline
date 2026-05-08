@@ -45,6 +45,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./docker/traefik/traefik.prod.yml:/etc/traefik/traefik.yml:ro
       - ./letsencrypt:/letsencrypt
+      # Access log — shared with the API container for ingestion
+      - traefik-logs:/var/log/traefik
     environment:
       - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
     networks:
@@ -58,6 +60,8 @@ services:
     restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      # Read Traefik access logs for analytics ingestion
+      - traefik-logs:/var/log/traefik:ro
     group_add:
       - "988"
     env_file: .env
@@ -89,3 +93,4 @@ networks:
 volumes:
   pgdata:
   redisdata:
+  traefik-logs:

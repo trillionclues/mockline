@@ -79,6 +79,7 @@ export function ExplorerView({ initialMocks }: { initialMocks: MockServer[] }) {
                             <>
                                 <RequestPanel
                                     endpoint={selectedEndpoint}
+                                    mockId={selectedMock.id}
                                     baseUrl={selectedMock.publicUrl ?? ''}
                                     onResponse={setResponse}
                                 />

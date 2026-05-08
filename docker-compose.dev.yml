@@ -14,3 +14,7 @@ services:
       - "8080:8080"
     volumes:
       - ./docker/traefik/traefik.dev.yml:/etc/traefik/traefik.yml:ro
+      - traefik-logs:/var/log/traefik
+
+volumes:
+  traefik-logs:
