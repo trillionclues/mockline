@@ -57,6 +57,7 @@ model User {
 
   specs       Spec[]
   mockServers MockServer[]
+  specDrafts  SpecDraft[]
   sessions    Session[]
   accounts    Account[]
 
@@ -74,6 +75,7 @@ model Spec {
 
   versions    SpecVersion[]
   mockServers MockServer[]
+  drafts      SpecDraft[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -125,6 +127,14 @@ model MockServer {
   strictValidation Boolean @default(false)
   strictLevel      String?
 
+  // Partner sandbox fields
+  expiresAt        DateTime?        // deliberate expiry — distinct from idle auto-stop
+  label            String?          // human-friendly sandbox name, e.g. "Acme Corp"
+  sharePageEnabled Boolean @default(false)
+  description      String?          // shown on sandbox share page
+
+  requestLogs SandboxRequestLog[]
+
   lastAccessedAt DateTime @default(now())
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
@@ -133,7 +143,28 @@ model MockServer {
   @@index([userId])
   @@index([specId])
   @@index([status])
+  @@index([expiresAt])
   @@map("mock_servers")
+}
+
+model SandboxRequestLog {
+  id             String     @id @default(cuid())
+  mockServerId   String
+  mockServer     MockServer @relation(fields: [mockServerId], references: [id], onDelete: Cascade)
+
+  method         String     // GET, POST, PUT, DELETE, etc.
+  path           String     // /users, /transactions/{id}, etc.
+  statusCode     Int        // 200, 404, 400, etc.
+  responseTimeMs Int?       // optional latency tracking
+  userAgent      String?    // caller's user-agent header
+  ipAddress      String?    // caller's IP
+
+  createdAt      DateTime   @default(now())
+
+  @@index([mockServerId])
+  @@index([mockServerId, createdAt])
+  @@index([createdAt])
+  @@map("sandbox_request_logs")
 }
 
 model ContractTestRun {
@@ -150,6 +181,23 @@ model ContractTestRun {
   @@index([specId])
   @@index([userId])
   @@map("contract_test_runs")
+}
+
+model SpecDraft {
+  id        String   @id @default(cuid())
+  userId    String
+  specId    String?  // null = new unsaved draft; set once linked to a Spec
+  title     String?
+  content   String   // JSON.stringify'd OpenAPI spec object
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  spec Spec? @relation(fields: [specId], references: [id], onDelete: SetNull)
+
+  @@unique([userId, specId])
+  @@index([userId])
+  @@map("spec_drafts")
 }
 
 // ============================================

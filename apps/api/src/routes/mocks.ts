@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 import { z } from 'zod'
 import { stopContainer, removeContainer, getContainerStatus } from '@mockline/docker-manager'
 import { provisionMockServer } from '../services/mock-provisioner'
+import { SANDBOX_EXPIRY_MAX_DAYS } from '@mockline/types'
 import {
     listMocks,
     findMock,
@@ -26,6 +27,14 @@ const ProvisionSchema = z.object({
             requireAuth: z.boolean().optional(),
             strictValidation: z.boolean().optional(),
             strictLevel: z.enum(['hard', 'soft']).optional(),
+        })
+        .optional(),
+    sandboxOptions: z
+        .object({
+            expiresAt: z.string().optional(),
+            label: z.string().max(100).optional(),
+            sharePageEnabled: z.boolean().optional(),
+            description: z.string().max(500).optional(),
         })
         .optional(),
 })
@@ -75,6 +84,49 @@ mocksRouter.post('/', rateLimit('PROVISION'), async (c) => {
         }
     }
 
+    // Sandbox options are PRO+ only
+    if (parsed.data.sandboxOptions && user.tier === 'FREE') {
+        return c.json(
+            {
+                data: null,
+                error: {
+                    code: 'UPGRADE_REQUIRED',
+                    message: 'Partner sandbox features (expiry, share page, analytics) require PRO tier.',
+                    requiredTier: 'PRO',
+                },
+            },
+            403,
+        )
+    }
+
+    // Validate expiry duration against tier limit
+    if (parsed.data.sandboxOptions?.expiresAt) {
+        const expiresAt = new Date(parsed.data.sandboxOptions.expiresAt)
+        const now = new Date()
+        const maxDays = SANDBOX_EXPIRY_MAX_DAYS[user.tier ?? 'FREE']
+        const diffDays = (expiresAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+
+        if (diffDays <= 0) {
+            return c.json(
+                { data: null, error: { code: 'VALIDATION_ERROR', message: 'Expiry date must be in the future.' } },
+                400,
+            )
+        }
+
+        if (diffDays > maxDays) {
+            return c.json(
+                {
+                    data: null,
+                    error: {
+                        code: 'EXPIRY_LIMIT_EXCEEDED',
+                        message: `${user.tier} tier allows sandbox expiry up to ${maxDays} days. Requested: ${Math.ceil(diffDays)} days.`,
+                    },
+                },
+                403,
+            )
+        }
+    }
+
     try {
         const result = await provisionMockServer({
             specVersionId: parsed.data.specVersionId,
@@ -89,6 +141,7 @@ mocksRouter.post('/', rateLimit('PROVISION'), async (c) => {
                 strictValidation: parsed.data.contourOptions.strictValidation,
                 strictLevel: parsed.data.contourOptions.strictLevel,
             } : undefined,
+            sandboxOptions: parsed.data.sandboxOptions,
         })
         return c.json({ data: result, error: null }, 201)
     } catch (error) {
