@@ -48,3 +48,14 @@ certificatesResolvers:
 
 api:
   dashboard: false
+
+# Access logs — JSON format, written to a file the API can tail and ingest.
+# Bind-mounted from /opt/mockline/logs/traefik/access.log on the host.
+accessLog:
+  filePath: "/var/log/traefik/access.log"
+  format: json
+  bufferingSize: 100
+  fields:
+    defaultMode: keep
+    headers:
+      defaultMode: keep

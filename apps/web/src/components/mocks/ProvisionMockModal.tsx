@@ -24,6 +24,7 @@ export function ProvisionMockModal({ open, onClose, specs, prefilledSpecId, pref
     const { canAccess } = useTierGuard()
     const { open: openUpgrade } = useUpgradeModal()
     const isProUser = canAccess('PRO')
+    const isTeamUser = canAccess('TEAM')
 
     const [stateful, setStateful] = useState(false)
     const [delay, setDelay] = useState('')
@@ -31,6 +32,14 @@ export function ProvisionMockModal({ open, onClose, specs, prefilledSpecId, pref
     const [requireAuth, setRequireAuth] = useState(false)
     const [strictValidation, setStrictValidation] = useState(false)
     const [strictLevel, setStrictLevel] = useState<'hard' | 'soft'>('hard')
+
+    const [sandboxLabel, setSandboxLabel] = useState('')
+    const [sandboxDescription, setSandboxDescription] = useState('')
+    const [sharePageEnabled, setSharePageEnabled] = useState(false)
+    const [expiryPreset, setExpiryPreset] = useState<'' | '7' | '14' | '30' | '90'>('')
+
+    const maxExpiryDays = isTeamUser ? 90 : isProUser ? 14 : 0
+    const hasSandboxOptions = !!(sandboxLabel || sandboxDescription || sharePageEnabled || expiryPreset)
 
     useEffect(() => {
         if (prefilledSpecId) setSpecId(prefilledSpecId)
@@ -62,6 +71,16 @@ export function ProvisionMockModal({ open, onClose, specs, prefilledSpecId, pref
                     strictLevel: strictValidation ? strictLevel : undefined,
                 }
             }),
+            ...(isProUser && hasSandboxOptions && {
+                sandboxOptions: {
+                    label: sandboxLabel || undefined,
+                    description: sandboxDescription || undefined,
+                    sharePageEnabled: sharePageEnabled || undefined,
+                    expiresAt: expiryPreset
+                        ? new Date(Date.now() + parseInt(expiryPreset) * 24 * 60 * 60 * 1000).toISOString()
+                        : undefined,
+                }
+            }),
         }),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: queryKeys.mocks.all() })
@@ -73,6 +92,10 @@ export function ProvisionMockModal({ open, onClose, specs, prefilledSpecId, pref
             setRequireAuth(false)
             setStrictValidation(false)
             setStrictLevel('hard')
+            setSandboxLabel('')
+            setSandboxDescription('')
+            setSharePageEnabled(false)
+            setExpiryPreset('')
             setError(null)
             onClose()
         },
@@ -248,6 +271,104 @@ export function ProvisionMockModal({ open, onClose, specs, prefilledSpecId, pref
                             </button>
                         )}
                     </div>
+
+                    {/* Partner Sandbox Options */}
+                    {(isProUser || isTeamUser) && (
+                        <div style={{
+                            marginTop: '4px',
+                            padding: '16px',
+                            background: 'var(--color-bg)',
+                            border: '1px solid var(--color-border)',
+                            borderRadius: '6px',
+                        }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                                <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--color-text-muted)' }}>
+                                    Partner Sandbox
+                                </span>
+                                {!isProUser && <TierBadge tier="PRO" />}
+                            </div>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', opacity: isProUser ? 1 : 0.4, pointerEvents: isProUser ? 'auto' : 'none' }}>
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                    <div className="form-field" style={{ flex: 1 }}>
+                                        <label className="form-label" style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>Sandbox label</label>
+                                        <input
+                                            type="text"
+                                            className="form-input"
+                                            placeholder='e.g. "Acme Corp Integration"'
+                                            value={sandboxLabel}
+                                            onChange={e => setSandboxLabel(e.target.value)}
+                                            maxLength={100}
+                                            disabled={mutation.isPending}
+                                            style={{ height: '32px', fontSize: '12px', opacity: mutation.isPending ? 0.6 : 1 }}
+                                        />
+                                    </div>
+                                    <div className="form-field" style={{ flex: 1 }}>
+                                        <label className="form-label" style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>Expiry</label>
+                                        <select
+                                            className="form-select"
+                                            value={expiryPreset}
+                                            onChange={e => setExpiryPreset(e.target.value as '' | '7' | '14' | '30' | '90')}
+                                            disabled={mutation.isPending}
+                                            style={{ height: '34px', fontSize: '12px', opacity: mutation.isPending ? 0.6 : 1 }}
+                                        >
+                                            <option value="">No expiry</option>
+                                            <option value="7">7 days</option>
+                                            <option value="14">14 days</option>
+                                            {maxExpiryDays >= 30 && <option value="30">30 days</option>}
+                                            {maxExpiryDays >= 90 && <option value="90">90 days</option>}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div className="form-field">
+                                    <label className="form-label" style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>Description (shown on share page)</label>
+                                    <input
+                                        type="text"
+                                        className="form-input"
+                                        placeholder="Short API description for prospects"
+                                        value={sandboxDescription}
+                                        onChange={e => setSandboxDescription(e.target.value)}
+                                        maxLength={500}
+                                        disabled={mutation.isPending}
+                                        style={{ height: '32px', fontSize: '12px', opacity: mutation.isPending ? 0.6 : 1 }}
+                                    />
+                                </div>
+
+                                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px', color: 'var(--color-text)' }}>
+                                    <input
+                                        type="checkbox"
+                                        checked={sharePageEnabled}
+                                        onChange={e => setSharePageEnabled(e.target.checked)}
+                                        disabled={mutation.isPending}
+                                        style={{ accentColor: 'var(--color-primary)' }}
+                                    />
+                                    Enable share page — Show branded landing page at sandbox URL
+                                </label>
+                            </div>
+
+                            {!isProUser && (
+                                <button
+                                    onClick={(e) => {
+                                        e.preventDefault()
+                                        openUpgrade()
+                                    }}
+                                    style={{
+                                        marginTop: '10px',
+                                        fontSize: '12px',
+                                        color: 'var(--color-logo-line)',
+                                        background: 'none',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        padding: 0,
+                                    }}
+                                >
+                                    Upgrade to PRO to unlock sandbox features →
+                                </button>
+                            )}
+                        </div>
+                    )}
+
                 </div>
 
                 <div className="modal-actions">
@@ -261,6 +382,10 @@ export function ProvisionMockModal({ open, onClose, specs, prefilledSpecId, pref
                         setRequireAuth(false);
                         setStrictValidation(false);
                         setStrictLevel('hard');
+                        setSandboxLabel('');
+                        setSandboxDescription('');
+                        setSharePageEnabled(false);
+                        setExpiryPreset('');
                         setError(null);
                     }} disabled={mutation.isPending} className="btn-secondary">Cancel</button>
                     <button onClick={() => mutation.mutate()} disabled={!canSubmit} className="btn-primary" style={{ background: 'var(--color-logo-line)', color: 'var(--color-bg)' }}>

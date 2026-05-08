@@ -14,6 +14,8 @@ import { ensureContourBaseImage } from '@mockline/docker-manager/src/base-image'
 import { billingRouter } from './routes/billing'
 import { webhookLemonSqueezyRouter } from './routes/webhook-lemonsqueezy'
 import { explorerRouter } from './routes/explorer'
+import { sandboxAnalyticsRouter } from './routes/sandbox-analytics'
+import { shareRouter } from './routes/share'
 import { initLemonSqueezy } from './lib/lemonsqueezy'
 
 const app = new Hono()
@@ -43,6 +45,9 @@ app.on(['POST', 'GET'], '/api/auth/**', (c) => auth.handler(c.req.raw))
 // Webhook route — public, verified by HMAC (must be before auth middleware)
 app.route('/webhooks/lemonsqueezy', webhookLemonSqueezyRouter)
 
+// Public share pages — no auth needed
+app.route('/share', shareRouter)
+
 // Protected routes — auth + general rate limit
 app.use('/specs/*', requireAuth, rateLimit('GENERAL'))
 app.use('/mocks/*', requireAuth, rateLimit('GENERAL'))
@@ -51,6 +56,7 @@ app.use('/explorer/*', requireAuth, rateLimit('GENERAL'))
 
 app.route('/specs', specsRouter)
 app.route('/mocks', mocksRouter)
+app.route('/mocks', sandboxAnalyticsRouter)
 app.route('/contracts', contractsRouter)
 app.route('/explorer', explorerRouter)
 

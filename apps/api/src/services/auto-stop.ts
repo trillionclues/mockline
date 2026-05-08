@@ -2,6 +2,8 @@ import { findStaleFreeMocks, findStaleRunningMocks, findExpiredSandboxes, update
 import { stopContainer, removeContainer, removeImage, pruneDockerImages } from '@mockline/docker-manager'
 import { AUTO_STOP_MINUTES } from '@mockline/types'
 import type { Tier } from '@mockline/types'
+import { cleanupExpiredLogs } from './log-retention'
+import { ingestTraefikAccessLogs } from './traefik-log-ingester'
 
 
 // Auto-stop cron(5mins): finds mock servers that haven't been accessed
@@ -122,6 +124,18 @@ export function startAutoStopScheduler(intervalMs = 5 * 60 * 1000): NodeJS.Timeo
             const { expired } = await autoRemoveExpiredSandboxes()
             if (expired > 0) {
                 console.log(`Sandbox expiry: removed ${expired} expired sandbox(es)`)
+            }
+
+            const { deleted } = await cleanupExpiredLogs()
+            if (deleted > 0) {
+                console.log(`Log retention: purged ${deleted} expired log(s)`)
+            }
+
+            // Ingest Traefik access logs — runs every tick (every 5 min by default)
+            // In prod, Traefik writes to /var/log/traefik/access.log (shared Docker volume)
+            const { ingested } = await ingestTraefikAccessLogs()
+            if (ingested > 0) {
+                console.log(`Traefik ingester: recorded ${ingested} new request(s)`)
             }
         } catch (error) {
             console.error('Auto-scheduler error:', (error as Error).message)
