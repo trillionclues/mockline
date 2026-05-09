@@ -4,6 +4,9 @@ import { AUTO_STOP_MINUTES } from '@mockline/types'
 import type { Tier } from '@mockline/types'
 import { cleanupExpiredLogs } from './log-retention'
 import { ingestTraefikAccessLogs } from './traefik-log-ingester'
+import { findStaleSubscriptions, expireSubscription } from '@/repositories/subscription.repository'
+import { handleDowngrade } from './downgrade'
+import { sendSubscriptionExpiredEmail } from '@mockline/emails'
 
 
 // Auto-stop cron(5mins): finds mock servers that haven't been accessed
@@ -101,6 +104,31 @@ export async function autoRemoveExpiredSandboxes(): Promise<{ expired: number }>
     return { expired }
 }
 
+// Subscription expiry safety net — runs every scheduler tick.
+// Catches users whose subscription lapsed without a webhook firing
+// (missed events, Lemon Squeezy delays, dev/test environments).
+// Mirrors exactly what the subscription_expired webhook does.
+export async function enforceSubscriptionExpiry(): Promise<{ expired: number }> {
+    const stale = await findStaleSubscriptions()
+    let expired = 0
+
+    for (const user of stale) {
+        try {
+            await expireSubscription(user.id, user.subscriptionEndsAt?.toISOString() ?? null)
+            await handleDowngrade(user.id)
+            await sendSubscriptionExpiredEmail(user.email, user.name).catch(() => {
+                // Email failure shouldn't block the downgrade
+            })
+            expired++
+            console.log(`[subscription] Expired stale subscription for user ${user.id} (was ${user.subscriptionStatus}, tier ${user.tier})`)
+        } catch (err) {
+            console.error(`[subscription] Failed to expire subscription for user ${user.id}:`, (err as Error).message)
+        }
+    }
+
+    return { expired }
+}
+
 // Starts the auto-stop and auto-remove interval at server startup.
 export function startAutoStopScheduler(intervalMs = 5 * 60 * 1000): NodeJS.Timeout {
     console.log(`Auto-stop scheduler started (checks every ${intervalMs / 1000}s)`)
@@ -136,6 +164,12 @@ export function startAutoStopScheduler(intervalMs = 5 * 60 * 1000): NodeJS.Timeo
             const { ingested } = await ingestTraefikAccessLogs()
             if (ingested > 0) {
                 console.log(`Traefik ingester: recorded ${ingested} new request(s)`)
+            }
+
+            // Subscription expiry safety net — catches missed webhooks
+            const { expired: expiredSubs } = await enforceSubscriptionExpiry()
+            if (expiredSubs > 0) {
+                console.log(`Subscription enforcer: expired ${expiredSubs} stale subscription(s)`)
             }
         } catch (error) {
             console.error('Auto-scheduler error:', (error as Error).message)
