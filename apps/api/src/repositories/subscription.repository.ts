@@ -111,3 +111,38 @@ export async function findUserSubscription(userId: string) {
         },
     })
 }
+
+// Find paid-tier users whose subscription should have expired by now.
+// Covers two cases:
+//   1. subscriptionEndsAt has passed (cancelled plan reached end of period)
+//   2. subscriptionRenewsAt has passed AND status is still 'active' or 'past_due'
+//      (renewal webhook never arrived — missed or delayed)
+export async function findStaleSubscriptions() {
+    const now = new Date()
+    return db.user.findMany({
+        where: {
+            tier: { not: 'FREE' },
+            OR: [
+                // Cancelled plan — grace period over
+                {
+                    subscriptionStatus: 'cancelled',
+                    subscriptionEndsAt: { lt: now },
+                },
+                // Active/past_due but renewal date passed — webhook likely missed
+                {
+                    subscriptionStatus: { in: ['active', 'past_due'] },
+                    subscriptionRenewsAt: { lt: now },
+                },
+            ],
+        },
+        select: {
+            id: true,
+            email: true,
+            name: true,
+            tier: true,
+            subscriptionStatus: true,
+            subscriptionRenewsAt: true,
+            subscriptionEndsAt: true,
+        },
+    })
+}
