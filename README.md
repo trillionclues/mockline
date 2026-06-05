@@ -15,6 +15,7 @@ Automated Mock API PaaS
 
 Mockline is an automated PaaS for engineering teams to deploy and manage isolated, Docker-powered mock API servers from OpenAPI specs. Each mock server runs [`@trillionclues/contour`](https://www.npmjs.com/package/@trillionclues/contour) inside an isolated Docker container with resource limits, automatic health checks, and auto-stop after idle timeout.
 
+
 ```mermaid
 graph LR
     A[Upload OpenAPI Spec] --> B[Mockline]
@@ -24,6 +25,13 @@ graph LR
     B --> F[Schema Version Diff]
     D --> G[Share Link with Team]
 ```
+
+
+If User A uploads a spec and starts a mock server on `mock-abc123.mockline.xyz`, here is what happens under the hood:
+
+1. The request hits the server - Traefik listening on ports 80/443 spots the host header `mock-abc123.mockline.xyz` and routes it to the correct Node.js API container.
+2. The Hono API receives the request and checks the database and provisions a new Docker container for the mock server on the fly and tells Traefik to create a new route for it.
+3. The Contour mock server starts inside the new container and reads the OpenAPI spec provided by the user. and generates a response matching that path and method. The response is sent back through the same path to the user.
 
 ## Features
 
