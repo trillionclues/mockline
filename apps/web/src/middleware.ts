@@ -17,7 +17,8 @@ export default async function middleware(request: NextRequest) {
         pathname.startsWith('/about') ||
         pathname.startsWith('/privacy') ||
         pathname.startsWith('/terms') ||
-        pathname.startsWith('/blog')
+        pathname.startsWith('/blog') ||
+        pathname.startsWith('/webhooks/')
 
     // allow static files and Next.js internals
     if (

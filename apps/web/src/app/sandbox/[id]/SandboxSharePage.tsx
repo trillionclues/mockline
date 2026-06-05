@@ -20,6 +20,10 @@ type SharePageData = {
 export function SandboxSharePage({ data }: { data: SharePageData }) {
     const isExpired = data.expiresAt ? new Date(data.expiresAt).getTime() < Date.now() : false
     const isRunning = data.status === 'RUNNING'
+    const [showAll, setShowAll] = useState(false)
+
+    const hasMore = data.endpoints.length > 5
+    const displayedEndpoints = showAll ? data.endpoints : data.endpoints.slice(0, 5)
 
     return (
         <div style={{
@@ -28,9 +32,8 @@ export function SandboxSharePage({ data }: { data: SharePageData }) {
             color: '#e4e4e7',
             fontFamily: 'var(--font-inter), system-ui, -apple-system, sans-serif',
         }}>
-            {/* Hero */}
             <div style={{
-                padding: '60px 24px 40px',
+                padding: '40px 24px 20px',
                 background: 'linear-gradient(180deg, rgba(99,102,241,0.08) 0%, transparent 100%)',
                 borderBottom: '1px solid rgba(255,255,255,0.06)',
             }}>
@@ -38,15 +41,15 @@ export function SandboxSharePage({ data }: { data: SharePageData }) {
                     <div style={{
                         display: 'inline-flex',
                         alignItems: 'center',
-                        gap: '8px',
-                        padding: '4px 12px',
+                        gap: '4px',
+                        padding: '4px 20px',
                         background: isRunning ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)',
                         border: `1px solid ${isRunning ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}`,
                         borderRadius: '20px',
                         fontSize: '12px',
-                        fontWeight: 500,
+                        fontWeight: 600,
                         color: isRunning ? '#22c55e' : '#ef4444',
-                        marginBottom: '20px',
+                        marginBottom: '15px',
                     }}>
                         <span style={{
                             width: '6px', height: '6px', borderRadius: '50%',
@@ -95,7 +98,6 @@ export function SandboxSharePage({ data }: { data: SharePageData }) {
                         </div>
                     )}
 
-                    {/* Stats row */}
                     <div style={{ display: 'flex', gap: '24px', marginTop: '24px' }}>
                         <StatChip icon={<Zap size={13} />} label="Total Hits" value={data.analytics.totalHits.toLocaleString()} />
                         <StatChip icon={<Activity size={13} />} label="Endpoints" value={String(data.endpoints.length)} />
@@ -106,7 +108,6 @@ export function SandboxSharePage({ data }: { data: SharePageData }) {
                 </div>
             </div>
 
-            {/* Endpoints */}
             <div style={{ maxWidth: '720px', margin: '0 auto', padding: '40px 24px' }}>
                 <h2 style={{ fontSize: '16px', fontWeight: 600, color: '#fafafa', marginBottom: '16px' }}>
                     Available Endpoints
@@ -118,7 +119,7 @@ export function SandboxSharePage({ data }: { data: SharePageData }) {
                     </div>
                 ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                        {data.endpoints.map((ep, i) => (
+                        {displayedEndpoints.map((ep, i) => (
                             <EndpointCard
                                 key={i}
                                 endpoint={ep}
@@ -126,10 +127,40 @@ export function SandboxSharePage({ data }: { data: SharePageData }) {
                                 isLive={isRunning && !isExpired}
                             />
                         ))}
+                        {hasMore && (
+                            <button
+                                onClick={() => setShowAll(!showAll)}
+                                style={{
+                                    alignSelf: 'center',
+                                    marginTop: '12px',
+                                    background: 'rgba(255,255,255,0.04)',
+                                    border: '1px solid rgba(255,255,255,0.08)',
+                                    borderRadius: '6px',
+                                    padding: '8px 16px',
+                                    color: '#a78bfa',
+                                    fontSize: '13px',
+                                    fontWeight: 500,
+                                    cursor: 'pointer',
+                                    transition: 'all 150ms ease',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '6px',
+                                }}
+                                onMouseEnter={e => {
+                                    e.currentTarget.style.background = 'rgba(255,255,255,0.08)'
+                                    e.currentTarget.style.borderColor = 'rgba(167,139,250,0.4)'
+                                }}
+                                onMouseLeave={e => {
+                                    e.currentTarget.style.background = 'rgba(255,255,255,0.04)'
+                                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'
+                                }}
+                            >
+                                {showAll ? 'Show Less' : `Show ${data.endpoints.length - 5} More Endpoints`}
+                            </button>
+                        )}
                     </div>
                 )}
 
-                {/* Example curl */}
                 {data.publicUrl && data.endpoints.length > 0 && isRunning && !isExpired && (
                     <div style={{ marginTop: '32px' }}>
                         <h2 style={{ fontSize: '16px', fontWeight: 600, color: '#fafafa', marginBottom: '12px' }}>
@@ -143,7 +174,6 @@ export function SandboxSharePage({ data }: { data: SharePageData }) {
                 )}
             </div>
 
-            {/* Footer */}
             {data.branding === 'powered-by' && (
                 <div style={{
                     padding: '24px',
